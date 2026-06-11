@@ -1,0 +1,4 @@
+rootProject.name = 'e-health-insurance-policy'
+
+includeBuild '../ehi-common-security'
+includeBuild '../ehi-common-events'

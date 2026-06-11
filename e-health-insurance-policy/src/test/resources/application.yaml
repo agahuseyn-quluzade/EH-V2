@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:policy-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+jwt:
+  secret: test-secret-key-for-policy-service
+
+ehi:
+  security:
+    jwt:
+      secret: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RpbmctcHVycG9zZXMtb25seQ==
+  outbox:
+    publisher:
+      enabled: false
+  policy:
+    payment-events:
+      enabled: false

@@ -1,0 +1,103 @@
+spring:
+  application:
+    name: e-health-insurance-iam
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/iam}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: ${REDIS_TIMEOUT_MS:2000}
+
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:validate}
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  liquibase:
+    enabled: true
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+
+server:
+  port: ${SERVER_PORT:8081}
+
+ehi:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+
+  iam:
+    tokens:
+      password-reset-ttl: ${PASSWORD_RESET_TOKEN_TTL:15m}
+      email-verification-ttl: ${EMAIL_VERIFICATION_TOKEN_TTL:24h}
+    events:
+      enabled: ${IAM_EVENTS_ENABLED:true}
+      email-requested-topic: ${NOTIFICATION_EMAIL_REQUESTED_TOPIC:notification.email.requested}
+    links:
+      password-reset-url: ${PASSWORD_RESET_LINK_URL:http://localhost:5173/reset-password}
+      email-verification-url: ${EMAIL_VERIFICATION_LINK_URL:http://localhost:5173/verify-email}
+
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiration: ${JWT_ACCESS_EXPIRATION_MS:900000}
+  refresh-token-expiration: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+      group:
+        readiness:
+          # Redis auth axınları üçün hard dependency-dir (refresh/reset token store)
+          include: readinessState,db,redis
+        liveness:
+          include: livenessState
+  info:
+    env:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLE_RATE:1.0}
+  otlp:
+    tracing:
+      endpoint: ${OTLP_TRACES_ENDPOINT:http://jaeger:4318/v1/traces}
+info:
+  app:
+    name: ${spring.application.name}
+    version: 0.0.1-SNAPSHOT
+
+logging:
+  structured:
+    format:
+      console: ${LOG_FORMAT:}   # boş = human-readable; "ecs" = JSON (compose-da)
+  pattern:
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"

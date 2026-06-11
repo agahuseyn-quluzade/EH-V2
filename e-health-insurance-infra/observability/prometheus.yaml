@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'ehi-services'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - gateway:8080
+          - iam:8081
+          - policy:8082
+          - claim:8083
+          - ai:8084
+          - notification:8085
+          - health-record:8086
+          - payment:8087
+        labels:
+          group: 'ehi'
+
+  - job_name: 'kafka'
+    static_configs:
+      - targets:
+          - kafka-exporter:9308
+        labels:
+          group: 'infra'
+
+  - job_name: 'redis'
+    static_configs:
+      - targets:
+          - redis-exporter:9121
+        labels:
+          group: 'infra'

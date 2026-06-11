@@ -1,0 +1,221 @@
+spring:
+  application:
+    name: e-health-insurance-gw
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: ${REDIS_TIMEOUT_MS:2000}
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            # ── Həssas endpoint-lər üçün ayrıca rate limit (order: -1,
+            # ── generik route-lardan əvvəl uyğunlaşır). Anonim endpoint-lər
+            # ── IP üzrə, autentifikasiyalılar JWT subject üzrə limitlənir.
+            - id: iam-auth-login
+              uri: ${IAM_URL:http://localhost:8081}
+              order: -1
+              predicates:
+                - Path=/api/iam/auth/login
+                - Method=POST
+              filters:
+                - RewritePath=/api/iam/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_LOGIN_REPLENISH_RATE:5}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_LOGIN_BURST_CAPACITY:10}
+            - id: iam-auth-register
+              uri: ${IAM_URL:http://localhost:8081}
+              order: -1
+              predicates:
+                - Path=/api/iam/auth/register
+                - Method=POST
+              filters:
+                - RewritePath=/api/iam/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_REGISTER_REPLENISH_RATE:2}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_REGISTER_BURST_CAPACITY:5}
+            - id: iam-auth-password-reset
+              uri: ${IAM_URL:http://localhost:8081}
+              order: -1
+              predicates:
+                - Path=/api/iam/auth/password-reset/**
+                - Method=POST
+              filters:
+                - RewritePath=/api/iam/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_PASSWORD_RESET_REPLENISH_RATE:2}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_PASSWORD_RESET_BURST_CAPACITY:4}
+            - id: payment-writes
+              uri: ${PAYMENT_URL:http://localhost:8087}
+              order: -1
+              predicates:
+                - Path=/api/payment/**
+                - Method=POST
+              filters:
+                - RewritePath=/api/payment/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_PAYMENT_REPLENISH_RATE:5}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_PAYMENT_BURST_CAPACITY:10}
+            - id: claim-submit
+              uri: ${CLAIM_URL:http://localhost:8083}
+              order: -1
+              predicates:
+                - Path=/api/claim/claims
+                - Method=POST
+              filters:
+                - RewritePath=/api/claim/(?<segment>.*), /api/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_CLAIM_SUBMIT_REPLENISH_RATE:3}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_CLAIM_SUBMIT_BURST_CAPACITY:6}
+
+            # ── Generik route-lar: ümumi default limit
+            - id: iam
+              uri: ${IAM_URL:http://localhost:8081}
+              predicates:
+                - Path=/api/iam/**
+              filters:
+                - RewritePath=/api/iam/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_DEFAULT_REPLENISH_RATE:50}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_DEFAULT_BURST_CAPACITY:100}
+            - id: policy
+              uri: ${POLICY_URL:http://localhost:8082}
+              predicates:
+                - Path=/api/policy/**
+              filters:
+                - RewritePath=/api/policy/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_DEFAULT_REPLENISH_RATE:50}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_DEFAULT_BURST_CAPACITY:100}
+            - id: claim
+              uri: ${CLAIM_URL:http://localhost:8083}
+              predicates:
+                - Path=/api/claim/**
+              filters:
+                - RewritePath=/api/claim/(?<segment>.*), /api/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_DEFAULT_REPLENISH_RATE:50}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_DEFAULT_BURST_CAPACITY:100}
+            - id: payment
+              uri: ${PAYMENT_URL:http://localhost:8087}
+              predicates:
+                - Path=/api/payment/**
+              filters:
+                - RewritePath=/api/payment/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_DEFAULT_REPLENISH_RATE:50}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_DEFAULT_BURST_CAPACITY:100}
+            - id: health-record
+              uri: ${HEALTH_RECORD_URL:http://localhost:8086}
+              predicates:
+                - Path=/api/health-record/**
+              filters:
+                - RewritePath=/api/health-record/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_DEFAULT_REPLENISH_RATE:50}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_DEFAULT_BURST_CAPACITY:100}
+            - id: ai
+              uri: ${AI_URL:http://localhost:8084}
+              predicates:
+                - Path=/api/ai/**
+              filters:
+                - RewritePath=/api/ai/(?<segment>.*), /api/v1/ai/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_DEFAULT_REPLENISH_RATE:50}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_DEFAULT_BURST_CAPACITY:100}
+            - id: notification
+              uri: ${NOTIFICATION_URL:http://localhost:8085}
+              predicates:
+                - Path=/api/notification/**
+              filters:
+                - RewritePath=/api/notification/(?<segment>.*), /api/v1/$\{segment}
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: ${RATE_LIMIT_DEFAULT_REPLENISH_RATE:50}
+                    redis-rate-limiter.burstCapacity: ${RATE_LIMIT_DEFAULT_BURST_CAPACITY:100}
+          globalcors:
+            cors-configurations:
+              '[/**]':
+                allowedOriginPatterns:
+                  - "http://localhost:*"
+                  - "http://127.0.0.1:*"
+                allowedMethods:
+                  - GET
+                  - POST
+                  - PUT
+                  - PATCH
+                  - DELETE
+                  - OPTIONS
+                allowedHeaders: "*"
+                exposedHeaders:
+                  - Authorization
+                  - Content-Disposition
+                allowCredentials: true
+                maxAge: 3600
+
+server:
+  port: ${SERVER_PORT:8080}
+
+ehi:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+    gateway-header:
+      secret: ${GATEWAY_HEADER_SECRET:${JWT_SECRET}}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus,gateway
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+      group:
+        readiness:
+          include: readinessState
+        liveness:
+          include: livenessState
+  info:
+    env:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLE_RATE:1.0}
+  otlp:
+    tracing:
+      endpoint: ${OTLP_TRACES_ENDPOINT:http://jaeger:4318/v1/traces}
+info:
+  app:
+    name: ${spring.application.name}
+    version: 0.0.1-SNAPSHOT
+
+logging:
+  structured:
+    format:
+      console: ${LOG_FORMAT:}
+  pattern:
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"

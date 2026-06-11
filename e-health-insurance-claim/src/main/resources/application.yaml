@@ -1,0 +1,164 @@
+spring:
+  application:
+    name: e-health-insurance-claim
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: false
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 12MB
+      enabled: true
+  datasource:
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/claim}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  liquibase:
+    change-log: classpath:db/changelog/db.changelog-master.yaml
+    enabled: true
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
+      client:
+        config:
+          default:
+            connect-timeout: 2000
+            read-timeout: 5000
+          ai-service:
+            # LLM ləng olur — daha uzun read timeout
+            read-timeout: 20000
+          notification-service:
+            read-timeout: 3000
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:29092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      acks: all
+      retries: ${KAFKA_PRODUCER_RETRIES:10}
+      properties:
+        enable.idempotence: true
+        max.in.flight.requests.per.connection: 5
+        delivery.timeout.ms: ${KAFKA_DELIVERY_TIMEOUT_MS:120000}
+        request.timeout.ms: ${KAFKA_REQUEST_TIMEOUT_MS:30000}
+    consumer:
+      group-id: ${CLAIM_AI_SCORE_CONSUMER_GROUP:claim-service-ai-score}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      auto-offset-reset: earliest
+      enable-auto-commit: false
+      properties:
+        isolation.level: read_committed
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowSize: 20
+        minimumNumberOfCalls: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 30s
+        permittedNumberOfCallsInHalfOpenState: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+    instances:
+      AiServiceClient:
+        baseConfig: default
+        slowCallDurationThreshold: 15s
+        slowCallRateThreshold: 50
+      PolicyServiceClient:
+        baseConfig: default
+      PolicyInternalServiceClient:
+        baseConfig: default
+      NotificationServiceClient:
+        baseConfig: default
+      IamServiceClient:
+        baseConfig: default
+  timelimiter:
+    configs:
+      default:
+        timeoutDuration: 25s
+        cancelRunningFuture: true
+
+server:
+  port: ${SERVER_PORT:8083}
+
+ehi:
+  security:
+    jwt:
+      secret: ${JWT_SECRET}
+  outbox:
+    publisher:
+      enabled: ${OUTBOX_PUBLISHER_ENABLED:true}
+      batch-size: ${OUTBOX_BATCH_SIZE:50}
+      fixed-delay-ms: ${OUTBOX_PUBLISHER_FIXED_DELAY_MS:5000}
+      send-timeout-ms: ${OUTBOX_SEND_TIMEOUT_MS:10000}
+      max-attempts: ${OUTBOX_MAX_ATTEMPTS:10}
+      retry-delay-ms: ${OUTBOX_RETRY_DELAY_MS:30000}
+      dlq-suffix: ${OUTBOX_DLQ_SUFFIX:.dlq}
+  adjudication:
+    fraud-high-threshold: ${FRAUD_HIGH_THRESHOLD:0.70}
+  claim:
+    events:
+      enabled: ${CLAIM_EVENTS_ENABLED:true}
+      ai-scored-topic: ${CLAIM_AI_SCORED_TOPIC:claim.ai.scored}
+      ai-scored-consumer-group: ${CLAIM_AI_SCORE_CONSUMER_GROUP:claim-service-ai-score}
+  evidence:
+    storage-path: ${EVIDENCE_STORAGE_PATH:/var/ehi/evidence}
+  services:
+    policy-url: ${POLICY_SERVICE_URL:http://localhost:8082}
+    ai-url: ${AI_SERVICE_URL:http://localhost:8084}
+    notification-url: ${NOTIFICATION_SERVICE_URL:http://localhost:8085}
+    iam-url: ${IAM_SERVICE_URL:http://localhost:8081}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics,prometheus
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: when-authorized
+      group:
+        readiness:
+          include: readinessState,db
+        liveness:
+          include: livenessState
+  info:
+    env:
+      enabled: true
+  metrics:
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+  tracing:
+    sampling:
+      probability: ${TRACING_SAMPLE_RATE:1.0}
+  otlp:
+    tracing:
+      endpoint: ${OTLP_TRACES_ENDPOINT:http://jaeger:4318/v1/traces}
+info:
+  app:
+    name: ${spring.application.name}
+    version: 0.0.1-SNAPSHOT
+
+logging:
+  structured:
+    format:
+      console: ${LOG_FORMAT:}
+  pattern:
+    level: "%5p [${spring.application.name},%X{traceId:-},%X{spanId:-}]"
+  level:
+    com.eHealthInsurance: INFO

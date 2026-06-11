@@ -1,0 +1,178 @@
+# Production override for the e-health-insurance stack.
+#
+# Usage:
+#   docker compose -f docker-compose.yaml -f docker-compose.prod.yaml \
+#       --env-file .env.prod up -d
+#
+# What this layer changes vs. the base (dev) compose:
+#   * restart: unless-stopped on every long-running service
+#   * CPU/memory limits + reservations on the JVM services
+#   * internal infra (postgres, redis, kafka, exporters, tracing, logs) is NOT
+#     published to the host — only the gateway and the dashboards are reachable
+#   * Postgres + per-service DB credentials come from the environment, never
+#     hard-coded "ehi/ehi"
+#   * notification talks to a real SMTP relay (prod profile), not MailHog
+#   * lower trace sampling to keep overhead/cost down
+#
+# The dev-only services (mailhog, kafka-ui, frontend) live behind profiles in
+# the base file and are simply never selected in production.
+
+services:
+  # ──────── Infrastructure ────────
+  postgres:
+    restart: unless-stopped
+    ports: !reset []          # internal only — do not publish 5432 in prod
+    environment:
+      # Username stays "ehi" to match each service's SPRING_DATASOURCE_USERNAME;
+      # only the password is a secret and must be supplied via .env.prod.
+      POSTGRES_USER: ${POSTGRES_USER:-ehi}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      POSTGRES_DB: ${POSTGRES_DB:-ehi}
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 2g }
+        reservations: { cpus: "0.5", memory: 512m }
+
+  redis:
+    restart: unless-stopped
+    ports: !reset []          # internal only
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 128m }
+
+  redis-exporter:
+    restart: unless-stopped
+
+  kafka:
+    restart: unless-stopped
+    ports: !reset []          # internal only — no external listener published
+    deploy:
+      resources:
+        limits: { cpus: "2.0", memory: 1500m }
+        reservations: { cpus: "0.5", memory: 512m }
+
+  kafka-exporter:
+    restart: unless-stopped
+
+  jaeger:
+    restart: unless-stopped
+    ports: !reset []          # scrape/UI reached over the internal network / behind VPN
+
+  loki:
+    restart: unless-stopped
+    ports: !reset []
+
+  promtail:
+    restart: unless-stopped
+
+  prometheus:
+    restart: unless-stopped
+    # Keep 9090 reachable only from localhost on the host running prod compose.
+    ports:
+      - "127.0.0.1:9090:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.retention.time=${PROM_RETENTION:-15d}'
+
+  grafana:
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:3000:3000"
+    environment:
+      # Real admin password + login form ON in prod (no anonymous admin).
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env.prod}
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_AUTH_DISABLE_LOGIN_FORM: "false"
+
+  # ──────── Application services ────────
+  gateway:
+    restart: unless-stopped
+    environment:
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }
+
+  iam:
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }
+
+  policy:
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }
+
+  claim:
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }
+
+  payment:
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }
+
+  health-record:
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }
+
+  ai:
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }
+
+  notification:
+    restart: unless-stopped
+    environment:
+      # Production profile uses a real SMTP relay instead of MailHog.
+      NOTIFICATION_SPRING_PROFILE: ${NOTIFICATION_SPRING_PROFILE:-prod}
+      SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env.prod}
+      SMTP_HOST: ${SMTP_HOST:?set SMTP_HOST in .env.prod}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USERNAME: ${SMTP_USERNAME:?set SMTP_USERNAME in .env.prod}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:?set SMTP_PASSWORD in .env.prod}
+      SMTP_AUTH: ${SMTP_AUTH:-true}
+      SMTP_STARTTLS: ${SMTP_STARTTLS:-true}
+      TRACING_SAMPLE_RATE: ${TRACING_SAMPLE_RATE:-0.1}
+    deploy:
+      resources:
+        limits: { cpus: "1.0", memory: 768m }
+        reservations: { cpus: "0.25", memory: 256m }

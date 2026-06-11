@@ -1,0 +1,33 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:claim-test;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+  liquibase:
+    enabled: false
+
+ehi:
+  security:
+    jwt:
+      secret: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RpbmctcHVycG9zZXMtb25seQ==
+  outbox:
+    publisher:
+      enabled: false
+  claim:
+    events:
+      enabled: false
+  services:
+    policy-url: http://localhost:8082
+    ai-url: http://localhost:8084
+    notification-url: http://localhost:8085
+    iam-url: http://localhost:8081
+  evidence:
+    # Testdə yazıla bilən qovluq (default /var/ehi/evidence CI/dev maşınlarında yaradıla bilmir)
+    storage-path: ${java.io.tmpdir}/ehi-evidence-test

@@ -1,0 +1,41 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  # Bütün Docker container-lərinin log-larını topla
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      # Container adını "service" label-i kimi qoy
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: container
+      # Compose project label-i
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_project']
+        target_label: compose_project
+      # Compose service label-i (iam, policy, claim, ai və s.)
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: service
+      # __path__ vacibdir — Promtail logu oxumaq üçün
+      - source_labels: ['__meta_docker_container_log_stream']
+        target_label: stream
+    pipeline_stages:
+      # JSON log-lardan traceId çıxar (ECS format)
+      - json:
+          expressions:
+            level: '"log.level"'
+            trace_id: '"trace.id"'
+            span_id: '"span.id"'
+            logger: '"log.logger"'
+      - labels:
+          level:
+          trace_id:

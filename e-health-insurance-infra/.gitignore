@@ -1,0 +1,24 @@
+# Secret environment variables - NEVER commit these
+.env
+.env.*
+!.env.example
+!.env.prod.example
+.env.local
+.env.*.local
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/

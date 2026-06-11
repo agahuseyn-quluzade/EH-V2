@@ -1,0 +1,7 @@
+CREATE DATABASE ehi_iam;
+CREATE DATABASE ehi_policy;
+CREATE DATABASE ehi_claim;
+CREATE DATABASE ehi_ai;
+CREATE DATABASE ehi_notification;
+CREATE DATABASE ehi_payment;
+CREATE DATABASE ehi_health_record;

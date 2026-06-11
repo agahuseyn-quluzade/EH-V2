@@ -1,0 +1,15 @@
+spring:
+  data:
+    redis:
+      # Qəsdən bağlı port — testlərdə Redis YOXDUR; fail-open davranışı
+      # deterministik yoxlanılır (host maşında işləyən Redis-ə düşməsin deyə)
+      host: localhost
+      port: 1
+      timeout: 200
+
+ehi:
+  security:
+    jwt:
+      secret: dGVzdC1zZWNyZXQta2V5LWZvci11bml0LXRlc3RpbmctcHVycG9zZXMtb25seQ==
+    gateway-header:
+      secret: test-gateway-header-secret

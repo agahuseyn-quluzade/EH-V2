@@ -1,0 +1,17 @@
+apiVersion: 1
+
+# Auto-load JSON dashboards from the provisioned folder. Editable in the UI;
+# changes are not written back to the JSON (file is mounted read-only).
+providers:
+  - name: ehi
+    orgId: 1
+    folder: EHI
+    type: file
+    disableDeletion: false
+    allowUiUpdates: true
+    updateIntervalSeconds: 30
+    options:
+      # JSON dashboards live in a separate dir; this provisioning folder holds
+      # only provider YAML files.
+      path: /etc/grafana/dashboards
+      foldersFromFilesStructure: false
