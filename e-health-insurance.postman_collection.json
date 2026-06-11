@@ -1,0 +1,625 @@
+{
+  "info": {
+    "name": "e-health-insurance",
+    "description": "All API endpoints for the e-health-insurance microservices platform. Requests go through the gateway by default. Login via `IAM › Login` and the test script will populate {{accessToken}} / {{refreshToken}} / {{userId}} automatically.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_postman_id": "ehi-platform-collection"
+  },
+  "variable": [
+    { "key": "baseUrl",       "value": "http://localhost:8080", "description": "Gateway base URL" },
+    { "key": "accessToken",   "value": "",                      "description": "Populated by IAM/Login" },
+    { "key": "refreshToken",  "value": "",                      "description": "Populated by IAM/Login" },
+    { "key": "userId",        "value": "",                      "description": "Populated by IAM/Login (UUID)" },
+    { "key": "planId",        "value": "00000000-0000-0000-0000-000000000000", "description": "Set after creating a plan" },
+    { "key": "policyId",      "value": "00000000-0000-0000-0000-000000000000", "description": "Set after purchasing a policy" },
+    { "key": "claimId",       "value": "00000000-0000-0000-0000-000000000000", "description": "Set after submitting a claim" },
+    { "key": "memberId",      "value": "00000000-0000-0000-0000-000000000000", "description": "Target member UUID for admin/internal calls" },
+    { "key": "userRole",      "value": "MEMBER",                    "description": "MEMBER | STAFF | ADMIN — passed as X-User-Role to claim service" }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "item": [
+    {
+      "name": "IAM",
+      "description": "Auth and user management. Mounted under /api/iam/* through the gateway → rewritten to /api/v1/*",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/iam/auth/register", "host": ["{{baseUrl}}"], "path": ["api","iam","auth","register"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@example.com\",\n  \"password\": \"P@ssw0rd123\",\n  \"firstName\": \"Ada\",\n  \"lastName\": \"Lovelace\",\n  \"phone\": \"+994501234567\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "  const body = pm.response.json();",
+                  "  if (body.accessToken)  pm.collectionVariables.set('accessToken',  body.accessToken);",
+                  "  if (body.refreshToken) pm.collectionVariables.set('refreshToken', body.refreshToken);",
+                  "  if (body.user && body.user.id) pm.collectionVariables.set('userId', body.user.id);",
+                  "  else if (body.userId) pm.collectionVariables.set('userId', body.userId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/iam/auth/login", "host": ["{{baseUrl}}"], "path": ["api","iam","auth","login"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"member@example.com\",\n  \"password\": \"P@ssw0rd123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Refresh token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/iam/auth/refresh", "host": ["{{baseUrl}}"], "path": ["api","iam","auth","refresh"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Validate token",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/iam/auth/validate", "host": ["{{baseUrl}}"], "path": ["api","iam","auth","validate"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"accessToken\": \"{{accessToken}}\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get current user",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/iam/users/me", "host": ["{{baseUrl}}"], "path": ["api","iam","users","me"] }
+          }
+        },
+        {
+          "name": "Update current user",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/iam/users/me", "host": ["{{baseUrl}}"], "path": ["api","iam","users","me"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Ada\",\n  \"lastName\": \"Lovelace\",\n  \"phone\": \"+994501112233\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get user by id (STAFF/ADMIN)",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/iam/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api","iam","users","{{userId}}"] }
+          }
+        },
+        {
+          "name": "Get user status (internal)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/api/iam/users/{{userId}}/status", "host": ["{{baseUrl}}"], "path": ["api","iam","users","{{userId}}","status"] },
+            "description": "Public service-to-service endpoint used by AI and policy to verify member is active."
+          }
+        },
+        {
+          "name": "Change user role (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/iam/users/{{userId}}/role", "host": ["{{baseUrl}}"], "path": ["api","iam","users","{{userId}}","role"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"STAFF\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Policy",
+      "description": "Plans and policies. Mounted under /api/policy/* → rewritten to /api/v1/*",
+      "item": [
+        {
+          "name": "Plans",
+          "item": [
+            {
+              "name": "List plans",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/policy/plans?page=0&size=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api","policy","plans"],
+                  "query": [
+                    { "key": "page", "value": "0" },
+                    { "key": "size", "value": "20" }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Get plan by id",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/api/policy/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["api","policy","plans","{{planId}}"] }
+              }
+            },
+            {
+              "name": "Compare plans",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/policy/plans/compare?ids={{planId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api","policy","plans","compare"],
+                  "query": [{ "key": "ids", "value": "{{planId}}" }]
+                }
+              }
+            },
+            {
+              "name": "Create plan (ADMIN)",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code < 300) {",
+                      "  const body = pm.response.json();",
+                      "  if (body.id) pm.collectionVariables.set('planId', body.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/api/policy/plans", "host": ["{{baseUrl}}"], "path": ["api","policy","plans"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"name\": \"Standard Care\",\n  \"description\": \"Standard family plan covering common procedures.\",\n  \"monthlyPremium\": 49.99,\n  \"coveragePercent\": 0.8,\n  \"annualLimit\": 50000.00,\n  \"deductible\": 250.00,\n  \"durationMonths\": 12,\n  \"gracePeriodDays\": 14,\n  \"waitingPeriodDays\": 30,\n  \"effectiveFrom\": \"2026-06-01\",\n  \"effectiveTo\": null,\n  \"coveredProcedures\": [\"GP-VISIT\", \"BLOOD-TEST\"],\n  \"procedureRules\": [\n    {\n      \"procedureCode\": \"GP-VISIT\",\n      \"category\": \"primary-care\",\n      \"benefitLimit\": 200.00,\n      \"requiresPriorAuthorization\": false,\n      \"waitingPeriodDays\": 0,\n      \"excluded\": false\n    }\n  ]\n}"
+                }
+              }
+            },
+            {
+              "name": "Update plan (ADMIN)",
+              "request": {
+                "method": "PUT",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/api/policy/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["api","policy","plans","{{planId}}"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"description\": \"Updated description.\",\n  \"monthlyPremium\": 54.99\n}"
+                }
+              }
+            },
+            {
+              "name": "Retire plan (ADMIN)",
+              "request": {
+                "method": "PATCH",
+                "url": { "raw": "{{baseUrl}}/api/policy/plans/{{planId}}/retire", "host": ["{{baseUrl}}"], "path": ["api","policy","plans","{{planId}}","retire"] }
+              }
+            },
+            {
+              "name": "Activate plan (ADMIN)",
+              "request": {
+                "method": "PATCH",
+                "url": { "raw": "{{baseUrl}}/api/policy/plans/{{planId}}/activate", "host": ["{{baseUrl}}"], "path": ["api","policy","plans","{{planId}}","activate"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Policies (member)",
+          "item": [
+            {
+              "name": "Purchase policy",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "if (pm.response.code < 300) {",
+                      "  const body = pm.response.json();",
+                      "  if (body.id) pm.collectionVariables.set('policyId', body.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/api/policy/policies", "host": ["{{baseUrl}}"], "path": ["api","policy","policies"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"planId\": \"{{planId}}\",\n  \"startDate\": \"2026-07-01\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Get my active policy",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/api/policy/policies/me", "host": ["{{baseUrl}}"], "path": ["api","policy","policies","me"] }
+              }
+            },
+            {
+              "name": "Get my policy history",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/api/policy/policies/me/history", "host": ["{{baseUrl}}"], "path": ["api","policy","policies","me","history"] }
+              }
+            },
+            {
+              "name": "Check coverage",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/api/policy/policies/{{policyId}}/coverage-checks", "host": ["{{baseUrl}}"], "path": ["api","policy","policies","{{policyId}}","coverage-checks"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"claimId\": null,\n  \"serviceDate\": \"2026-06-01\",\n  \"procedureCode\": \"GP-VISIT\",\n  \"claimAmount\": 120.00\n}"
+                }
+              }
+            },
+            {
+              "name": "Cancel my policy",
+              "request": {
+                "method": "PATCH",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/api/policy/policies/{{policyId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api","policy","policies","{{policyId}}","cancel"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Switching to a different plan.\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Renew policy",
+              "request": {
+                "method": "POST",
+                "url": { "raw": "{{baseUrl}}/api/policy/policies/{{policyId}}/renewals", "host": ["{{baseUrl}}"], "path": ["api","policy","policies","{{policyId}}","renewals"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Admin",
+          "item": [
+            {
+              "name": "Admin: purchase policy for member",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/api/policy/admin/members/{{memberId}}/policies", "host": ["{{baseUrl}}"], "path": ["api","policy","admin","members","{{memberId}}","policies"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"planId\": \"{{planId}}\",\n  \"memberId\": \"{{memberId}}\",\n  \"startDate\": \"2026-07-01\"\n}"
+                }
+              }
+            },
+            {
+              "name": "Admin: list policies",
+              "request": {
+                "method": "GET",
+                "url": {
+                  "raw": "{{baseUrl}}/api/policy/admin/policies?page=0&size=20",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["api","policy","admin","policies"],
+                  "query": [
+                    { "key": "page", "value": "0" },
+                    { "key": "size", "value": "20" }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "Admin: list a member's policies",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/api/policy/admin/members/{{memberId}}/policies", "host": ["{{baseUrl}}"], "path": ["api","policy","admin","members","{{memberId}}","policies"] }
+              }
+            },
+            {
+              "name": "Admin: policy statistics",
+              "request": {
+                "method": "GET",
+                "url": { "raw": "{{baseUrl}}/api/policy/admin/policies/statistics", "host": ["{{baseUrl}}"], "path": ["api","policy","admin","policies","statistics"] }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Internal",
+          "item": [
+            {
+              "name": "Internal: apply claim usage (CLAIM_SERVICE/ADMIN)",
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": { "raw": "{{baseUrl}}/api/policy/internal/policies/{{policyId}}/claim-usages", "host": ["{{baseUrl}}"], "path": ["api","policy","internal","policies","{{policyId}}","claim-usages"] },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"claimId\": \"{{claimId}}\",\n  \"deductibleApplied\": 100.00,\n  \"reimbursementAmount\": 240.00\n}"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Claim",
+      "description": "Claim submission and review. Mounted under /api/claim/* → rewritten to /api/*. Claim service trusts X-User-Id and X-User-Role headers (set {{userRole}} to MEMBER/STAFF/ADMIN to switch role).",
+      "item": [
+        {
+          "name": "Submit claim",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code < 300) {",
+                  "  const body = pm.response.json();",
+                  "  if (body.id) pm.collectionVariables.set('claimId', body.id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User-Id",    "value": "{{userId}}" },
+              { "key": "X-User-Role",  "value": "{{userRole}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/claim/claims", "host": ["{{baseUrl}}"], "path": ["api","claim","claims"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"policyId\": \"{{policyId}}\",\n  \"amount\": 320.00,\n  \"procedureCode\": \"GP-VISIT\",\n  \"diagnosisCode\": \"J06.9\",\n  \"providerName\": \"Central Clinic\",\n  \"serviceDate\": \"2026-06-01\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List my claims",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id",   "value": "{{userId}}" },
+              { "key": "X-User-Role", "value": "{{userRole}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/claim/claims/me", "host": ["{{baseUrl}}"], "path": ["api","claim","claims","me"] }
+          }
+        },
+        {
+          "name": "Manual review queue (STAFF/ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id",   "value": "{{userId}}" },
+              { "key": "X-User-Role", "value": "STAFF" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/claim/claims/queue", "host": ["{{baseUrl}}"], "path": ["api","claim","claims","queue"] },
+            "description": "Returns all claims awaiting manual review, oldest first. 403 if X-User-Role is not STAFF or ADMIN."
+          }
+        },
+        {
+          "name": "Get claim by id",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id",   "value": "{{userId}}" },
+              { "key": "X-User-Role", "value": "{{userRole}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/claim/claims/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["api","claim","claims","{{claimId}}"] }
+          }
+        },
+        {
+          "name": "List claim evidence",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "X-User-Id",   "value": "{{userId}}" },
+              { "key": "X-User-Role", "value": "{{userRole}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/claim/claims/{{claimId}}/evidence", "host": ["{{baseUrl}}"], "path": ["api","claim","claims","{{claimId}}","evidence"] },
+            "description": "Lists evidence files attached to a claim. MEMBER sees own claims only; STAFF/ADMIN see any."
+          }
+        },
+        {
+          "name": "Review claim (STAFF/ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User-Id",    "value": "{{userId}}" },
+              { "key": "X-User-Role",  "value": "STAFF" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/claim/claims/{{claimId}}/review", "host": ["{{baseUrl}}"], "path": ["api","claim","claims","{{claimId}}","review"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"APPROVED\",\n  \"reason\": \"Within policy limits.\",\n  \"approvedAmount\": 300.00\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI",
+      "description": "AI features: claim extraction/scoring/explanation, plan recommendation, chat. Mounted under /api/ai/* → rewritten to /api/v1/ai/*. Requires X-User-Id header (UUID).",
+      "item": [
+        {
+          "name": "Extract document",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User-Id", "value": "{{userId}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/ai/claims/extract", "host": ["{{baseUrl}}"], "path": ["api","ai","claims","extract"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"documentId\": 1,\n  \"claimId\": 1,\n  \"sourceUrl\": \"https://example.com/receipts/1.pdf\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Score claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User-Id", "value": "{{userId}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/ai/claims/score", "host": ["{{baseUrl}}"], "path": ["api","ai","claims","score"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Explain claim",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User-Id", "value": "{{userId}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/ai/claims/explain", "host": ["{{baseUrl}}"], "path": ["api","ai","claims","explain"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"claimId\": 1\n}"
+            }
+          }
+        },
+        {
+          "name": "Recommend plan",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User-Id", "value": "{{userId}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/ai/policies/recommend", "host": ["{{baseUrl}}"], "path": ["api","ai","policies","recommend"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"age\": 32,\n  \"gender\": \"F\",\n  \"monthlyBudget\": 60.00,\n  \"preExistingConditions\": [\"asthma\"],\n  \"coveragePreferences\": [\"dental\", \"prescription\"]\n}"
+            }
+          }
+        },
+        {
+          "name": "Send chat message",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "X-User-Id", "value": "{{userId}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/ai/chat/message", "host": ["{{baseUrl}}"], "path": ["api","ai","chat","message"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"conversationId\": null,\n  \"content\": \"What does my policy cover for dental visits?\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List my chat conversations",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-User-Id", "value": "{{userId}}" }],
+            "url": { "raw": "{{baseUrl}}/api/ai/chat/conversations", "host": ["{{baseUrl}}"], "path": ["api","ai","chat","conversations"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notification",
+      "description": "Email/SMS notifications. Mounted under /api/notification/* → rewritten to /api/v1/*",
+      "item": [
+        {
+          "name": "Send email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": { "raw": "{{baseUrl}}/api/notification/notifications/email", "host": ["{{baseUrl}}"], "path": ["api","notification","notifications","email"] },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"recipientId\": \"{{userId}}\",\n  \"recipientEmail\": \"member@example.com\",\n  \"template\": \"welcome\",\n  \"subject\": \"Welcome to the E-Health Insurance Platform!\",\n  \"templateVariables\": {\n    \"name\": \"Ada\"\n  }\n}"
+            }
+          }
+        },
+        {
+          "name": "Send SMS (not implemented → 501)",
+          "request": {
+            "method": "POST",
+            "url": { "raw": "{{baseUrl}}/api/notification/notifications/sms", "host": ["{{baseUrl}}"], "path": ["api","notification","notifications","sms"] }
+          }
+        },
+        {
+          "name": "List my notifications",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "X-User-Id", "value": "{{userId}}" }],
+            "url": { "raw": "{{baseUrl}}/api/notification/notifications/me", "host": ["{{baseUrl}}"], "path": ["api","notification","notifications","me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Gateway / Actuator",
+      "description": "Direct gateway/actuator endpoints (no service prefix).",
+      "item": [
+        {
+          "name": "Gateway health",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/actuator/health", "host": ["{{baseUrl}}"], "path": ["actuator","health"] }
+          }
+        },
+        {
+          "name": "Gateway routes",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/actuator/gateway/routes", "host": ["{{baseUrl}}"], "path": ["actuator","gateway","routes"] }
+          }
+        }
+      ]
+    }
+  ]
+}

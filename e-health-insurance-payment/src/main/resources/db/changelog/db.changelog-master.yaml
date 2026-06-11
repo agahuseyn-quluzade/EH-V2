@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - include:
+      file: changes/001_create_payment_tables.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/002_create_outbox_table.yaml
+      relativeToChangelogFile: true
+  - include:
+      file: changes/003_payment_productionization.yaml
+      relativeToChangelogFile: true
+

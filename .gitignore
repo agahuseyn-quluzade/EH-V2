@@ -1,0 +1,56 @@
+# macOS
+.DS_Store
+
+# Build output
+build/
+out/
+target/
+*/build/
+*/out/
+dist/
+*/dist/
+
+# Node
+node_modules/
+*/node_modules/
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Gradle
+.gradle/
+
+# Logs
+logs/
+*.log
+
+# JVM crash dumps
+hs_err_pid*.log
+replay_pid*.log
+
+# Coverage
+coverage/
+**/jacoco/
+*.lcov
+
+# Env
+.env
+.env.local
+
+# Spring per-developer overrides
+**/application-local.yaml
+**/application-local.yml
+**/application-*-secret.yaml
+**/application-*-secret.yml
+
+# Docker per-developer override
+docker-compose.override.yml
+docker-compose.override.yaml
+
+# Editor backups
+*.bak
+*~
+*.swp
+*.swo

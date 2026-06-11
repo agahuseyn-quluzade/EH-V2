@@ -1,0 +1,28 @@
+# Build outputs
+**/build/
+**/out/
+**/.gradle/
+**/target/
+
+# IDE
+**/.idea/
+**/.vscode/
+**/*.iml
+
+# OS
+**/.DS_Store
+
+# Frontend (backend Dockerfile-ları üçün lazım deyil)
+e-health-insurance-frontend/node_modules/
+e-health-insurance-frontend/dist/
+
+# Infra
+e-health-insurance-infra/.env
+
+# Git
+.git/
+.gitignore
+
+# Logs
+**/*.log
+**/logs/

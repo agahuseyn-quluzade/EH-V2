@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001
+      author: system
+      changes:
+        - createTable:
+            tableName: payment
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true } }
+              - column: { name: policy_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: member_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: amount, type: "decimal(19,2)", constraints: { nullable: false } }
+              - column: { name: currency, type: varchar(3), defaultValue: 'AZN' }
+              - column: { name: provider, type: varchar(30), constraints: { nullable: false } }
+              - column: { name: status, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: provider_reference, type: varchar(200) }
+              - column: { name: paid_at, type: timestamp with time zone }
+              - column: { name: created_at, type: timestamp with time zone, constraints: { nullable: false } }
+        - createTable:
+            tableName: invoice
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true } }
+              - column: { name: policy_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: member_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: amount, type: "decimal(19,2)", constraints: { nullable: false } }
+              - column: { name: due_date, type: date, constraints: { nullable: false } }
+              - column: { name: status, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: invoice_number, type: varchar(50), constraints: { unique: true, nullable: false } }
+              - column: { name: created_at, type: timestamp with time zone, constraints: { nullable: false } }
+        - createTable:
+            tableName: refund
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true } }
+              - column: { name: payment_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: member_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: amount, type: "decimal(19,2)", constraints: { nullable: false } }
+              - column: { name: reason, type: text }
+              - column: { name: status, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: requested_by, type: uuid }
+              - column: { name: requested_at, type: timestamp with time zone, constraints: { nullable: false } }
+              - column: { name: processed_at, type: timestamp with time zone }
+        - addForeignKeyConstraint:
+            baseTableName: refund
+            baseColumnNames: payment_id
+            constraintName: fk_refund_payment
+            referencedTableName: payment
+            referencedColumnNames: id

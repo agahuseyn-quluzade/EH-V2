@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Agent(Explore)",
+      "Bash(dir *)"
+    ]
+  },
+  "$version": 4
+}

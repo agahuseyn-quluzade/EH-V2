@@ -1,0 +1,61 @@
+databaseChangeLog:
+  - changeSet:
+      id: payment-productionization
+      author: ehealth
+      changes:
+        - addColumn:
+            tableName: payment
+            columns:
+              - column: { name: idempotency_key, type: varchar(120) }
+              - column: { name: failure_code, type: varchar(80) }
+              - column: { name: failure_reason, type: text }
+              - column: { name: failed_at, type: timestamp with time zone }
+              - column: { name: updated_at, type: timestamp with time zone }
+        - addUniqueConstraint:
+            tableName: payment
+            columnNames: member_id, idempotency_key
+            constraintName: uk_payment_member_idempotency
+        - createIndex:
+            indexName: idx_payment_member_status
+            tableName: payment
+            columns:
+              - column: { name: member_id }
+              - column: { name: status }
+        - createIndex:
+            indexName: idx_payment_policy
+            tableName: payment
+            columns:
+              - column: { name: policy_id }
+        - addColumn:
+            tableName: refund
+            columns:
+              - column: { name: provider_reference, type: varchar(200) }
+        - createTable:
+            tableName: payment_attempt
+            columns:
+              - column: { name: id, type: uuid, constraints: { primaryKey: true, nullable: false } }
+              - column: { name: payment_id, type: uuid, constraints: { nullable: false } }
+              - column: { name: provider, type: varchar(30), constraints: { nullable: false } }
+              - column: { name: status, type: varchar(20), constraints: { nullable: false } }
+              - column: { name: provider_reference, type: varchar(200) }
+              - column: { name: failure_code, type: varchar(80) }
+              - column: { name: failure_reason, type: text }
+              - column: { name: idempotency_key, type: varchar(120) }
+              - column: { name: created_at, type: timestamp with time zone, constraints: { nullable: false } }
+              - column: { name: completed_at, type: timestamp with time zone }
+        - addForeignKeyConstraint:
+            baseTableName: payment_attempt
+            baseColumnNames: payment_id
+            constraintName: fk_payment_attempt_payment
+            referencedTableName: payment
+            referencedColumnNames: id
+        - createIndex:
+            indexName: idx_payment_attempt_payment
+            tableName: payment_attempt
+            columns:
+              - column: { name: payment_id }
+        - createIndex:
+            indexName: idx_payment_attempt_status
+            tableName: payment_attempt
+            columns:
+              - column: { name: status }
