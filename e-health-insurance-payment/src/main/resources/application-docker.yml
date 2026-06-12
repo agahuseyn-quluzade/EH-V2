@@ -3,3 +3,11 @@ spring:
     url: jdbc:postgresql://postgres:5432/ehi_payment
   kafka:
     bootstrap-servers: kafka:29092
+
+epoint:
+  public-key: ${EPOINT_PUBLIC_KEY:}
+  private-key: ${EPOINT_PRIVATE_KEY:}
+  base-url: ${EPOINT_BASE_URL:https://epoint.az/api/1}
+  success-redirect-url: ${EPOINT_SUCCESS_REDIRECT_URL:}
+  error-redirect-url: ${EPOINT_ERROR_REDIRECT_URL:}
+  result-url: ${EPOINT_RESULT_URL:}

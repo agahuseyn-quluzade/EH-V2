@@ -21,4 +21,6 @@ public interface PolicyService {
     PagedResponse<PolicyDto> getAllPolicies(Pageable pageable);
 
     void activatePolicy(UUID policyId);
+
+    void markPaymentFailed(UUID policyId);
 }

@@ -49,7 +49,7 @@ public class Policy {
     @Column(nullable = false)
     private PolicyStatus status;
 
-    @Column(nullable = false)
+    @Column(nullable = false, precision = 19, scale = 2)
     private BigDecimal premiumAmount;
 
     private Instant startDate;

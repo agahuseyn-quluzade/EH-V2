@@ -10,8 +10,11 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
     show-sql: true
+  liquibase:
+    enabled: true
+    change-log: classpath:/db/changelog/db.changelog-master.xml
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -26,3 +29,11 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please}
+
+epoint:
+  public-key: ${EPOINT_PUBLIC_KEY:}
+  private-key: ${EPOINT_PRIVATE_KEY:}
+  base-url: ${EPOINT_BASE_URL:https://epoint.az/api/1}
+  success-redirect-url: ${EPOINT_SUCCESS_REDIRECT_URL:}
+  error-redirect-url: ${EPOINT_ERROR_REDIRECT_URL:}
+  result-url: ${EPOINT_RESULT_URL:}

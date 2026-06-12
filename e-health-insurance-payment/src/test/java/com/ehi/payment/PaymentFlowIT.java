@@ -7,29 +7,16 @@ import com.ehi.infra.enums.ClaimStatus;
 import com.ehi.infra.enums.PaymentReferenceType;
 import com.ehi.infra.enums.PaymentStatus;
 import com.ehi.infra.event.ClaimDecisionEvent;
-import com.ehi.infra.event.PaymentCompletedEvent;
 import com.ehi.infra.event.PolicyCreatedEvent;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.common.serialization.StringDeserializer;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
-import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.kafka.test.utils.KafkaTestUtils;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -38,45 +25,22 @@ import static org.awaitility.Awaitility.await;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.NONE)
 @ActiveProfiles("it")
-@EmbeddedKafka(partitions = 1, topics = {KafkaTopics.POLICY_CREATED, KafkaTopics.CLAIM_DECISION, KafkaTopics.PAYMENT_COMPLETED})
+@EmbeddedKafka(
+        partitions = 1,
+        topics = {KafkaTopics.POLICY_CREATED, KafkaTopics.CLAIM_DECISION, KafkaTopics.PAYMENT_COMPLETED},
+        brokerProperties = {
+                "offsets.topic.num.partitions=1",
+                "log.cleaner.enable=false",
+                "controlled.shutdown.enable=false"
+        }
+)
 class PaymentFlowIT {
 
     @Autowired PaymentRepository paymentRepository;
     @Autowired KafkaTemplate<String, Object> kafkaTemplate;
-    @Autowired EmbeddedKafkaBroker embeddedKafkaBroker;
-
-    private Consumer<String, Object> consumer;
-
-    @BeforeEach
-    void setUp() {
-        Map<String, Object> consumerProps = KafkaTestUtils.consumerProps("payment-flow-it-" + UUID.randomUUID(), "true", embeddedKafkaBroker);
-        consumerProps.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
-        DefaultKafkaConsumerFactory<String, Object> consumerFactory = new DefaultKafkaConsumerFactory<>(
-                consumerProps, new StringDeserializer(), new JsonDeserializer<>(Object.class).trustedPackages("*"));
-        consumer = consumerFactory.createConsumer();
-        embeddedKafkaBroker.consumeFromEmbeddedTopics(consumer, KafkaTopics.PAYMENT_COMPLETED);
-    }
-
-    @AfterEach
-    void tearDown() {
-        consumer.close();
-    }
-
-    private ConsumerRecord<String, Object> awaitRecord(String topic, UUID key) {
-        long deadline = System.currentTimeMillis() + 10_000;
-        while (System.currentTimeMillis() < deadline) {
-            ConsumerRecords<String, Object> records = KafkaTestUtils.getRecords(consumer, Duration.ofSeconds(2));
-            for (ConsumerRecord<String, Object> record : records.records(topic)) {
-                if (record.key().equals(key.toString())) {
-                    return record;
-                }
-            }
-        }
-        throw new AssertionError("No record on topic " + topic + " for key " + key);
-    }
 
     @Test
-    void policyCreated_completesPremiumPayment_andPublishesCompletedEvent() {
+    void policyCreated_doesNotCompletePremiumPayment_withoutEpointResult() {
         UUID policyId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
@@ -85,14 +49,9 @@ class PaymentFlowIT {
                         .policyId(policyId).userId(userId).planId(UUID.randomUUID())
                         .policyNumber("POL-1").premiumAmount(BigDecimal.valueOf(150)).build());
 
-        Payment payment = awaitCompletedPayment(policyId, PaymentReferenceType.POLICY_PREMIUM);
-        assertThat(payment.getUserId()).isEqualTo(userId);
-        assertThat(payment.getAmount()).isEqualByComparingTo(BigDecimal.valueOf(150));
-
-        ConsumerRecord<String, Object> record = awaitRecord(KafkaTopics.PAYMENT_COMPLETED, payment.getId());
-        PaymentCompletedEvent event = (PaymentCompletedEvent) record.value();
-        assertThat(event.referenceId()).isEqualTo(policyId);
-        assertThat(event.referenceType()).isEqualTo(PaymentReferenceType.POLICY_PREMIUM);
+        await().pollDelay(Duration.ofSeconds(2)).atMost(Duration.ofSeconds(3)).untilAsserted(() ->
+                assertThat(paymentRepository.findFirstByReferenceIdAndReferenceTypeAndStatusNot(
+                        policyId, PaymentReferenceType.POLICY_PREMIUM, PaymentStatus.FAILED)).isEmpty());
     }
 
     @Test

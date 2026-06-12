@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="policy-001-create-plans" author="codex">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="plans"/>
+            </not>
+        </preConditions>
+        <createTable tableName="plans">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_plans"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_plans_name"/>
+            </column>
+            <column name="description" type="VARCHAR(1024)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="coverage_amount" type="NUMERIC(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="premium_amount" type="NUMERIC(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="duration_months" type="INTEGER">
+                <constraints nullable="false"/>
+            </column>
+            <column name="active" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="policy-002-create-policies" author="codex">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="policies"/>
+            </not>
+        </preConditions>
+        <createTable tableName="policies">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_policies"/>
+            </column>
+            <column name="policy_number" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_policies_policy_number"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="plan_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="premium_amount" type="NUMERIC(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="start_date" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="end_date" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="policies"
+                                 baseColumnNames="plan_id"
+                                 constraintName="fk_policies_plan"
+                                 referencedTableName="plans"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="policies" indexName="idx_policies_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="policies" indexName="idx_policies_status">
+            <column name="status"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

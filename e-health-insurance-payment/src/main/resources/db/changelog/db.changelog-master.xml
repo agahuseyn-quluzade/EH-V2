@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd">
+
+    <changeSet id="payment-001-create-payments" author="codex">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="payments"/>
+            </not>
+        </preConditions>
+        <createTable tableName="payments">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_payments"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="NUMERIC(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="transaction_id" type="VARCHAR(255)"/>
+            <column name="failure_reason" type="VARCHAR(1024)"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <createIndex tableName="payments" indexName="idx_payments_user_id">
+            <column name="user_id"/>
+        </createIndex>
+        <createIndex tableName="payments" indexName="idx_payments_reference">
+            <column name="reference_id"/>
+            <column name="reference_type"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="payment-002-create-payment-transactions" author="codex">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="payment_transactions"/>
+            </not>
+        </preConditions>
+        <createTable tableName="payment_transactions">
+            <column name="id" type="UUID">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_payment_transactions"/>
+            </column>
+            <column name="payment_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reference_type" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="amount" type="NUMERIC(19,2)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="currency" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="provider" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="order_id" type="VARCHAR(255)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="uk_payment_transactions_order_id"/>
+            </column>
+            <column name="status" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="redirect_url" type="VARCHAR(1024)"/>
+            <column name="epoint_transaction" type="VARCHAR(255)"/>
+            <column name="bank_transaction" type="VARCHAR(255)"/>
+            <column name="card_mask" type="VARCHAR(255)"/>
+            <column name="card_name" type="VARCHAR(255)"/>
+            <column name="gateway_status" type="VARCHAR(255)"/>
+            <column name="gateway_code" type="VARCHAR(255)"/>
+            <column name="operation_code" type="VARCHAR(255)"/>
+            <column name="failure_reason" type="VARCHAR(1024)"/>
+            <column name="callback_received_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="completed_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="reversed_at" type="TIMESTAMP WITH TIME ZONE"/>
+            <column name="created_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="TIMESTAMP WITH TIME ZONE">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="payment_transactions"
+                                 baseColumnNames="payment_id"
+                                 constraintName="fk_payment_transactions_payment"
+                                 referencedTableName="payments"
+                                 referencedColumnNames="id"/>
+        <createIndex tableName="payment_transactions" indexName="idx_payment_transactions_payment_id">
+            <column name="payment_id"/>
+        </createIndex>
+        <createIndex tableName="payment_transactions" indexName="idx_payment_transactions_reference">
+            <column name="reference_id"/>
+            <column name="reference_type"/>
+        </createIndex>
+        <createIndex tableName="payment_transactions" indexName="idx_payment_transactions_epoint_transaction">
+            <column name="epoint_transaction"/>
+        </createIndex>
+    </changeSet>
+</databaseChangeLog>

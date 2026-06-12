@@ -129,6 +129,12 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       <<: *jwt-secret
+      EPOINT_PUBLIC_KEY: ${EPOINT_PUBLIC_KEY:-}
+      EPOINT_PRIVATE_KEY: ${EPOINT_PRIVATE_KEY:-}
+      EPOINT_BASE_URL: ${EPOINT_BASE_URL:-https://epoint.az/api/1}
+      EPOINT_SUCCESS_REDIRECT_URL: ${EPOINT_SUCCESS_REDIRECT_URL:-}
+      EPOINT_ERROR_REDIRECT_URL: ${EPOINT_ERROR_REDIRECT_URL:-}
+      EPOINT_RESULT_URL: ${EPOINT_RESULT_URL:-}
     ports:
       - "8084:8084"
     networks:
