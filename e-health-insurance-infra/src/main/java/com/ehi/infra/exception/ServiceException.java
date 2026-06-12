@@ -1,5 +1,8 @@
 package com.ehi.infra.exception;
 
+import com.ehi.infra.exception.base.BaseErrorService;
+import com.ehi.infra.exception.base.BaseException;
+
 public class ServiceException extends BaseException {
 
     public ServiceException(BaseErrorService errorService) {

@@ -67,7 +67,7 @@ class ChatbotControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void sendMessage_forbiddenForAgent() throws Exception {
         mockMvc.perform(post("/api/v1/ai/chatbot")
                         .with(csrf())
@@ -86,7 +86,7 @@ class ChatbotControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void getHistory_forbiddenForAgent() throws Exception {
         mockMvc.perform(get("/api/v1/ai/chatbot/history").param("sessionId", UUID.randomUUID().toString()))
                 .andExpect(status().isForbidden());

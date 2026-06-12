@@ -60,6 +60,19 @@
 - Dockerfile (2-stage, no infra dependency): `build` stage compiles `bootJar` with `gradle.properties` removed (container's own JDK 17 used instead), runtime stage `eclipse-temurin:17-jre-jammy`. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` redefines all 8 routes to point at Docker Compose service names (`iam:8081`, `policy:8082`, `claim:8083`, `payment:8084`, `ai:8085`, `notification:8086`) instead of `localhost`, activated via `SPRING_PROFILES_ACTIVE=docker`.
 
+## Logging (SLF4J) — DONE
+
+> The gateway currently logs nothing. The one place worth logging is the auth rejection in
+> `JwtAuthFilter` — it's the single security choke point and today a 401 is emitted silently.
+> Add `@Slf4j` only to `JwtAuthFilter`, only the lines below. Keep it `warn` (not `info`) so
+> rejections stand out; do not log the token value.
+
+- **`JwtAuthFilter`** (`@Slf4j`):
+  - On a protected path with a missing/invalid `Bearer` token → before short-circuiting with 401:
+    `warn` — `"Auth rejected: {} {} (missing/invalid token)"` with HTTP method + path.
+  - Optionally `debug` on a successful pass-through — `"Authenticated request: userId={}, path={}"`
+    (keep at `debug` to avoid per-request noise in production).
+
 ## Review Findings (see root `check.md` and CLAUDE.md cross-cutting for full detail)
 
 - 🟠 **`X-User-Id`/`X-User-Role` injection is dead code** — no downstream service reads them; each

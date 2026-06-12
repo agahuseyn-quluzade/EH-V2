@@ -87,11 +87,23 @@
 - `PaymentCompletedEventConsumer` relies on `@KafkaListener` default JSON deserialization (type info from the producer's `__TypeId__` header + `spring.json.trusted.packages: com.ehi.infra.event` in `application.yml`) — no custom `ConsumerFactory`/`ContainerFactory` needed.
 - `exception/PolicyErrorEnum implements BaseErrorService`: `FORBIDDEN` → `"POLICY-FORBIDDEN-0001"` / 403 — same pattern as iam's `IamErrorEnum`, used only by `GlobalExceptionHandler` to format Spring Security's `AccessDeniedException` (infra's `BaseErrorEnum` tops out at 401).
 - `exception/GlobalExceptionHandler` (`@RestControllerAdvice`, `@Slf4j`): identical structure to iam's — handles `BaseException`, `MethodArgumentNotValidException` (400, field errors in `details`), `AccessDeniedException` (403, `PolicyErrorEnum.FORBIDDEN`), generic `Exception` (500). All responses `ApiResponse<ErrorResponse>` with `success=false`.
-- Step 10 (Build & verify): `./gradlew build` → BUILD SUCCESSFUL (compile, processResources, classes, bootJar, jar, assemble all pass; no test sources yet so `test`/`check` are NO-SOURCE/UP-TO-DATE). Full `bootRun` smoke test not run — no local Postgres (`ehi_policy`) or Kafka available in this environment, same as iam.
+- Step 10 (Build & verify): `./gradlew build` → BUILD SUCCESSFUL. `application.yml` uses `ddl-auto: validate` and `show-sql: false`.
 - Dockerfile (multi-stage, same pattern as iam): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_policy` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
 - Full-stack smoke test (via Docker Compose, gw → iam/policy/claim/payment/ai/notification): register → create plan → purchase policy → policy.created → payment processes POLICY_PREMIUM → payment.completed activates policy → submit claim → ai fraud check → approve claim → payment processes CLAIM_PAYOUT, all verified end-to-end.
 - **Bug fix**: `PolicyServiceImpl.activatePolicy()` threw `LazyInitializationException` on `policy.getPlan().getDurationMonths()` when invoked from `PaymentCompletedEventConsumer` — the repository call's transaction/session closed before the lazy `Plan` proxy was accessed, so policies never activated after payment. Fixed by adding `@Transactional` to `activatePolicy()`.
+
+## Logging (SLF4J) — DONE
+
+> Add `@Slf4j` only to the classes below, only the listed lines. Producers/consumers and
+> `GlobalExceptionHandler` already log; `activatePolicy` already logs. Follow the existing
+> convention (parameterized `{}`, `info` for state changes, `warn` for rejected actions).
+
+- **`PolicyServiceImpl`** (`@Slf4j`):
+  - `purchasePolicy`: `info` after save — `"Policy purchased: policyId={}, userId={}, planId={}"`.
+  - `cancelPolicy`: `info` — `"Policy cancelled: policyId={}, userId={}"`.
+- **`PlanServiceImpl`** (`@Slf4j`) — admin action:
+  - `createPlan`: `info` — `"Plan created: planId={}, name={}"`.
 
 ## Review Findings (see root `check.md` for full detail)
 

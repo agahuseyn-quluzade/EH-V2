@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:04:12" hostname="Nijats-MacBook-Pro.local" time="0.067">
+<testsuite name="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-12T19:00:54" hostname="Nijats-MacBook-Pro.local" time="0.066">
   <properties/>
-  <testcase name="evaluateClaim_farAboveThresholdAndHighRiskUser_parsesFencedAiResponse_andFlagsHighRisk()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.057"/>
-  <testcase name="evaluateClaim_belowThreshold_zeroRuleScore_noAiCall()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.002"/>
-  <testcase name="evaluateClaim_amountAboveThreshold_triggersAi_andCombinesScores()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
-  <testcase name="reanalyzeClaim_rebuildsEventFromExistingFraudCheck()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.002"/>
+  <testcase name="evaluateClaim_farAboveThresholdAndHighRiskUser_parsesFencedAiResponse_andFlagsHighRisk()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.054"/>
+  <testcase name="evaluateClaim_belowThreshold_zeroRuleScore_noAiCall()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
+  <testcase name="evaluateClaim_amountAboveThreshold_triggersAi_andCombinesScores()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.002"/>
+  <testcase name="reanalyzeClaim_rebuildsEventFromExistingFraudCheck()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
   <testcase name="getFraudCheck_throwsNotFound_whenMissing()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
   <testcase name="evaluateClaim_existingFraudCheck_doesNotRecordRiskProfileAgain()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
-  <testcase name="evaluateClaim_aiThrows_fallsBackToRuleOnlyScore()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.003"/>
-  <system-out><![CDATA[2026-06-12T21:04:12.804+04:00  WARN 6510 --- [e-health-insurance-ai] [    Test worker] c.e.a.s.impl.FraudDetectionServiceImpl   : OpenAI fraud assessment failed for claim 83fe2655-fac6-4e17-b9e0-4f68283ef311, falling back to rule-only score
+  <testcase name="evaluateClaim_aiThrows_fallsBackToRuleOnlyScore()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.004"/>
+  <system-out><![CDATA[2026-06-12T23:00:54.740+04:00  WARN 22801 --- [e-health-insurance-ai] [    Test worker] c.e.a.s.impl.FraudDetectionServiceImpl   : OpenAI fraud assessment failed for claim 6ca22643-609a-42ad-a19e-41bb4469e753, falling back to rule-only score
 
 java.lang.RuntimeException: OpenRouter down
 	at com.ehi.ai.service.impl.FraudDetectionServiceImpl.callAiAssessment(FraudDetectionServiceImpl.java:165) ~[main/:na]

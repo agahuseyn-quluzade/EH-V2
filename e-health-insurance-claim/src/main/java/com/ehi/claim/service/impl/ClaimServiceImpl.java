@@ -18,9 +18,10 @@ import com.ehi.infra.enums.ClaimStatus;
 import com.ehi.infra.event.ClaimDecisionEvent;
 import com.ehi.infra.event.ClaimSubmittedEvent;
 import com.ehi.infra.event.FraudDetectedEvent;
-import com.ehi.infra.exception.BadRequestException;
+import com.ehi.infra.exception.base.BadRequestException;
 import com.ehi.infra.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +38,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ClaimServiceImpl implements ClaimService {
@@ -64,6 +66,7 @@ public class ClaimServiceImpl implements ClaimService {
                 .build();
 
         claim = claimRepository.save(claim);
+        log.info("Claim submitted: claimId={}, userId={}, type={}, amount={}", claim.getId(), userId, claim.getClaimType(), claim.getAmount());
 
         claimSubmittedEventProducer.publish(ClaimSubmittedEvent.builder()
                 .claimId(claim.getId())
@@ -111,7 +114,9 @@ public class ClaimServiceImpl implements ClaimService {
                 .contentType(file.getContentType())
                 .build();
 
-        return claimEvidenceMapper.toDto(claimEvidenceRepository.save(evidence));
+        ClaimEvidenceDto evidenceDto = claimEvidenceMapper.toDto(claimEvidenceRepository.save(evidence));
+        log.info("Evidence uploaded for claimId={}, fileName={}", claimId, file.getOriginalFilename());
+        return evidenceDto;
     }
 
     @Override
@@ -136,6 +141,7 @@ public class ClaimServiceImpl implements ClaimService {
                 .orElseThrow(() -> new NotFoundException("Claim", claimId));
 
         if (claim.getStatus() != ClaimStatus.SUBMITTED && claim.getStatus() != ClaimStatus.UNDER_REVIEW) {
+            log.warn("Review rejected: claimId={} not in SUBMITTED/UNDER_REVIEW (status={})", claimId, claim.getStatus());
             throw new BadRequestException("Claim cannot be reviewed in status: " + claim.getStatus());
         }
 
@@ -163,6 +169,7 @@ public class ClaimServiceImpl implements ClaimService {
         claim.setReviewedBy(reviewerId);
 
         claim = claimRepository.save(claim);
+        log.info("Claim reviewed: claimId={}, decision={}, reviewedBy={}", claimId, claim.getStatus(), reviewerId);
 
         claimDecisionEventProducer.publish(ClaimDecisionEvent.builder()
                 .claimId(claim.getId())

@@ -6,16 +6,17 @@
 
 ## What's Done
 - [x] build.gradle
-- [x] Entity: User
-- [x] Repository: UserRepository
+- [x] Entity: User (includes `active` field)
+- [x] Repository: UserRepository (includes `search` query)
 - [x] Service: AuthService, UserService (interfaces in `service/`, impls in `service/impl/`)
 - [x] Controller: AuthController, UserController
-- [x] DTO: RegisterRequest, LoginRequest, RefreshRequest, UpdateUserRequest (`dto/request/`), AuthResponse, UserDto (`dto/response/`) + UserMapper
+- [x] DTO: RegisterRequest, LoginRequest, RefreshRequest, UpdateUserRequest, ChangePasswordRequest, ChangeRoleRequest, ChangeStatusRequest (`dto/request/`), AuthResponse, UserDto (`dto/response/`) + UserMapper
 - [x] Security: SecurityConfig, JwtProvider, JwtAuthenticationFilter, JwtProperties
 - [x] Kafka producer: UserRegisteredEvent → user.registered
 - [x] GlobalExceptionHandler
 - [x] application.yml
 - [x] Dockerfile
+- [x] Planned Additions implemented: 4 new endpoints (change password, change role, change status, search users)
 
 ## Entities
 ### User (`users` table)
@@ -39,29 +40,29 @@
 | GET | /api/v1/users/me | Current user profile | Bearer |
 | PUT | /api/v1/users/me | Update profile | Bearer |
 | GET | /api/v1/users | All users | ADMIN |
-| GET | /api/v1/users/{id} | User by ID | ADMIN, AGENT |
-
-> Four more endpoints are planned but not yet built — see "Planned Additions" below.
+| GET | /api/v1/users/{id} | User by ID | ADMIN, STAFF |
+| POST | /api/v1/users/me/password | Change own password | Bearer (any role) |
+| PATCH | /api/v1/users/{id}/role | Change a user's role | ADMIN |
+| PATCH | /api/v1/users/{id}/status | Suspend / re-activate a user | ADMIN |
+| GET | /api/v1/users/search?query= | Search users by email/name (paginated) | ADMIN, STAFF |
 
 ## Kafka
 - Produces: user.registered (`UserRegisteredEventProducer`, `kafka/`, fires from `AuthServiceImpl.register()` after save, key = userId, value = `UserRegisteredEvent`)
 - Consumes: (none)
 
-## Planned Additions (incremental — NOT yet implemented)
+## Planned Additions (DONE — implemented)
 
-> Scope: B2C MVP. Add the following to the existing IAM service only. Gateway already
-> routes `/api/v1/**`, so no gateway change is needed. Follow existing conventions
-> (records for DTOs, `XxxService` interface + `XxxServiceImpl`, infra exceptions,
-> `ApiResponse<T>` wrapping, MapStruct mapper). Build & verify with `./gradlew build`,
-> then rebuild the Docker image and live-test through the gateway on :8080.
+> All four endpoints below are implemented and tested. They are wired into the existing
+> `UserController` / `UserServiceImpl`. Frontend wiring for these is described in
+> `docs/e-health-insurance-frontend.md` → "Planned Additions".
 
-### New endpoints
+### New endpoints (IMPLEMENTED)
 | Method | Path | Description | Auth |
 |---|---|---|---|
 | POST | /api/v1/users/me/password | Change own password | Bearer (any role) |
 | PATCH | /api/v1/users/{id}/role | Change a user's role | ADMIN |
 | PATCH | /api/v1/users/{id}/status | Suspend / re-activate a user | ADMIN |
-| GET | /api/v1/users/search?query= | Search users by email/name (paginated) | ADMIN, AGENT |
+| GET | /api/v1/users/search?query= | Search users by email/name (paginated) | ADMIN, STAFF |
 
 ### 1. User entity (`entity/User.java`)
 - Add field:
@@ -84,7 +85,7 @@
 - `ChangePasswordRequest(@NotBlank String currentPassword, @NotBlank String newPassword)`
   — add `@Size(min = 8)` on `newPassword`.
 - `ChangeRoleRequest(@NotNull UserRole role)` — `UserRole` is the infra enum
-  (`ADMIN`/`AGENT`/`CUSTOMER`); Jackson binds the string value.
+  (`ADMIN`/`STAFF`/`CUSTOMER`); Jackson binds the string value.
 - `ChangeStatusRequest(@NotNull Boolean active)`.
 
 ### 4. UserRepository (`repository/UserRepository.java`)
@@ -123,7 +124,7 @@
   `@Valid ChangeRoleRequest` → `userService.changeRole(id, req.role())`.
 - `PATCH /{id}/status` — `@PreAuthorize("hasRole('ADMIN')")` →
   `userService.changeStatus(id, req.active())`.
-- `GET /search` — `@PreAuthorize("hasRole('ADMIN') or hasRole('AGENT')")`,
+- `GET /search` — `@PreAuthorize("hasRole('ADMIN') or hasRole('STAFF')")`,
   `@RequestParam String query`, `Pageable` → `ApiResponse<PagedResponse<UserDto>>`.
 
 ### 7. AuthServiceImpl (`service/impl/AuthServiceImpl.java`)
@@ -160,14 +161,32 @@
 - `UserService`: getCurrentUser/updateProfile by email (from JWT subject), getAllUsers (paginated via `PagedResponse`), getUserById — all `NotFoundException` on missing user.
 - Service layer convention (project-wide, see CLAUDE.md): interface `XxxService` in `service/`, implementation `XxxServiceImpl` in `service/impl/` (`@Service`). Controllers depend on the interface. `AuthServiceImpl`/`UserServiceImpl` are the first to follow this.
 - `AuthController` (`/api/v1/auth`): register/login/refresh, all public (permitted in `SecurityConfig`), wrapped in `ApiResponse<AuthResponse>`.
-- `UserController` (`/api/v1/users`): `/me` (GET/PUT) uses `Authentication.getName()` (email, set by `JwtAuthenticationFilter`) to resolve the current user; `GET /api/v1/users` requires `ROLE_ADMIN` via `@PreAuthorize`; `GET /api/v1/users/{id}` requires `ROLE_ADMIN` or `ROLE_AGENT`. List endpoint returns `ApiResponse<PagedResponse<UserDto>>` via Spring Data `Pageable`.
+- `UserController` (`/api/v1/users`): `/me` (GET/PUT) uses `Authentication.getName()` (email, set by `JwtAuthenticationFilter`) to resolve the current user; `GET /api/v1/users` requires `ROLE_ADMIN` via `@PreAuthorize`; `GET /api/v1/users/{id}` requires `ROLE_ADMIN` or `ROLE_STAFF`. List endpoint returns `ApiResponse<PagedResponse<UserDto>>` via Spring Data `Pageable`.
 - API versioning (project-wide, see CLAUDE.md): all endpoints prefixed with `/api/v1/`.
 - `exception/IamErrorEnum implements BaseErrorService`: `FORBIDDEN` → `"IAM-FORBIDDEN-0001"` / 403 — used for Spring Security's `AccessDeniedException` (no equivalent in infra's `BaseErrorEnum`, which tops out at `UNAUTHORIZED`=401). Not thrown via `ServiceException`; only used by `GlobalExceptionHandler` to build a consistent error response.
 - `exception/GlobalExceptionHandler` (`@RestControllerAdvice`, `@Slf4j`): handles `BaseException` (uses `errorCode`/`statusCode` from the exception), `MethodArgumentNotValidException` (400, `BaseErrorEnum.VALIDATION_ERROR`, field errors in `details`), `AccessDeniedException` (403, `IamErrorEnum.FORBIDDEN`), and generic `Exception` (500, `BaseErrorEnum.INTERNAL_ERROR`). All responses are `ApiResponse<ErrorResponse>` with `success=false`, `data` = the `ErrorResponse` (status, message, details incl. `errorCode`, timestamp).
 - Added `org.springframework.kafka:spring-kafka` and `spring.kafka.*` producer config (StringSerializer key, JsonSerializer value, `localhost:9092`) to `application.yml`.
-- Step 10 (Build & verify): `./gradlew build` → BUILD SUCCESSFUL (compile, processResources, classes, bootJar, jar, assemble all pass; no test sources yet so `test`/`check` are NO-SOURCE/UP-TO-DATE). A full `bootRun` smoke test was not run since this environment has no local Postgres (`ehi_iam` on 5432) or Kafka (9092) available — needed once those are provisioned (e.g. via docker-compose).
+- Step 10 (Build & verify): `./gradlew build` → BUILD SUCCESSFUL. `application.yml` uses `ddl-auto: validate` and `show-sql: false` (hardened from the original `update`/`true` defaults).
 - Dockerfile (multi-stage): an `infra-build` stage builds+publishes `e-health-insurance-infra` (provided via Compose's `additional_contexts: infra`) to `/root/.m2`, a `build` stage compiles this service's `bootJar` against that local repo, and the runtime stage is `eclipse-temurin:17-jre-jammy`. `gradle.properties` (host-only JDK path) is deleted before building so the container's own JDK 17 is used. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_iam` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker` in docker-compose.
+
+## Logging (SLF4J) — DONE
+
+> Add `@Slf4j` only to the classes below and only the lines listed — these are security/audit
+> events and failure paths, not blanket tracing. Follow the existing convention: parameterized
+> `{}` placeholders, `info` for successful state changes, `warn` for rejected/suspicious actions.
+> Never log passwords, password hashes, or raw JWTs.
+
+- **`AuthServiceImpl`** (`@Slf4j`):
+  - `register`: `info` after save — `"Registered new user userId={}, email={}"` (no password).
+  - `login`: `warn` on bad credentials — `"Failed login attempt for email={}"`; `warn` on suspended
+    account — `"Login blocked: account suspended, userId={}"`. (Security audit trail.)
+  - `refresh`: `warn` on invalid/expired refresh token — `"Refresh rejected: invalid token"`.
+- **`UserServiceImpl`** (`@Slf4j`) — admin privilege changes must be auditable:
+  - `changeRole`: `info` — `"Role changed for userId={} -> {}"`.
+  - `changeStatus`: `info` (or `warn` when suspending) — `"Status changed for userId={}, active={}"`.
+  - `changePassword`: `info` on success — `"Password changed for userId={}"` (never the password);
+    `warn` on wrong current password — `"Password change rejected (wrong current) for email={}"`.
 
 ## Review Findings (see root `check.md` for full detail)
 
@@ -194,7 +213,7 @@ Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + running Compose P
 - **`JwtProviderTest`** (4 tests): access/refresh tokens carry `userId`/`role` claims and validate;
   token signed with wrong secret rejected; malformed token rejected.
 - **`UserControllerTest`** (`@WebMvcTest`, 9 tests): ADMIN-only on `/{id}/role` and `/{id}/status`;
-  ADMIN/AGENT on `/search`; any authenticated user on `/me/password`; unauthenticated blocked.
+  ADMIN/STAFF on `/search`; any authenticated user on `/me/password`; unauthenticated blocked.
 - **`IamAuthIT`** (`@SpringBootTest` + `ehi_iam_test` DB, 2 tests): register → login → `/users/me`
   full HTTP flow; suspended user → 401 on login.
 

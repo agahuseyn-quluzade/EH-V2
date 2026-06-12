@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.112s</div>
+<div class="counter">0.123s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">getAllClaims_allowedForAgent()</td>
-<td class="success">0.018s</td>
+<td class="success">0.017s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -89,7 +89,7 @@
 </tr>
 <tr>
 <td class="success">getClaimById_allowedForAnyAuthenticatedUser()</td>
-<td class="success">0.046s</td>
+<td class="success">0.048s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -99,7 +99,7 @@
 </tr>
 <tr>
 <td class="success">getMyClaims_allowedForCustomer()</td>
-<td class="success">0.003s</td>
+<td class="success">0.002s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -109,7 +109,7 @@
 </tr>
 <tr>
 <td class="success">reviewClaim_forbiddenForCustomer()</td>
-<td class="success">0.005s</td>
+<td class="success">0.016s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -127,7 +127,7 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2026-06-12T20:32:24.663+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.claim.ClaimApplication for test class com.ehi.claim.controller.ClaimControllerTest
+<pre>2026-06-12T23:00:43.792+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.claim.ClaimApplication for test class com.ehi.claim.controller.ClaimControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -137,19 +137,19 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T20:32:24.681+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Starting ClaimControllerTest using Java 17.0.19 with PID 2029 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-claim)
-2026-06-12T20:32:24.681+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : No active profile set, falling back to 1 default profile: &quot;default&quot;
-2026-06-12T20:32:24.922+04:00  WARN 2029 --- [e-health-insurance-claim] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-12T23:00:43.808+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Starting ClaimControllerTest using Java 17.0.19 with PID 22762 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-claim)
+2026-06-12T23:00:43.808+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2026-06-12T23:00:44.030+04:00  WARN 22762 --- [e-health-insurance-claim] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 7ba3ca0b-dd62-4dff-b096-8265c715a27d
+Using generated security password: 17254310-e489-48cb-8b87-47c2d7c63cde
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-12T20:32:25.034+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@59b7cbec, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@f9402c2, org.springframework.security.web.context.SecurityContextHolderFilter@410185ec, org.springframework.security.web.header.HeaderWriterFilter@62c41ad, org.springframework.web.filter.CorsFilter@9dc9212, org.springframework.security.web.authentication.logout.LogoutFilter@4947b8a7, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6f3b4c9a, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@bfe49f9, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5b9815b6, org.springframework.security.web.session.SessionManagementFilter@3027fe42, org.springframework.security.web.access.ExceptionTranslationFilter@6878cd83, org.springframework.security.web.access.intercept.AuthorizationFilter@4552f89f]
-2026-06-12T20:32:25.141+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-12T20:32:25.141+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-12T20:32:25.142+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
-2026-06-12T20:32:25.152+04:00  INFO 2029 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Started ClaimControllerTest in 0.483 seconds (process running for 6.052)
+2026-06-12T23:00:44.140+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7db99d41, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@3e0fe68f, org.springframework.security.web.context.SecurityContextHolderFilter@5496cd02, org.springframework.security.web.header.HeaderWriterFilter@579a6e64, org.springframework.web.filter.CorsFilter@3c799d53, org.springframework.security.web.authentication.logout.LogoutFilter@10357889, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@700cc0e6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@746169cd, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@66ed4881, org.springframework.security.web.session.SessionManagementFilter@7e2f0c2e, org.springframework.security.web.access.ExceptionTranslationFilter@22b0c1cf, org.springframework.security.web.access.intercept.AuthorizationFilter@1a6804d1]
+2026-06-12T23:00:44.247+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-12T23:00:44.247+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-12T23:00:44.248+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-12T23:00:44.259+04:00  INFO 22762 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Started ClaimControllerTest in 0.462 seconds (process running for 6.173)
 </pre>
 </span>
 </div>
@@ -161,7 +161,7 @@ This generated password is for development use only. Your security configuration
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 8:32:25 PM</p>
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 11:00:44 PM</p>
 </div>
 </div>
 </body>

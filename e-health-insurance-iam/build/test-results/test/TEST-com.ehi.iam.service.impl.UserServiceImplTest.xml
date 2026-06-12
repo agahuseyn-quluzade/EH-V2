@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.iam.service.impl.UserServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-12T16:06:28" hostname="Nijats-MacBook-Pro.local" time="0.022">
+<testsuite name="com.ehi.iam.service.impl.UserServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-12T19:00:37" hostname="Nijats-MacBook-Pro.local" time="0.024">
   <properties/>
   <testcase name="getCurrentUser_throwsNotFound_whenEmailMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.014"/>
   <testcase name="changeRole_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.0"/>
   <testcase name="changePassword_throwsBadRequest_whenCurrentPasswordWrong()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
   <testcase name="changeStatus_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
-  <testcase name="searchUsers_returnsPagedResponse()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.004"/>
+  <testcase name="searchUsers_returnsPagedResponse()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.006"/>
   <testcase name="changePassword_encodesNewPassword()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
+  <system-out><![CDATA[2026-06-12T23:00:37.314+04:00  WARN 22724 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password change rejected (wrong current) for email=test@example.com
+2026-06-12T23:00:37.323+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password changed for userId=40328dbe-d2e6-49c1-87b6-e81f58c4a5d0
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

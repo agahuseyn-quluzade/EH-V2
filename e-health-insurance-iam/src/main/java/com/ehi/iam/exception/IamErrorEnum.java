@@ -1,6 +1,6 @@
 package com.ehi.iam.exception;
 
-import com.ehi.infra.exception.BaseErrorService;
+import com.ehi.infra.exception.base.BaseErrorService;
 
 public enum IamErrorEnum implements BaseErrorService {
 

@@ -65,9 +65,22 @@
   - `ClaimDecisionEventConsumer` — on `claim.decision`, only acts if `decision == APPROVED`, calls `processPayment(userId, claimId, CLAIM_PAYOUT, approvedAmount)`.
 - `PaymentErrorEnum implements BaseErrorService`: single `FORBIDDEN("PAYMENT-FORBIDDEN-0001", "Access denied", 403)` entry, same pattern as `ClaimErrorEnum`/`AiErrorEnum`. `NotFoundException` (infra) used directly for not-found cases.
 - `GlobalExceptionHandler`: identical structure to claim/ai — `BaseException` → `ApiResponse.error`, `MethodArgumentNotValidException` → `VALIDATION_ERROR`, `AccessDeniedException` → `PaymentErrorEnum.FORBIDDEN`, generic `Exception` → `INTERNAL_ERROR`.
-- Build verification: `./gradlew build` → BUILD SUCCESSFUL. Service complete.
+- Build verification: `./gradlew build` → BUILD SUCCESSFUL. `application.yml` uses `ddl-auto: validate` and `show-sql: false`.
 - Dockerfile (multi-stage, same pattern as claim): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_payment` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
+
+## Logging (SLF4J) — DONE
+
+> Add `@Slf4j` only to `PaymentServiceImpl`, only the listed lines. Producers/consumers and
+> `MockPaymentProcessor` already log. The idempotency skip is the most important to log — it's the
+> dedup path that prevents double charges/payouts. Follow the existing convention (parameterized
+> `{}`, `info` for state changes, `warn` for skipped/failed).
+
+- **`PaymentServiceImpl`** (`@Slf4j`):
+  - `processPayment`: `info` when a PENDING payment is created — `"Processing payment: referenceId={},
+    type={}, amount={}"`; `warn` on the **idempotency skip** (existing non-FAILED payment found) —
+    `"Duplicate payment skipped for referenceId={}, type={}"`; `warn` on invalid amount → FAILED —
+    `"Payment failed (invalid amount): referenceId={}, amount={}"`.
 
 ## Review Findings (see root `check.md` for full detail)
 

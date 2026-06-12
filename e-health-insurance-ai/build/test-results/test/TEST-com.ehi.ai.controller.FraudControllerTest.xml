@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.ai.controller.FraudControllerTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:04:09" hostname="Nijats-MacBook-Pro.local" time="0.023">
+<testsuite name="com.ehi.ai.controller.FraudControllerTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-12T19:00:51" hostname="Nijats-MacBook-Pro.local" time="0.021">
   <properties/>
-  <testcase name="getFraudCheck_blocked_whenUnauthenticated()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.003"/>
+  <testcase name="getFraudCheck_blocked_whenUnauthenticated()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.002"/>
   <testcase name="getFraudCheck_allowedForAdmin()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.006"/>
   <testcase name="getFraudCheck_allowedForAgent()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.002"/>
   <testcase name="getFraudCheck_forbiddenForCustomer()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.003"/>
   <testcase name="analyzeClaim_forbiddenForCustomer()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.003"/>
-  <testcase name="analyzeClaim_allowedForAgent()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.003"/>
-  <system-out><![CDATA[2026-06-12T21:04:08.939+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.ai.AiApplication for test class com.ehi.ai.controller.FraudControllerTest
+  <testcase name="analyzeClaim_allowedForAgent()" classname="com.ehi.ai.controller.FraudControllerTest" time="0.002"/>
+  <system-out><![CDATA[2026-06-12T23:00:50.947+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.ai.AiApplication for test class com.ehi.ai.controller.FraudControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -17,19 +17,19 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T21:04:08.958+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Starting FraudControllerTest using Java 17.0.19 with PID 6510 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-ai)
-2026-06-12T21:04:08.958+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : No active profile set, falling back to 1 default profile: "default"
-2026-06-12T21:04:09.112+04:00  WARN 6510 --- [e-health-insurance-ai] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-12T23:00:50.964+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Starting FraudControllerTest using Java 17.0.19 with PID 22801 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-ai)
+2026-06-12T23:00:50.964+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : No active profile set, falling back to 1 default profile: "default"
+2026-06-12T23:00:51.098+04:00  WARN 22801 --- [e-health-insurance-ai] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 36372102-b766-4b67-8285-32c42dfc1cf0
+Using generated security password: 45b5b515-dfbb-4577-8846-111dfe2a493b
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-12T21:04:09.175+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7df0a05b, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@485c31d7, org.springframework.security.web.context.SecurityContextHolderFilter@74b795da, org.springframework.security.web.header.HeaderWriterFilter@12e035a8, org.springframework.web.filter.CorsFilter@60c2c500, org.springframework.security.web.authentication.logout.LogoutFilter@38b2a4e7, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@6e6b556d, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@7d35707d, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1204d592, org.springframework.security.web.session.SessionManagementFilter@4c082a7d, org.springframework.security.web.access.ExceptionTranslationFilter@2447d039, org.springframework.security.web.access.intercept.AuthorizationFilter@5bf52832]
-2026-06-12T21:04:09.225+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-12T21:04:09.225+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-12T21:04:09.226+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
-2026-06-12T21:04:09.233+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Started FraudControllerTest in 0.293 seconds (process running for 5.408)
+2026-06-12T23:00:51.160+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4e27c500, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6dbd38e8, org.springframework.security.web.context.SecurityContextHolderFilter@2d3c0f89, org.springframework.security.web.header.HeaderWriterFilter@2bc7e895, org.springframework.web.filter.CorsFilter@1a183473, org.springframework.security.web.authentication.logout.LogoutFilter@3ff4ed56, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@67fd59f, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@12680685, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@2d7956fb, org.springframework.security.web.session.SessionManagementFilter@2ff9e11e, org.springframework.security.web.access.ExceptionTranslationFilter@2bd01716, org.springframework.security.web.access.intercept.AuthorizationFilter@59edc76c]
+2026-06-12T23:00:51.206+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-12T23:00:51.206+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-12T23:00:51.206+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-06-12T23:00:51.213+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Started FraudControllerTest in 0.264 seconds (process running for 5.528)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

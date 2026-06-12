@@ -10,9 +10,10 @@ import com.ehi.iam.mapper.UserMapper;
 import com.ehi.iam.repository.UserRepository;
 import com.ehi.iam.service.UserService;
 import com.ehi.infra.dto.PagedResponse;
-import com.ehi.infra.exception.BadRequestException;
+import com.ehi.infra.exception.base.BadRequestException;
 import com.ehi.infra.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -72,10 +74,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new NotFoundException("User", email));
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
+            log.warn("Password change rejected (wrong current) for email={}", email);
             throw new BadRequestException("Current password is incorrect");
         }
         user.setPassword(passwordEncoder.encode(request.newPassword()));
-        return userMapper.toDto(userRepository.save(user));
+        UserDto result = userMapper.toDto(userRepository.save(user));
+        log.info("Password changed for userId={}", user.getId());
+        return result;
     }
 
     @Override
@@ -83,7 +88,9 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User", id));
         user.setRole(request.role());
-        return userMapper.toDto(userRepository.save(user));
+        UserDto result = userMapper.toDto(userRepository.save(user));
+        log.info("Role changed for userId={} -> {}", id, request.role());
+        return result;
     }
 
     @Override
@@ -91,7 +98,13 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User", id));
         user.setActive(request.active());
-        return userMapper.toDto(userRepository.save(user));
+        UserDto result = userMapper.toDto(userRepository.save(user));
+        if (Boolean.FALSE.equals(request.active())) {
+            log.warn("Status changed for userId={}, active={}", id, false);
+        } else {
+            log.info("Status changed for userId={}, active={}", id, true);
+        }
+        return result;
     }
 
     @Override

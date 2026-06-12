@@ -21,7 +21,7 @@ public class RiskProfileController {
     private final RiskProfileService riskProfileService;
 
     @GetMapping("/risk-profile/{userId}")
-    @PreAuthorize("hasRole('AGENT') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<RiskAiResponse>> getRiskProfile(@PathVariable UUID userId) {
         return ResponseEntity.ok(ApiResponse.ok(riskProfileService.getRiskProfile(userId)));
     }

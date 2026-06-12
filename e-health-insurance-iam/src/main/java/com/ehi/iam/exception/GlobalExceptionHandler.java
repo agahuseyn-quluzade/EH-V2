@@ -2,8 +2,8 @@ package com.ehi.iam.exception;
 
 import com.ehi.infra.dto.ApiResponse;
 import com.ehi.infra.dto.ErrorResponse;
-import com.ehi.infra.exception.BaseErrorEnum;
-import com.ehi.infra.exception.BaseException;
+import com.ehi.infra.exception.base.BaseErrorEnum;
+import com.ehi.infra.exception.base.BaseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;

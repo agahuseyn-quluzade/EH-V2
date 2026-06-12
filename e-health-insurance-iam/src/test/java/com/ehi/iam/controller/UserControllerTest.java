@@ -72,7 +72,7 @@ class UserControllerTest {
         mockMvc.perform(patch("/api/v1/users/{id}/role", id)
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new ChangeRoleRequest(UserRole.AGENT))))
+                        .content(objectMapper.writeValueAsString(new ChangeRoleRequest(UserRole.STAFF))))
                 .andExpect(status().isOk());
     }
 
@@ -82,7 +82,7 @@ class UserControllerTest {
         mockMvc.perform(patch("/api/v1/users/{id}/role", UUID.randomUUID())
                         .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(new ChangeRoleRequest(UserRole.AGENT))))
+                        .content(objectMapper.writeValueAsString(new ChangeRoleRequest(UserRole.STAFF))))
                 .andExpect(status().isForbidden());
     }
 
@@ -119,7 +119,7 @@ class UserControllerTest {
     }
 
     @Test
-    @WithMockUser(roles = "AGENT")
+    @WithMockUser(roles = "STAFF")
     void searchUsers_allowedForAgent() throws Exception {
         when(userService.searchUsers(any(), any())).thenReturn(null);
 

@@ -2,6 +2,7 @@ package com.ehi.gw.security;
 
 import com.ehi.gw.config.GatewaySecurityProperties;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
@@ -15,6 +16,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter implements GlobalFilter, Ordered {
@@ -36,11 +38,13 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
         String authHeader = request.getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
         if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
+            log.warn("Auth rejected: {} {} (missing/invalid token)", request.getMethod(), path);
             return unauthorized(exchange);
         }
 
         String token = authHeader.substring(BEARER_PREFIX.length());
         if (!jwtProvider.isTokenValid(token)) {
+            log.warn("Auth rejected: {} {} (missing/invalid token)", request.getMethod(), path);
             return unauthorized(exchange);
         }
 
@@ -49,6 +53,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
                 .header("X-User-Role", jwtProvider.getRole(token))
                 .build();
 
+        log.debug("Authenticated request: userId={}, path={}", jwtProvider.getUserId(token), path);
         return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 

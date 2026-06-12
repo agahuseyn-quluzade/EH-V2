@@ -16,7 +16,7 @@
 ## Enums
 | Enum | Values |
 |---|---|
-| UserRole | ADMIN, AGENT, CUSTOMER |
+| UserRole | ADMIN, STAFF, CUSTOMER | <!-- was AGENT in v3-3; renamed back to STAFF -->
 | PolicyStatus | PENDING, ACTIVE, EXPIRED, CANCELLED |
 | ClaimStatus | SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED |
 | ClaimType | HOSPITALIZATION, MEDICATION, DENTAL, CONSULTATION |
@@ -57,16 +57,21 @@
 | ErrorResponse | Error details: status, message, details (Map), timestamp |
 
 ## Exceptions
-| Class | Error Code | Status Code | Constructor |
-|---|---|---|---|
-| BaseErrorService | (interface) | — | getErrorCode(), getMessage(), getHttpStatus() |
-| BaseErrorEnum | (enum) | — | NOT_FOUND, UNAUTHORIZED, BAD_REQUEST, DUPLICATE_RESOURCE, VALIDATION_ERROR, INTERNAL_ERROR |
-| BaseException | (abstract) | from errorService | (errorService, message) / (errorService) |
-| NotFoundException | BASE-NOT-FOUND-0001 | 404 | (entity, id) |
-| UnauthorizedException | BASE-UNAUTHORIZED-0002 | 401 | (message) |
-| BadRequestException | BASE-BAD-REQUEST-0003 | 400 | (message) |
-| DuplicateResourceException | BASE-DUPLICATE-RESOURCE-0004 | 409 | (message) |
-| ServiceException | from errorService | from errorService | (errorService) / (errorService, message) — for service-defined `XxxErrorEnum implements BaseErrorService` |
+
+Package layout: `com.ehi.infra.exception.base` holds the base types; `com.ehi.infra.exception` holds the ready-made subclasses.
+
+| Class | Package | Error Code | Status Code | Constructor |
+|---|---|---|---|---|
+| BaseErrorService | `exception.base` | (interface) | — | getErrorCode(), getMessage(), getHttpStatus() |
+| BaseErrorEnum | `exception.base` | (enum) | — | NOT_FOUND, UNAUTHORIZED, BAD_REQUEST, DUPLICATE_RESOURCE, VALIDATION_ERROR, INTERNAL_ERROR |
+| BaseException | `exception.base` | (abstract) | from errorService | (errorService, message) / (errorService) |
+| BadRequestException | `exception.base` | BASE-BAD-REQUEST-0003 | 400 | (message) |
+| NotFoundException | `exception` | BASE-NOT-FOUND-0001 | 404 | (entity, id) |
+| UnauthorizedException | `exception` | BASE-UNAUTHORIZED-0002 | 401 | (message) |
+| DuplicateResourceException | `exception` | BASE-DUPLICATE-RESOURCE-0004 | 409 | (message) |
+| ServiceException | `exception` | from errorService | from errorService | (errorService) / (errorService, message) — for service-defined `XxxErrorEnum implements BaseErrorService` |
+
+Services import `BaseErrorEnum`/`BaseException`/`BaseErrorService`/`BadRequestException` from `com.ehi.infra.exception.base.*`; `NotFoundException`, `UnauthorizedException`, `DuplicateResourceException`, `ServiceException` from `com.ehi.infra.exception.*`.
 
 ## Utilities
 | Class | Method | Purpose |

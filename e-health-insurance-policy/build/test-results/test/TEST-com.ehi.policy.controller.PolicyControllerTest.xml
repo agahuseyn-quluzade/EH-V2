@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.policy.controller.PolicyControllerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-12T16:16:59" hostname="Nijats-MacBook-Pro.local" time="0.138">
+<testsuite name="com.ehi.policy.controller.PolicyControllerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:50:44" hostname="Nijats-MacBook-Pro.local" time="0.142">
   <properties/>
-  <testcase name="purchasePolicy_allowedForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.091"/>
-  <testcase name="createPlan_forbiddenForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.014"/>
+  <testcase name="purchasePolicy_allowedForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.107"/>
+  <testcase name="createPlan_forbiddenForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.013"/>
   <testcase name="createPlan_allowedForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.004"/>
   <testcase name="getAllPolicies_allowedForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.005"/>
-  <testcase name="purchasePolicy_forbiddenForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.003"/>
+  <testcase name="purchasePolicy_forbiddenForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.002"/>
   <testcase name="getAllPolicies_forbiddenForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.002"/>
-  <testcase name="getActivePlans_isPublic()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.012"/>
-  <system-out><![CDATA[2026-06-12T20:16:59.374+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.policy.PolicyApplication for test class com.ehi.policy.controller.PolicyControllerTest
+  <testcase name="getActivePlans_isPublic()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.003"/>
+  <system-out><![CDATA[2026-06-12T22:50:43.892+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.policy.PolicyApplication for test class com.ehi.policy.controller.PolicyControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -18,19 +18,19 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T20:16:59.391+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Starting PolicyControllerTest using Java 17.0.19 with PID 99546 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-policy)
-2026-06-12T20:16:59.391+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : No active profile set, falling back to 1 default profile: "default"
-2026-06-12T20:16:59.634+04:00  WARN 99546 --- [e-health-insurance-policy] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-12T22:50:43.908+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Starting PolicyControllerTest using Java 17.0.19 with PID 20954 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-policy)
+2026-06-12T22:50:43.908+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : No active profile set, falling back to 1 default profile: "default"
+2026-06-12T22:50:44.150+04:00  WARN 20954 --- [e-health-insurance-policy] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 066da373-4a53-4762-99a0-2a0d0886a8c6
+Using generated security password: 5ad0a9cb-0d2d-4fa5-8074-50235e432535
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-12T20:16:59.758+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@25c887ca, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@ba65354, org.springframework.security.web.context.SecurityContextHolderFilter@75be3cdf, org.springframework.security.web.header.HeaderWriterFilter@72b8b04f, org.springframework.web.filter.CorsFilter@647dcc5e, org.springframework.security.web.authentication.logout.LogoutFilter@3f19f197, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@f500481, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@38dde7ec, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5af850f1, org.springframework.security.web.session.SessionManagementFilter@1b131102, org.springframework.security.web.access.ExceptionTranslationFilter@69c27acb, org.springframework.security.web.access.intercept.AuthorizationFilter@2523730b]
-2026-06-12T20:16:59.875+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-12T20:16:59.875+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-12T20:16:59.876+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
-2026-06-12T20:16:59.887+04:00  INFO 99546 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Started PolicyControllerTest in 0.507 seconds (process running for 5.352)
+2026-06-12T22:50:44.291+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2c05303d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@32394a4b, org.springframework.security.web.context.SecurityContextHolderFilter@4424285, org.springframework.security.web.header.HeaderWriterFilter@64079186, org.springframework.web.filter.CorsFilter@21b33459, org.springframework.security.web.authentication.logout.LogoutFilter@6deda1cd, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@65a022e6, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3d731475, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@8499717, org.springframework.security.web.session.SessionManagementFilter@6314b195, org.springframework.security.web.access.ExceptionTranslationFilter@181f2388, org.springframework.security.web.access.intercept.AuthorizationFilter@1177049c]
+2026-06-12T22:50:44.400+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-12T22:50:44.400+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-12T22:50:44.401+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-12T22:50:44.412+04:00  INFO 20954 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Started PolicyControllerTest in 0.514 seconds (process running for 5.679)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

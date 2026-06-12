@@ -9,7 +9,7 @@ import com.ehi.iam.mapper.UserMapper;
 import com.ehi.iam.repository.UserRepository;
 import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.UserRole;
-import com.ehi.infra.exception.BadRequestException;
+import com.ehi.infra.exception.base.BadRequestException;
 import com.ehi.infra.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -84,7 +84,7 @@ class UserServiceImplTest {
         UUID id = UUID.randomUUID();
         when(userRepository.findById(id)).thenReturn(Optional.empty());
 
-        assertThatThrownBy(() -> userService.changeRole(id, new ChangeRoleRequest(UserRole.AGENT)))
+        assertThatThrownBy(() -> userService.changeRole(id, new ChangeRoleRequest(UserRole.STAFF)))
                 .isInstanceOf(NotFoundException.class);
     }
 

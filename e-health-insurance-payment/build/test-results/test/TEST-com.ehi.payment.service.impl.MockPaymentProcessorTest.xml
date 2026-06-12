@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.payment.service.impl.MockPaymentProcessorTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-12T16:44:57" hostname="Nijats-MacBook-Pro.local" time="4.077">
+<testsuite name="com.ehi.payment.service.impl.MockPaymentProcessorTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:52:24" hostname="Nijats-MacBook-Pro.local" time="4.083">
   <properties/>
-  <testcase name="process_completesPendingPayment_andPublishesEvent()" classname="com.ehi.payment.service.impl.MockPaymentProcessorTest" time="2.071"/>
-  <testcase name="process_noOps_whenPaymentMissing()" classname="com.ehi.payment.service.impl.MockPaymentProcessorTest" time="2.005"/>
-  <system-out><![CDATA[2026-06-12T20:45:01.270+04:00  WARN 3736 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.MockPaymentProcessor  : Payment 45fcb9c3-c225-4874-a57d-034f065bac60 not found when completing mock processing
+  <testcase name="process_completesPendingPayment_andPublishesEvent()" classname="com.ehi.payment.service.impl.MockPaymentProcessorTest" time="2.075"/>
+  <testcase name="process_noOps_whenPaymentMissing()" classname="com.ehi.payment.service.impl.MockPaymentProcessorTest" time="2.007"/>
+  <system-out><![CDATA[2026-06-12T22:52:28.117+04:00  WARN 21276 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.MockPaymentProcessor  : Payment 8b977150-da6d-4ddd-a195-0a355f89e1c6 not found when completing mock processing
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

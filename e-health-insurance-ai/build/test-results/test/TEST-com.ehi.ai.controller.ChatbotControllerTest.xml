@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.ai.controller.ChatbotControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:04:08" hostname="Nijats-MacBook-Pro.local" time="0.111">
+<testsuite name="com.ehi.ai.controller.ChatbotControllerTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-06-12T19:00:50" hostname="Nijats-MacBook-Pro.local" time="0.101">
   <properties/>
-  <testcase name="sendMessage_forbiddenForAgent()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.084"/>
-  <testcase name="getHistory_forbiddenForAgent()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.005"/>
-  <testcase name="sendMessage_allowedForCustomer()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.013"/>
+  <testcase name="sendMessage_forbiddenForAgent()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.076"/>
+  <testcase name="getHistory_forbiddenForAgent()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.004"/>
+  <testcase name="sendMessage_allowedForCustomer()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.012"/>
   <testcase name="sendMessage_blocked_whenUnauthenticated()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.003"/>
-  <testcase name="getHistory_allowedForCustomer()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.003"/>
-  <system-out><![CDATA[2026-06-12T21:04:08.316+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.ai.AiApplication for test class com.ehi.ai.controller.ChatbotControllerTest
+  <testcase name="getHistory_allowedForCustomer()" classname="com.ehi.ai.controller.ChatbotControllerTest" time="0.004"/>
+  <system-out><![CDATA[2026-06-12T23:00:50.379+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.ai.AiApplication for test class com.ehi.ai.controller.ChatbotControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -16,19 +16,19 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T21:04:08.334+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.e.ai.controller.ChatbotControllerTest  : Starting ChatbotControllerTest using Java 17.0.19 with PID 6510 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-ai)
-2026-06-12T21:04:08.334+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.e.ai.controller.ChatbotControllerTest  : No active profile set, falling back to 1 default profile: "default"
-2026-06-12T21:04:08.572+04:00  WARN 6510 --- [e-health-insurance-ai] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-12T23:00:50.394+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] c.e.ai.controller.ChatbotControllerTest  : Starting ChatbotControllerTest using Java 17.0.19 with PID 22801 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-ai)
+2026-06-12T23:00:50.394+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] c.e.ai.controller.ChatbotControllerTest  : No active profile set, falling back to 1 default profile: "default"
+2026-06-12T23:00:50.615+04:00  WARN 22801 --- [e-health-insurance-ai] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 760fb7e4-bc56-4265-b6a4-8b30433c2ef7
+Using generated security password: aea393c6-d866-44da-a16f-6d04a2793cb2
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-12T21:04:08.698+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@1a4fa5df, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@238869e8, org.springframework.security.web.context.SecurityContextHolderFilter@1fb66050, org.springframework.security.web.header.HeaderWriterFilter@47e2a158, org.springframework.web.filter.CorsFilter@7aadd290, org.springframework.security.web.authentication.logout.LogoutFilter@634cd45c, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@65f68e96, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@37cc1b11, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1b3ee7f3, org.springframework.security.web.session.SessionManagementFilter@7dc0b40a, org.springframework.security.web.access.ExceptionTranslationFilter@71c16f67, org.springframework.security.web.access.intercept.AuthorizationFilter@6831286e]
-2026-06-12T21:04:08.798+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-12T21:04:08.798+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-12T21:04:08.799+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
-2026-06-12T21:04:08.815+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.e.ai.controller.ChatbotControllerTest  : Started ChatbotControllerTest in 0.493 seconds (process running for 4.99)
+2026-06-12T23:00:50.727+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@643ee419, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@6033ed50, org.springframework.security.web.context.SecurityContextHolderFilter@6b82196e, org.springframework.security.web.header.HeaderWriterFilter@4f63343b, org.springframework.web.filter.CorsFilter@7947bf34, org.springframework.security.web.authentication.logout.LogoutFilter@3d1b97e4, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@2f5823c7, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@79cc08fb, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@1269538a, org.springframework.security.web.session.SessionManagementFilter@4dce4286, org.springframework.security.web.access.ExceptionTranslationFilter@4dd139e0, org.springframework.security.web.access.intercept.AuthorizationFilter@4a742630]
+2026-06-12T23:00:50.820+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-12T23:00:50.820+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-12T23:00:50.821+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-12T23:00:50.835+04:00  INFO 22801 --- [e-health-insurance-ai] [    Test worker] c.e.ai.controller.ChatbotControllerTest  : Started ChatbotControllerTest in 0.451 seconds (process running for 5.15)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

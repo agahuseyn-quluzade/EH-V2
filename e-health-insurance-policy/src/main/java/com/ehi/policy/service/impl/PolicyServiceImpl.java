@@ -3,7 +3,7 @@ package com.ehi.policy.service.impl;
 import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.PolicyStatus;
 import com.ehi.infra.event.PolicyCreatedEvent;
-import com.ehi.infra.exception.BadRequestException;
+import com.ehi.infra.exception.base.BadRequestException;
 import com.ehi.infra.exception.NotFoundException;
 import com.ehi.policy.dto.request.PurchasePolicyRequest;
 import com.ehi.policy.dto.response.PolicyDto;
@@ -15,6 +15,7 @@ import com.ehi.policy.repository.PlanRepository;
 import com.ehi.policy.repository.PolicyRepository;
 import com.ehi.policy.service.PolicyService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PolicyServiceImpl implements PolicyService {
@@ -53,6 +55,7 @@ public class PolicyServiceImpl implements PolicyService {
                 .build();
 
         policy = policyRepository.save(policy);
+        log.info("Policy purchased: policyId={}, userId={}, planId={}", policy.getId(), userId, plan.getId());
 
         policyCreatedEventProducer.publish(PolicyCreatedEvent.builder()
                 .policyId(policy.getId())
@@ -86,7 +89,9 @@ public class PolicyServiceImpl implements PolicyService {
         }
 
         policy.setStatus(PolicyStatus.CANCELLED);
-        return policyMapper.toDto(policyRepository.save(policy));
+        PolicyDto result = policyMapper.toDto(policyRepository.save(policy));
+        log.info("Policy cancelled: policyId={}, userId={}", policyId, requesterId);
+        return result;
     }
 
     @Override

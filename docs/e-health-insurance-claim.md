@@ -54,10 +54,10 @@
 |---|---|---|---|
 | POST | /api/v1/claims | Submit claim | CUSTOMER |
 | GET | /api/v1/claims/me | My claims | CUSTOMER |
-| GET | /api/v1/claims/{id} | Claim detail | authenticated (owner, AGENT, or ADMIN — 404 if non-owner & non-staff) |
-| POST | /api/v1/claims/{id}/evidence | Upload evidence (multipart `file`) | authenticated (owner, AGENT, or ADMIN — 404 if non-owner & non-staff) |
-| GET | /api/v1/claims?status=&page=&size= | All claims, optional status filter, paginated | AGENT, ADMIN |
-| PUT | /api/v1/claims/{id}/review | Approve/reject claim | AGENT, ADMIN |
+| GET | /api/v1/claims/{id} | Claim detail | authenticated (owner, STAFF, or ADMIN — 404 if non-owner & non-staff) |
+| POST | /api/v1/claims/{id}/evidence | Upload evidence (multipart `file`) | authenticated (owner, STAFF, or ADMIN — 404 if non-owner & non-staff) |
+| GET | /api/v1/claims?status=&page=&size= | All claims, optional status filter, paginated | STAFF, ADMIN |
+| PUT | /api/v1/claims/{id}/review | Approve/reject claim | STAFF, ADMIN |
 
 ## Kafka
 - Produces:
@@ -88,21 +88,35 @@
 - `ClaimService`/`ClaimServiceImpl`:
   - `submitClaim`: generates `claimNumber` (`"CLM-" + UUID.randomUUID().substring(0,8).toUpperCase()`), sets `status=SUBMITTED`, saves, publishes `ClaimSubmittedEvent`.
   - `getMyClaims`: `findByUserId` + map.
-  - `getClaimById`/`uploadEvidence`: both go through private `findAccessibleClaim(claimId, requesterId, privileged)` — non-privileged requester accessing another user's claim gets `NotFoundException` (404, not 403), same ownership pattern as policy. `privileged` = AGENT or ADMIN.
+  - `getClaimById`/`uploadEvidence`: both go through private `findAccessibleClaim(claimId, requesterId, privileged)` — non-privileged requester accessing another user's claim gets `NotFoundException` (404, not 403), same ownership pattern as policy. `privileged` = STAFF or ADMIN.
   - `uploadEvidence`: stores file on disk under `app.upload-dir/{claimId}/{UUID}_{originalFilename}` via `Files.createDirectories` + `MultipartFile.transferTo`; IO errors wrapped in `UncheckedIOException`.
   - `getAllClaims`: paginated, optional `ClaimStatus` filter — `findByStatus` if provided, else `findAll`.
   - `reviewClaim`: only allowed when claim status is `SUBMITTED` or `UNDER_REVIEW` (else `BadRequestException`); `decision` must be `APPROVED` or `REJECTED`; `APPROVED` requires `approvedAmount`, `REJECTED` requires `rejectionReason`; sets `reviewedBy`, saves, publishes `ClaimDecisionEvent`.
   - `applyFraudResult`: called by the `fraud.detected` Kafka consumer — **AI auto-decision**. Guards `if (status != SUBMITTED) return;` so a manual review is never overwritten. Sets `riskScore`/`fraudFlags`/`aiExplanation` from `FraudDetectedEvent`, then decides by score: `<40` → `APPROVED` (`approvedAmount` = full claim amount); `40–69` → `UNDER_REVIEW` (goes to the agent queue); `≥70` → `REJECTED` (rejection reason notes the score). For the auto APPROVED/REJECTED branches it also publishes a `ClaimDecisionEvent` (with `reviewedBy = null`) so payment/notification react exactly as for a manual decision. Agents can still override `UNDER_REVIEW` claims via `reviewClaim`.
 - Kafka producers created ahead of schedule (needed by service layer): `ClaimSubmittedEventProducer` (topic `claim.submitted`, key=claimId), `ClaimDecisionEventProducer` (topic `claim.decision`, key=claimId) — both follow `PolicyCreatedEventProducer`'s structure exactly. The `fraud.detected` consumer is still pending for Step 8.
 - `ClaimController` (`/api/v1/claims`):
-  - `getClaimById`/`uploadEvidence` have no `@PreAuthorize` — any authenticated user can call them, but the service-layer ownership check (`findAccessibleClaim`) returns 404 for non-owners who aren't AGENT/ADMIN.
+  - `getClaimById`/`uploadEvidence` have no `@PreAuthorize` — any authenticated user can call them, but the service-layer ownership check (`findAccessibleClaim`) returns 404 for non-owners who aren't STAFF/ADMIN.
   - `uploadEvidence` accepts `multipart/form-data` with a `file` part (`@RequestParam("file") MultipartFile`).
   - `getAllClaims` takes optional `status` query param (`ClaimStatus`) plus `Pageable` (page/size/sort via Spring's standard binding).
-  - Private `isStaff(Authentication)` checks for `ROLE_AGENT` or `ROLE_ADMIN`, passed as the `privileged` flag to the service.
+  - Private `isStaff(Authentication)` checks for `ROLE_STAFF` or `ROLE_ADMIN`, passed as the `privileged` flag to the service.
 - `GlobalExceptionHandler` + `ClaimErrorEnum`: identical structure/content to policy's — handles `BaseException`, `MethodArgumentNotValidException`, `AccessDeniedException` (→ `ClaimErrorEnum.FORBIDDEN`, `"CLAIM-FORBIDDEN-0001"`, 403), and generic `Exception` → 500.
-- Step 10 build verification: `./gradlew build` → BUILD SUCCESSFUL. No local Postgres/Kafka available, so no `bootRun` smoke test (same as policy).
+- Step 10 build verification: `./gradlew build` → BUILD SUCCESSFUL. `application.yml` uses `ddl-auto: validate` and `show-sql: false`. `build.gradle` includes `runtimeOnly 'org.liquibase:liquibase-core'` for future migration support.
 - Dockerfile (multi-stage, same pattern as iam/policy): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`, `uploads/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_claim` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
+
+## Logging (SLF4J) — DONE
+
+> Add `@Slf4j` only to `ClaimServiceImpl`, only the listed lines. Producers/consumers and
+> `GlobalExceptionHandler` already log; `applyFraudResult` (in the consumer path) already logs the
+> AI auto-decision. Follow the existing convention (parameterized `{}`, `info` for state changes,
+> `warn` for rejected actions).
+
+- **`ClaimServiceImpl`** (`@Slf4j`):
+  - `submitClaim`: `info` after save — `"Claim submitted: claimId={}, userId={}, type={}, amount={}"`.
+  - `reviewClaim`: `info` on the manual decision — `"Claim reviewed: claimId={}, decision={},
+    reviewedBy={}"`; `warn` when an out-of-state review is rejected — `"Review rejected: claimId={}
+    not in SUBMITTED/UNDER_REVIEW"`.
+  - `uploadEvidence`: `info` — `"Evidence uploaded for claimId={}, fileName={}"`.
 
 ## Review Findings (see root `check.md` for full detail)
 
@@ -134,7 +148,7 @@ Postgres (IT).
 
 - **`ClaimServiceImplTest`** (14 tests): `submitClaim` sets `SUBMITTED`, generates a `CLM-` number,
   publishes `ClaimSubmittedEvent`; `getClaimById`/`uploadEvidence` return 404 for a non-owner
-  non-privileged requester, and succeed for a privileged (AGENT/ADMIN) requester regardless of
+  non-privileged requester, and succeed for a privileged (STAFF/ADMIN) requester regardless of
   owner; `reviewClaim` rejects non-`SUBMITTED`/`UNDER_REVIEW` status, requires `approvedAmount` on
   APPROVE and `rejectionReason` on REJECT, rejects `approvedAmount` that is `<= 0` or
   `> claim.getAmount()` (fix #2), and on success sets `reviewedBy`/`approvedAmount` and publishes
@@ -143,7 +157,7 @@ Postgres (IT).
   `≥70` → REJECTED + event; and the **status guard** — a non-`SUBMITTED` claim is left untouched
   (no overwrite of a manual review, no save, no event).
 - **`ClaimControllerTest`** (`@WebMvcTest`, 9 tests): CUSTOMER can `POST /claims` and
-  `GET /claims/me`; AGENT gets 403 on `POST /claims` (CUSTOMER-only); AGENT can `GET /claims` and
+  `GET /claims/me`; STAFF gets 403 on `POST /claims` (CUSTOMER-only); STAFF can `GET /claims` and
   `PUT /{id}/review`; CUSTOMER gets 403 on both `GET /claims` and `PUT /{id}/review`;
   `GET /{id}` (no `@PreAuthorize`) works for any authenticated role and is rejected when
   unauthenticated.

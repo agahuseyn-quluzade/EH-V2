@@ -12,6 +12,7 @@ import com.ehi.infra.enums.PaymentStatus;
 import com.ehi.infra.event.PaymentFailedEvent;
 import com.ehi.infra.exception.NotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
@@ -35,6 +37,7 @@ public class PaymentServiceImpl implements PaymentService {
         Optional<Payment> existing = paymentRepository.findFirstByReferenceIdAndReferenceTypeAndStatusNot(
                 referenceId, referenceType, PaymentStatus.FAILED);
         if (existing.isPresent()) {
+            log.warn("Duplicate payment skipped for referenceId={}, type={}", referenceId, referenceType);
             return paymentMapper.toDto(existing.get());
         }
 
@@ -47,6 +50,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .build();
 
         if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            log.warn("Payment failed (invalid amount): referenceId={}, amount={}", referenceId, amount);
             payment.setStatus(PaymentStatus.FAILED);
             payment.setFailureReason("Invalid payment amount");
             payment = paymentRepository.save(payment);
@@ -64,6 +68,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         payment = paymentRepository.save(payment);
+        log.info("Processing payment: referenceId={}, type={}, amount={}", referenceId, referenceType, amount);
         mockPaymentProcessor.process(payment.getId());
 
         return paymentMapper.toDto(payment);

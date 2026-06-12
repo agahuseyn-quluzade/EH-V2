@@ -54,7 +54,7 @@ class FraudControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void getFraudCheck_allowedForAgent() throws Exception {
         when(fraudDetectionService.getFraudCheck(any())).thenReturn(stubResponse());
 
@@ -79,7 +79,7 @@ class FraudControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void analyzeClaim_allowedForAgent() throws Exception {
         when(fraudDetectionService.reanalyzeClaim(any())).thenReturn(stubResponse());
 

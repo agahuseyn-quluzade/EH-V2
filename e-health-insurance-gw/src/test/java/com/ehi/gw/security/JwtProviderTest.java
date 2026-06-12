@@ -61,7 +61,7 @@ class JwtProviderTest {
 
     @Test
     void isTokenValid_returnsFalse_forExpiredToken() {
-        String expiredToken = token(SECRET, UUID.randomUUID().toString(), "AGENT", -1_000L);
+        String expiredToken = token(SECRET, UUID.randomUUID().toString(), "STAFF", -1_000L);
 
         assertThat(jwtProvider.isTokenValid(expiredToken)).isFalse();
     }

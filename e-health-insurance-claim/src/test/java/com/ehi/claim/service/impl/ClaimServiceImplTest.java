@@ -15,7 +15,7 @@ import com.ehi.infra.enums.ClaimType;
 import com.ehi.infra.event.ClaimDecisionEvent;
 import com.ehi.infra.event.ClaimSubmittedEvent;
 import com.ehi.infra.event.FraudDetectedEvent;
-import com.ehi.infra.exception.BadRequestException;
+import com.ehi.infra.exception.base.BadRequestException;
 import com.ehi.infra.exception.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

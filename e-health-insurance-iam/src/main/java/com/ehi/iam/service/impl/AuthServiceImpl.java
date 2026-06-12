@@ -15,11 +15,13 @@ import com.ehi.infra.exception.DuplicateResourceException;
 import com.ehi.infra.exception.NotFoundException;
 import com.ehi.infra.exception.UnauthorizedException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -44,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
 
         user = userRepository.save(user);
+        log.info("Registered new user userId={}, email={}", user.getId(), user.getEmail());
 
         userRegisteredEventProducer.publish(new UserRegisteredEvent(
                 user.getId(), user.getEmail(), user.getFirstName(), user.getLastName()));
@@ -53,14 +56,15 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.email())
-                .orElseThrow(() -> new UnauthorizedException("Invalid email or password"));
+        User user = userRepository.findByEmail(request.email()).orElse(null);
 
-        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
+        if (user == null || !passwordEncoder.matches(request.password(), user.getPassword())) {
+            log.warn("Failed login attempt for email={}", request.email());
             throw new UnauthorizedException("Invalid email or password");
         }
 
         if (Boolean.FALSE.equals(user.getActive())) {
+            log.warn("Login blocked: account suspended, userId={}", user.getId());
             throw new UnauthorizedException("Account is suspended");
         }
 
@@ -71,6 +75,7 @@ public class AuthServiceImpl implements AuthService {
     public AuthResponse refresh(RefreshRequest request) {
         String token = request.refreshToken();
         if (!jwtProvider.isTokenValid(token)) {
+            log.warn("Refresh rejected: invalid token");
             throw new UnauthorizedException("Invalid or expired refresh token");
         }
 

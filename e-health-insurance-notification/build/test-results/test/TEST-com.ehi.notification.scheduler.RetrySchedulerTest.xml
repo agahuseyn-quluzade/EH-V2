@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.scheduler.RetrySchedulerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:15:53" hostname="Nijats-MacBook-Pro.local" time="0.06">
+<testsuite name="com.ehi.notification.scheduler.RetrySchedulerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.055">
   <properties/>
-  <testcase name="retryFailedNotifications_marksFailed_andIncrementsRetryCount_whenSenderFails()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.058"/>
+  <testcase name="retryFailedNotifications_marksFailed_andIncrementsRetryCount_whenSenderFails()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.053"/>
   <testcase name="retryFailedNotifications_onlyQueriesFailedWithRetryCountBelowMax()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.001"/>
   <testcase name="retryFailedNotifications_marksSent_andIncrementsRetryCount_whenSenderSucceeds()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-12T21:15:53.999+04:00  INFO 8268 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification 17c774b1-13d5-46da-85a5-f36a386c2629 (attempt 1), result: FAILED
-2026-06-12T21:15:54.003+04:00  INFO 8268 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification 1b17ec93-baae-4342-aa9f-780e0abd5b45 (attempt 2), result: SENT
+  <system-out><![CDATA[2026-06-12T22:56:30.855+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification bcf8a2f9-8d7d-469e-ab12-6ec69dda058d (attempt 1), result: FAILED
+2026-06-12T22:56:30.871+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification cea90954-7a09-4de5-8ac9-b972b808cd7d (attempt 2), result: SENT
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

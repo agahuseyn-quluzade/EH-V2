@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.490s</div>
+<div class="counter">0.489s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,12 +79,12 @@
 </thead>
 <tr>
 <td class="success">register_login_thenAccessProfile()</td>
-<td class="success">0.345s</td>
+<td class="success">0.342s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">suspendedUser_cannotLogin()</td>
-<td class="success">0.145s</td>
+<td class="success">0.147s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -92,8 +92,8 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>20:06:25.992 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ehi.iam.IamAuthIT]: IamAuthIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-20:06:26.022 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.iam.IamApplication for test class com.ehi.iam.IamAuthIT
+<pre>23:00:33.974 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ehi.iam.IamAuthIT]: IamAuthIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+23:00:34.012 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.iam.IamApplication for test class com.ehi.iam.IamAuthIT
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -103,41 +103,57 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T20:06:26.133+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] com.ehi.iam.IamAuthIT                    : Starting IamAuthIT using Java 17.0.19 with PID 98010 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-iam)
-2026-06-12T20:06:26.133+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] com.ehi.iam.IamAuthIT                    : The following 1 profile is active: &quot;it&quot;
-2026-06-12T20:06:26.315+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
-2026-06-12T20:06:26.334+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 1 JPA repository interface.
-2026-06-12T20:06:26.904+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
-2026-06-12T20:06:26.908+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
-2026-06-12T20:06:26.908+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
-2026-06-12T20:06:26.938+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
-2026-06-12T20:06:26.938+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 800 ms
-2026-06-12T20:06:27.013+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
-2026-06-12T20:06:27.032+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
-2026-06-12T20:06:27.042+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
-2026-06-12T20:06:27.072+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
-2026-06-12T20:06:27.079+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
-2026-06-12T20:06:27.141+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@5870fc05
-2026-06-12T20:06:27.142+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
-2026-06-12T20:06:27.391+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
-2026-06-12T20:06:27.396+04:00  WARN 98010 --- [e-health-insurance-iam] [    Test worker] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
-2026-06-12T20:06:27.396+04:00  WARN 98010 --- [e-health-insurance-iam] [    Test worker] o.h.engine.jdbc.spi.SqlExceptionHelper   : table &quot;users&quot; does not exist, skipping
-2026-06-12T20:06:27.409+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
-2026-06-12T20:06:27.495+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
-2026-06-12T20:06:27.708+04:00  WARN 98010 --- [e-health-insurance-iam] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
-2026-06-12T20:06:27.721+04:00  WARN 98010 --- [e-health-insurance-iam] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-12T23:00:34.153+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] com.ehi.iam.IamAuthIT                    : Starting IamAuthIT using Java 17.0.19 with PID 22724 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-iam)
+2026-06-12T23:00:34.154+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] com.ehi.iam.IamAuthIT                    : The following 1 profile is active: &quot;it&quot;
+2026-06-12T23:00:34.382+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data JPA repositories in DEFAULT mode.
+2026-06-12T23:00:34.399+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 14 ms. Found 1 JPA repository interface.
+2026-06-12T23:00:35.049+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 0 (http)
+2026-06-12T23:00:35.056+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-06-12T23:00:35.056+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-06-12T23:00:35.085+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-06-12T23:00:35.086+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 926 ms
+2026-06-12T23:00:35.162+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-06-12T23:00:35.231+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@25c6ab3f
+2026-06-12T23:00:35.232+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-06-12T23:00:35.297+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.database                       : Set default schema name to public
+2026-06-12T23:00:35.409+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.changelog                      : Reading from public.databasechangelog
+Database is up to date, no changesets to execute
+2026-06-12T23:00:35.426+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.changelog                      : Reading from public.databasechangelog
+2026-06-12T23:00:35.428+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.util                           : UPDATE SUMMARY
+2026-06-12T23:00:35.428+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.util                           : Run:                          0
+2026-06-12T23:00:35.428+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.util                           : Previously run:               1
+2026-06-12T23:00:35.428+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.util                           : Filtered out:                 0
+2026-06-12T23:00:35.428+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.util                           : -------------------------------
+2026-06-12T23:00:35.428+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.util                           : Total change sets:            1
+2026-06-12T23:00:35.428+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.util                           : Update summary generated
+2026-06-12T23:00:35.436+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.lockservice                    : Successfully released change log lock
+2026-06-12T23:00:35.436+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] liquibase.command                        : Command execution complete
+2026-06-12T23:00:35.471+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-06-12T23:00:35.495+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.4.4.Final
+2026-06-12T23:00:35.508+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.h.c.internal.RegionFactoryInitiator    : HHH000026: Second-level cache disabled
+2026-06-12T23:00:35.551+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.o.j.p.SpringPersistenceUnitInfo      : No LoadTimeWeaver setup: ignoring JPA class transformer
+2026-06-12T23:00:35.830+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-06-12T23:00:35.836+04:00  WARN 22724 --- [e-health-insurance-iam] [    Test worker] o.h.engine.jdbc.spi.SqlExceptionHelper   : SQL Warning Code: 0, SQLState: 00000
+2026-06-12T23:00:35.836+04:00  WARN 22724 --- [e-health-insurance-iam] [    Test worker] o.h.engine.jdbc.spi.SqlExceptionHelper   : table &quot;users&quot; does not exist, skipping
+2026-06-12T23:00:35.844+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-06-12T23:00:35.938+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.d.j.r.query.QueryEnhancerFactory     : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-06-12T23:00:36.162+04:00  WARN 22724 --- [e-health-insurance-iam] [    Test worker] JpaBaseConfiguration$JpaWebConfiguration : spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2026-06-12T23:00:36.172+04:00  WARN 22724 --- [e-health-insurance-iam] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 193158a1-0294-45b1-b15c-4cec0e5f0688
+Using generated security password: cf324f55-ec47-493c-8a1d-ddacfc85150e
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-12T20:06:27.866+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@4fdf83bb, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@75e81be2, org.springframework.security.web.context.SecurityContextHolderFilter@4968deb9, org.springframework.security.web.header.HeaderWriterFilter@23595dd9, org.springframework.web.filter.CorsFilter@42010bc8, org.springframework.security.web.authentication.logout.LogoutFilter@30b0d271, com.ehi.iam.security.JwtAuthenticationFilter@4583b617, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@29f94912, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@1e299e3f, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@50b4e828, org.springframework.security.web.session.SessionManagementFilter@69924070, org.springframework.security.web.access.ExceptionTranslationFilter@46969355, org.springframework.security.web.access.intercept.AuthorizationFilter@541c7857]
-2026-06-12T20:06:28.056+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 53749 (http) with context path ''
-2026-06-12T20:06:28.062+04:00  INFO 98010 --- [e-health-insurance-iam] [    Test worker] com.ehi.iam.IamAuthIT                    : Started IamAuthIT in 2.007 seconds (process running for 2.324)
-2026-06-12T20:06:28.111+04:00  INFO 98010 --- [e-health-insurance-iam] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
-2026-06-12T20:06:28.111+04:00  INFO 98010 --- [e-health-insurance-iam] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
-2026-06-12T20:06:28.112+04:00  INFO 98010 --- [e-health-insurance-iam] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
-2026-06-12T20:06:28.556+04:00  WARN 98010 --- [e-health-insurance-iam] [o-auto-1-exec-5] c.e.i.exception.GlobalExceptionHandler   : Business exception: Account is suspended
+2026-06-12T23:00:36.296+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@2488a11, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@8936d23, org.springframework.security.web.context.SecurityContextHolderFilter@22f3a5bc, org.springframework.security.web.header.HeaderWriterFilter@4acbe932, org.springframework.web.filter.CorsFilter@73131043, org.springframework.security.web.authentication.logout.LogoutFilter@37a26221, com.ehi.iam.security.JwtAuthenticationFilter@300aa927, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@16fc5679, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@2b465287, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@5af2bc6, org.springframework.security.web.session.SessionManagementFilter@c1aa8f9, org.springframework.security.web.access.ExceptionTranslationFilter@5d98f014, org.springframework.security.web.access.intercept.AuthorizationFilter@5e04bfe5]
+2026-06-12T23:00:36.485+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 56196 (http) with context path ''
+2026-06-12T23:00:36.491+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] com.ehi.iam.IamAuthIT                    : Started IamAuthIT in 2.436 seconds (process running for 2.84)
+2026-06-12T23:00:36.545+04:00  INFO 22724 --- [e-health-insurance-iam] [o-auto-1-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-06-12T23:00:36.545+04:00  INFO 22724 --- [e-health-insurance-iam] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-06-12T23:00:36.546+04:00  INFO 22724 --- [e-health-insurance-iam] [o-auto-1-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-06-12T23:00:36.691+04:00  INFO 22724 --- [e-health-insurance-iam] [o-auto-1-exec-1] c.ehi.iam.service.impl.AuthServiceImpl   : Registered new user userId=b184a7d0-1456-418e-baa6-42892e533dca, email=it-flow@example.com
+2026-06-12T23:00:36.900+04:00  INFO 22724 --- [e-health-insurance-iam] [o-auto-1-exec-4] c.ehi.iam.service.impl.AuthServiceImpl   : Registered new user userId=746d825c-c75b-4f0c-8f2b-ffa7acfd116f, email=suspended-it@example.com
+2026-06-12T23:00:36.981+04:00  WARN 22724 --- [e-health-insurance-iam] [o-auto-1-exec-5] c.ehi.iam.service.impl.AuthServiceImpl   : Login blocked: account suspended, userId=746d825c-c75b-4f0c-8f2b-ffa7acfd116f
+2026-06-12T23:00:36.982+04:00  WARN 22724 --- [e-health-insurance-iam] [o-auto-1-exec-5] c.e.i.exception.GlobalExceptionHandler   : Business exception: Account is suspended
 </pre>
 </span>
 </div>
@@ -149,7 +165,7 @@ This generated password is for development use only. Your security configuration
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 8:06:28 PM</p>
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 11:00:37 PM</p>
 </div>
 </div>
 </body>

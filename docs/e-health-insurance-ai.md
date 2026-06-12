@@ -59,11 +59,11 @@
 ## Endpoints
 | Method | Path | Description | Auth |
 |---|---|---|---|
-| GET | /api/v1/ai/fraud-checks/{claimId} | Fraud check result | AGENT, ADMIN |
-| GET | /api/v1/ai/risk-profile/{userId} | User risk profile | AGENT, ADMIN |
+| GET | /api/v1/ai/fraud-checks/{claimId} | Fraud check result | STAFF, ADMIN |
+| GET | /api/v1/ai/risk-profile/{userId} | User risk profile | STAFF, ADMIN |
 | POST | /api/v1/ai/chatbot | AI chatbot | CUSTOMER |
 | GET | /api/v1/ai/chatbot/history?sessionId= | Chat history by session | CUSTOMER |
-| POST | /api/v1/ai/claims/{claimId}/analyze | Manual claim analysis | AGENT, ADMIN |
+| POST | /api/v1/ai/claims/{claimId}/analyze | Manual claim analysis | STAFF, ADMIN |
 
 ## Kafka
 - Produces: fraud.detected
@@ -79,7 +79,7 @@
 - Same dependency set as claim, plus `spring-boot-starter-webflux` (for `WebClient` to call the OpenAI API — app remains a servlet/MVC app, webflux is added only as an HTTP client library).
 - `application.yml`: port 8085, `jdbc:postgresql://localhost:5432/ehi_ai`, JWT validation-only (shared secret with iam), Kafka producer (fraud.detected) + consumer (claim.submitted, group-id `ai-service`, trusted packages `com.ehi.infra.event`).
 - AI client config via `openai.*` properties (OpenRouter, OpenAI-compatible): `openai.api-key` (env `OPENROUTER_API_KEY`, blank default), `openai.base-url` (default `https://openrouter.ai/api/v1`), `openai.model` (default `google/gemini-2.5-flash`). Key stored in `e-health-insurance-infra/.env` (auto-loaded by Docker Compose).
-- Step 1 build verification: `./gradlew build` → BUILD SUCCESSFUL.
+- Step 1 build verification: `./gradlew build` → BUILD SUCCESSFUL. `application.yml` uses `ddl-auto: validate` and `show-sql: false`. `build.gradle` includes `runtimeOnly 'org.liquibase:liquibase-core'`.
 - `FraudCheck.flags` stored via `@ElementCollection` (separate collection table `fraud_check_flags`), same pattern as claim's `Claim.fraudFlags`.
 - `RiskProfile` is one row per user (`userId` unique), updated/upserted as new fraud checks and claim decisions come in — aggregated stats rather than per-claim history.
 - `ChatMessage.sessionId` (UUID) groups a multi-turn conversation; `role` kept as plain `String` (not an enum) to map directly to OpenAI's chat message roles ("user"/"assistant"/"system").
@@ -111,8 +111,8 @@
 
 ### Step 8 — Controllers
 - All endpoints corrected to the `/api/v1/` prefix (the earlier `/api/ai/...` paths in the doc were inconsistent with the rest of the project and were fixed here).
-- `FraudController` (`/api/v1/ai`): `GET /fraud-checks/{claimId}` (AGENT/ADMIN) → `fraudDetectionService.getFraudCheck`; `POST /claims/{claimId}/analyze` (AGENT/ADMIN) → `fraudDetectionService.reanalyzeClaim`.
-- `RiskProfileController` (`/api/v1/ai`): `GET /risk-profile/{userId}` (AGENT/ADMIN) → `riskProfileService.getRiskProfile`.
+- `FraudController` (`/api/v1/ai`): `GET /fraud-checks/{claimId}` (STAFF/ADMIN) → `fraudDetectionService.getFraudCheck`; `POST /claims/{claimId}/analyze` (STAFF/ADMIN) → `fraudDetectionService.reanalyzeClaim`.
+- `RiskProfileController` (`/api/v1/ai`): `GET /risk-profile/{userId}` (STAFF/ADMIN) → `riskProfileService.getRiskProfile`.
 - `ChatbotController` (`/api/v1/ai/chatbot`): `POST /` (CUSTOMER) → `chatbotService.sendMessage(userId, request)`; `GET /history?sessionId=` (CUSTOMER) → `chatbotService.getHistory(userId, sessionId)`. `userId` taken from `authentication.getName()` (JWT principal), same pattern as `ClaimController`.
 - Step 8 build verification: `./gradlew compileJava` → BUILD SUCCESSFUL.
 
@@ -132,6 +132,19 @@
 ### Docker
 - Dockerfile (multi-stage, same pattern as claim/payment): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_ai` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`. `openai.*` properties remain env-var driven (`OPENAI_API_KEY`, etc.) — set via docker-compose environment, no profile override needed.
+
+## Logging (SLF4J) — DONE
+
+> Add `@Slf4j` only to the classes below, only the listed lines. `FraudDetectionServiceImpl`,
+> producers, and the consumer already log. Follow the existing convention (parameterized `{}`,
+> `info`/`warn`). Never log full chatbot message bodies (PII) — log ids/lengths only.
+
+- **`ChatbotServiceImpl`** (`@Slf4j`) — covers the "AI failure → raw 500" review finding:
+  - `sendMessage`: `warn` when the `chatCompletion` call fails before the fallback reply —
+    `"Chatbot AI call failed for userId={}, sessionId={}"` (log the exception, not the message text).
+- **`AiClientServiceImpl`** (`@Slf4j`):
+  - `chatCompletion`: `warn` on timeout/HTTP error before propagating — `"OpenRouter call failed
+    (model={})"`. (The fraud path already logs the rule-only fallback; this records the root cause.)
 
 ## Review Findings (see root `check.md` for full detail)
 
@@ -179,8 +192,8 @@ Stack: JUnit 5 + Mockito + AssertJ (unit); MockWebServer for OpenRouter; `@Sprin
   persisted as `ChatMessage` rows; `getHistory` returns mapped `ChatMessageDto`s scoped by
   `sessionId` + `userId`.
 - **`FraudControllerTest` / `RiskProfileControllerTest` / `ChatbotControllerTest`** (`@WebMvcTest`,
-  6 + 4 + 5 tests): fraud-check and risk-profile endpoints are AGENT/ADMIN-only (403 for CUSTOMER);
-  chatbot endpoints are CUSTOMER-only (403 for AGENT); all endpoints reject unauthenticated requests.
+  6 + 4 + 5 tests): fraud-check and risk-profile endpoints are STAFF/ADMIN-only (403 for CUSTOMER);
+  chatbot endpoints are CUSTOMER-only (403 for STAFF); all endpoints reject unauthenticated requests.
 - **`AiFlowIT`** (`@SpringBootTest` + `@EmbeddedKafka` + `ehi_ai_test` DB, 2 tests): publishing
   `ClaimSubmittedEvent` on `claim.submitted` creates a `FraudCheck` row and publishes
   `fraud.detected` with the matching `riskScore` — below-threshold (`ruleScore=0`, no AI call) and

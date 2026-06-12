@@ -1,6 +1,6 @@
 package com.ehi.payment.exception;
 
-import com.ehi.infra.exception.BaseErrorService;
+import com.ehi.infra.exception.base.BaseErrorService;
 
 public enum PaymentErrorEnum implements BaseErrorService {
 

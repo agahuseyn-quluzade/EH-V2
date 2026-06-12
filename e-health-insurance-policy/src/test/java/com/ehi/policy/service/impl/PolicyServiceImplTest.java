@@ -2,7 +2,7 @@ package com.ehi.policy.service.impl;
 
 import com.ehi.infra.enums.PolicyStatus;
 import com.ehi.infra.event.PolicyCreatedEvent;
-import com.ehi.infra.exception.BadRequestException;
+import com.ehi.infra.exception.base.BadRequestException;
 import com.ehi.infra.exception.NotFoundException;
 import com.ehi.policy.dto.request.PurchasePolicyRequest;
 import com.ehi.policy.dto.response.PolicyDto;

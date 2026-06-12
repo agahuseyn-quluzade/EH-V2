@@ -10,6 +10,7 @@ import com.ehi.ai.repository.ChatMessageRepository;
 import com.ehi.ai.service.AiClientService;
 import com.ehi.ai.service.ChatbotService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatbotServiceImpl implements ChatbotService {
@@ -40,7 +42,13 @@ public class ChatbotServiceImpl implements ChatbotService {
         history.forEach(m -> messages.add(new OpenAiMessage(m.getRole(), m.getContent())));
         messages.add(new OpenAiMessage("user", request.message()));
 
-        String reply = aiClientService.chatCompletion(messages);
+        String reply;
+        try {
+            reply = aiClientService.chatCompletion(messages);
+        } catch (Exception e) {
+            log.warn("Chatbot AI call failed for userId={}, sessionId={}", userId, sessionId, e);
+            throw e;
+        }
 
         chatMessageRepository.save(ChatMessage.builder()
                 .userId(userId)

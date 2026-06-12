@@ -1,0 +1,123 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-plans
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: plans
+      changes:
+        - createTable:
+            tableName: plans
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: coverage_amount
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: premium_amount
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: duration_months
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-create-policies
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: policies
+      changes:
+        - createTable:
+            tableName: policies
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: policy_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: plan_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_policies_plan_id
+                    references: plans(id)
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: premium_amount
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: start_date
+                  type: TIMESTAMP(6) WITH TIME ZONE
+              - column:
+                  name: end_date
+                  type: TIMESTAMP(6) WITH TIME ZONE
+              - column:
+                  name: created_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false

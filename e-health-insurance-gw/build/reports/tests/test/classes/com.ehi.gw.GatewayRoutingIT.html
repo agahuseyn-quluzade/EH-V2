@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.482s</div>
+<div class="counter">0.491s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">protectedRoute_withValidToken_forwardsRequest_withUserHeaders()</td>
-<td class="success">0.467s</td>
+<td class="success">0.478s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -89,7 +89,7 @@
 </tr>
 <tr>
 <td class="success">publicAuthRoute_forwardsWithoutToken_toDownstreamService()</td>
-<td class="success">0.010s</td>
+<td class="success">0.008s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -97,8 +97,8 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>21:24:56.592 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ehi.gw.GatewayRoutingIT]: GatewayRoutingIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-21:24:56.617 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.gw.GatewayApplication for test class com.ehi.gw.GatewayRoutingIT
+<pre>22:57:29.867 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ehi.gw.GatewayRoutingIT]: GatewayRoutingIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+22:57:29.896 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.gw.GatewayApplication for test class com.ehi.gw.GatewayRoutingIT
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -108,26 +108,27 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T21:24:56.922+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Starting GatewayRoutingIT using Java 17.0.19 with PID 9544 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-gw)
-2026-06-12T21:24:56.923+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : No active profile set, falling back to 1 default profile: &quot;default&quot;
-2026-06-12T21:24:57.094+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.cloud.context.scope.GenericScope     : BeanFactory id=49a05afb-7a75-343f-85ba-05dd67503a50
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [After]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Before]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Between]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Cookie]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Header]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Host]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Method]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Path]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Query]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [ReadBody]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [RemoteAddr]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [XForwardedRemoteAddr]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Weight]
-2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [CloudFoundryRouteService]
-2026-06-12T21:24:57.410+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 54844
-2026-06-12T21:24:57.428+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Started GatewayRoutingIT in 0.779 seconds (process running for 1.083)
-2026-06-12T21:24:57.783+04:00 ERROR 9544 --- [e-health-insurance-gw] [    Test worker] i.n.r.d.DnsServerAddressStreamProviders  : Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
+2026-06-12T22:57:30.277+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Starting GatewayRoutingIT using Java 17.0.19 with PID 22169 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-gw)
+2026-06-12T22:57:30.278+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2026-06-12T22:57:30.471+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.cloud.context.scope.GenericScope     : BeanFactory id=49a05afb-7a75-343f-85ba-05dd67503a50
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [After]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Before]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Between]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Cookie]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Header]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Host]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Method]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Path]
+2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Query]
+2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [ReadBody]
+2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [RemoteAddr]
+2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [XForwardedRemoteAddr]
+2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Weight]
+2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [CloudFoundryRouteService]
+2026-06-12T22:57:30.796+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 56171
+2026-06-12T22:57:30.815+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Started GatewayRoutingIT in 0.881 seconds (process running for 1.198)
+2026-06-12T22:57:31.174+04:00 ERROR 22169 --- [e-health-insurance-gw] [    Test worker] i.n.r.d.DnsServerAddressStreamProviders  : Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
+2026-06-12T22:57:31.313+04:00  WARN 22169 --- [e-health-insurance-gw] [ctor-http-nio-8] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: GET /api/v1/claims/123 (missing/invalid token)
 </pre>
 </span>
 </div>
@@ -139,7 +140,7 @@
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 9:25:00 PM</p>
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 10:57:33 PM</p>
 </div>
 </div>
 </body>

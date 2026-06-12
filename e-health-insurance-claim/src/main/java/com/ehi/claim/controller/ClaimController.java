@@ -65,14 +65,14 @@ public class ClaimController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('AGENT') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<PagedResponse<ClaimDto>>> getAllClaims(
             @RequestParam(required = false) ClaimStatus status, Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.ok(claimService.getAllClaims(status, pageable)));
     }
 
     @PutMapping("/{id}/review")
-    @PreAuthorize("hasRole('AGENT') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<ClaimDto>> reviewClaim(Authentication authentication,
                                                               @PathVariable UUID id,
                                                               @Valid @RequestBody ReviewClaimRequest request) {
@@ -83,6 +83,6 @@ public class ClaimController {
     private boolean isStaff(Authentication authentication) {
         return authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
-                .anyMatch(authority -> authority.equals("ROLE_AGENT") || authority.equals("ROLE_ADMIN"));
+                .anyMatch(authority -> authority.equals("ROLE_STAFF") || authority.equals("ROLE_ADMIN"));
     }
 }

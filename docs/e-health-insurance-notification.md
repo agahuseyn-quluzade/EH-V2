@@ -61,6 +61,17 @@
 - Dockerfile (multi-stage, same pattern as claim/payment/ai): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_notification` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
 
+## Logging (SLF4J) — DONE
+
+> All 7 consumers, `RetryScheduler`, and `NotificationSender` already log. The only gap is the
+> persisted FAILED outcome in the service layer. Add `@Slf4j` only to `NotificationServiceImpl`,
+> only the line below (avoid duplicating what `NotificationSender` already logs).
+
+- **`NotificationServiceImpl`** (`@Slf4j`):
+  - `send`: `warn` when the notification is saved with status FAILED —
+    `"Notification FAILED: type={}, userId={}, recipient={}"`. Successful sends are already logged by
+    `NotificationSender`, so no extra `info` is needed here.
+
 ## Review Findings (see root `check.md` for full detail)
 
 - 🟢 **`recipient` is a `userId.toString()` placeholder for every event except registration**, so

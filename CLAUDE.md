@@ -207,8 +207,6 @@ gateway (no infra dependency, only routing + JWT filter)
   (`submitClaim`, `reviewClaim`, `applyFraudResult`, `evaluateClaim`, `processPayment`) lack
   `@Transactional` and an outbox — a publish failure after commit diverges state from events.
   Cheap fix: `@Transactional` on the consumer-facing methods. Correct fix: transactional outbox.
-- 🟡 **`ddl-auto: update` + `show-sql: true` everywhere.** Known MVP choice; pre-prod task is to
-  move to Flyway/Liquibase migrations and disable `show-sql`. (This already bites the IAM `active`
-  column, which needs a manual backfill.)
+- 🟡 **`ddl-auto: validate` + `show-sql: false`** is now set in iam, claim, ai, payment, and policy. Only notification still uses `ddl-auto: update`/`show-sql: true`. Pre-prod task: switch notification + add Flyway/Liquibase migrations (Liquibase already on the classpath for iam, claim, ai). The IAM `active` column may still need a backfill: `UPDATE users SET active = true WHERE active IS NULL;`.
 - 🟢 **No pagination caps.** Paginated endpoints bind `Pageable` straight from the request, so
   `?size=100000` is allowed. Add `@PageableDefault` + a max page size project-wide.

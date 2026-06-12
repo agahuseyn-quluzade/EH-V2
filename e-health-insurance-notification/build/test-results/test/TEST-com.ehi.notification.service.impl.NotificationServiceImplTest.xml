@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.service.impl.NotificationServiceImplTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:15:54" hostname="Nijats-MacBook-Pro.local" time="0.022">
+<testsuite name="com.ehi.notification.service.impl.NotificationServiceImplTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.02">
   <properties/>
-  <testcase name="send_savesFailed_whenSenderFails()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.017"/>
-  <testcase name="getAllNotifications_returnsPagedResponse()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.003"/>
-  <testcase name="getMyNotifications_returnsNotifications_scopedByUserId()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.001"/>
-  <testcase name="send_savesPendingThenSent_whenSenderSucceeds()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.001"/>
-  <system-out><![CDATA[]]></system-out>
+  <testcase name="send_savesFailed_whenSenderFails()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.013"/>
+  <testcase name="getAllNotifications_returnsPagedResponse()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.001"/>
+  <testcase name="getMyNotifications_returnsNotifications_scopedByUserId()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.0"/>
+  <testcase name="send_savesPendingThenSent_whenSenderSucceeds()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.004"/>
+  <system-out><![CDATA[2026-06-12T22:56:30.882+04:00  WARN 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.NotificationServiceImpl     : Notification FAILED: type=CLAIM_SUBMITTED, userId=a4ae85d6-388c-43a6-bcbc-029b7fd7bc16, recipient=user@example.com
+]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

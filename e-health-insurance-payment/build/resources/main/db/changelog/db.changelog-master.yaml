@@ -1,0 +1,60 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-payments
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: payments
+      changes:
+        - createTable:
+            tableName: payments
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reference_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: reference_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: transaction_id
+                  type: varchar(255)
+              - column:
+                  name: failure_reason
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false

@@ -84,7 +84,7 @@ class ClaimControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void submitClaim_forbiddenForAgent() throws Exception {
         var request = new SubmitClaimRequest(UUID.randomUUID(), ClaimType.HOSPITALIZATION, BigDecimal.valueOf(500), "Surgery");
 
@@ -105,7 +105,7 @@ class ClaimControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void getAllClaims_allowedForAgent() throws Exception {
         when(claimService.getAllClaims(any(), any())).thenReturn(
                 PagedResponse.<ClaimDto>builder()
@@ -124,7 +124,7 @@ class ClaimControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void reviewClaim_allowedForAgent() throws Exception {
         when(claimService.reviewClaim(any(), any(), any())).thenReturn(stubDto());
 

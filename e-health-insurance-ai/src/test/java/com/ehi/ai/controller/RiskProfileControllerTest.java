@@ -52,7 +52,7 @@ class RiskProfileControllerTest {
     }
 
     @Test
-    @WithMockUser(username = USER_ID, roles = "AGENT")
+    @WithMockUser(username = USER_ID, roles = "STAFF")
     void getRiskProfile_allowedForAgent() throws Exception {
         when(riskProfileService.getRiskProfile(any())).thenReturn(stubResponse());
 

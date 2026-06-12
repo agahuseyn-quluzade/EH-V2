@@ -10,6 +10,7 @@ import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.NotificationChannel;
 import com.ehi.infra.enums.NotificationType;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationServiceImpl implements NotificationService {
@@ -42,6 +44,9 @@ public class NotificationServiceImpl implements NotificationService {
 
         boolean sent = notificationSender.send(notification);
         notification.setStatus(sent ? NotificationStatus.SENT : NotificationStatus.FAILED);
+        if (!sent) {
+            log.warn("Notification FAILED: type={}, userId={}, recipient={}", type, userId, recipient);
+        }
         notification = notificationRepository.save(notification);
 
         return notificationMapper.toDto(notification);

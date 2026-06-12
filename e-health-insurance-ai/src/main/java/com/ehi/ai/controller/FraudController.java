@@ -22,13 +22,13 @@ public class FraudController {
     private final FraudDetectionService fraudDetectionService;
 
     @GetMapping("/fraud-checks/{claimId}")
-    @PreAuthorize("hasRole('AGENT') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<FraudAiResponse>> getFraudCheck(@PathVariable UUID claimId) {
         return ResponseEntity.ok(ApiResponse.ok(fraudDetectionService.getFraudCheck(claimId)));
     }
 
     @PostMapping("/claims/{claimId}/analyze")
-    @PreAuthorize("hasRole('AGENT') or hasRole('ADMIN')")
+    @PreAuthorize("hasRole('STAFF') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<FraudAiResponse>> analyzeClaim(@PathVariable UUID claimId) {
         return ResponseEntity.ok(ApiResponse.ok(fraudDetectionService.reanalyzeClaim(claimId)));
     }

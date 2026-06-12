@@ -9,11 +9,13 @@ import com.ehi.policy.mapper.PlanMapper;
 import com.ehi.policy.repository.PlanRepository;
 import com.ehi.policy.service.PlanService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class PlanServiceImpl implements PlanService {
@@ -50,6 +52,8 @@ public class PlanServiceImpl implements PlanService {
                 .active(true)
                 .build();
 
-        return planMapper.toDto(planRepository.save(plan));
+        PlanDto result = planMapper.toDto(planRepository.save(plan));
+        log.info("Plan created: planId={}, name={}", result.id(), result.name());
+        return result;
     }
 }

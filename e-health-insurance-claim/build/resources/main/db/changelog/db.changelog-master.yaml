@@ -1,0 +1,149 @@
+databaseChangeLog:
+  - changeSet:
+      id: 001-create-claims
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: claims
+      changes:
+        - createTable:
+            tableName: claims
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: claim_number
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: policy_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: claim_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: amount
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: approved_amount
+                  type: numeric(38,2)
+              - column:
+                  name: rejection_reason
+                  type: varchar(255)
+              - column:
+                  name: reviewed_by
+                  type: uuid
+              - column:
+                  name: risk_score
+                  type: int
+              - column:
+                  name: ai_explanation
+                  type: varchar(255)
+              - column:
+                  name: created_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 002-create-claim-evidence
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: claim_evidence
+      changes:
+        - createTable:
+            tableName: claim_evidence
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: claim_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_claim_evidence_claim_id
+                    references: claims(id)
+              - column:
+                  name: file_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file_path
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: content_type
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: uploaded_at
+                  type: TIMESTAMP(6) WITH TIME ZONE
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 003-create-claim-fraud-flags
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: claim_fraud_flags
+      changes:
+        - createTable:
+            tableName: claim_fraud_flags
+            columns:
+              - column:
+                  name: claim_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_claim_fraud_flags_claim_id
+                    references: claims(id)
+              - column:
+                  name: fraud_flags
+                  type: varchar(255)
