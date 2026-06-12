@@ -210,11 +210,14 @@ In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>
   existing fields**: `name`, `description`, `premiumAmount`, `coverageAmount`, `durationMonths`.
   No new backend fields, no new API call. Keep the existing "Sığorta al" (Buy) flow working;
   make sure the details-modal click and the buy-button click don't collide.
-- **"Remove smoke test in the plans":** there is *no* smoke-test code in the frontend. This is a
-  leftover seeded/test plan (a `Plan` literally named e.g. "Smoke Test"/"Test") coming from the
-  DB. Backend is off-limits, so the frontend-only fix is to **filter it out of `activePlans`**
-  (e.g. drop plans whose `name` matches `/smoke|test/i`). ⚠️ Confirm the exact plan name with
-  the user before hardcoding a filter — see Open Questions.
+- **"Remove smoke test in the plans":** there is *no* smoke-test code anywhere (the "smoke test"
+  in the repo docs is the manual end-to-end *test procedure*, not data). The "Smoke Test" plan is a
+  **manually-created row in the `ehi_policy` DB**. **DECISION: fix at the DB level only — no
+  frontend filter, no hardcoding.** Procedure: (1) find the plan id by name in `plans`; (2) check
+  whether any `policies` row references that `plan_id` (including inactive/past) — **if any do, do
+  NOT delete**, report back (orphan / FK risk); (3) only if unreferenced, `DELETE FROM plans WHERE
+  id = <id>`. Show the exact SQL for confirmation before running. **This item is OUT of the
+  frontend change set** — PlansPage code is untouched for it.
 
 ### 6. Admin · AdminDashboardPage (`pages/admin/AdminDashboardPage.tsx`)
 - **Remove statistics entirely** ("statistika endpoint"): delete the info alert at lines ~38-41
@@ -227,12 +230,13 @@ In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>
   import and the queue fetch.
 
 ### 7. Admin · remove claim-review access elsewhere (duplicates of item 6)
-The admin's ability to approve claims is also wired here — remove for consistency:
+**DECISION: remove ONLY claim approval/review for admin — keep all other admin & staff-area
+access (member search, dashboard, plans, policies, users).**
 - `components/Layout.tsx` → `adminNav`: delete the `{ to: "/staff/queue", label: "Baxış növbəsi" }`
-  entry (line ~35).
-- `App.tsx`: drop `"ADMIN"` from the role guards on `/staff/queue` and `/staff/claims/:id`
-  (lines ~63-64). ⚠️ Decide whether ADMIN should keep *any* staff access (`/staff`, `/staff/members`)
-  — see Open Questions. (`homePathForRole` already sends ADMIN to `/admin`, so this is safe.)
+  entry (line ~35). Leave everything else.
+- `App.tsx`: drop `"ADMIN"` from the role guards on **`/staff/queue`** and **`/staff/claims/:id`**
+  only (lines ~63-64). **Do NOT touch `/staff` or `/staff/members`** — ADMIN keeps member search and
+  the staff dashboard. (`homePathForRole` sends ADMIN to `/admin`, so removing the queue is safe.)
 
 ### 8. Admin · AdminUsersPage (`pages/admin/AdminUsersPage.tsx`)
 - In the "Search by ID" card, change the field label **`İstifadəçi ID (UUID)` → `User ID`**
@@ -253,9 +257,11 @@ The admin's ability to approve claims is also wired here — remove for consiste
 - **Notification status badge:** only the member `NotificationsPage` renders it; no staff/admin
   notifications page exists.
 
-### Open Questions (confirm before implementing the ⚠️ items)
-1. Exact name of the "smoke test" plan to filter out of the plans list (item 5).
-2. Should ADMIN lose **all** staff-area access, or only the claim-review queue? (item 7).
+### Open Questions — RESOLVED
+1. ~~Smoke-test plan~~ → **DB-only deletion** (see item 5); not a frontend change. PlansPage code
+   is untouched for it.
+2. ~~Admin staff access~~ → **Remove only the claim-review queue** (`/staff/queue`,
+   `/staff/claims/:id`); ADMIN keeps `/staff` + `/staff/members` (see item 7).
 
 ## Review Findings (see root `check.md` for full detail)
 
