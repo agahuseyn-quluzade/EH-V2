@@ -103,7 +103,7 @@
 - `FraudDetectionService` / `FraudDetectionServiceImpl`:
   - Constants: `AI_TRIGGER_THRESHOLD=40`, `HIGH_RISK_THRESHOLD=70`, `REPEAT_HIGH_RISK_USER_SCORE=20`, `AMOUNT_ABOVE_THRESHOLD_SCORE=40`, `AMOUNT_FAR_ABOVE_THRESHOLD_SCORE=20`.
   - Per-claim-type amount thresholds (`thresholdFor`): HOSPITALIZATION=10000, MEDICATION=2000, DENTAL=1500, CONSULTATION=500.
-  - `evaluateClaim(event)`: rule engine computes `ruleScore` (amount-vs-threshold + repeat-high-risk-user checks, capped at 100, each contributing a flag). If `ruleScore >= AI_TRIGGER_THRESHOLD`, calls OpenAI for a deeper assessment (`AiAssessment` record: `score`, `explanation`, `flags`, parsed from JSON via `ObjectMapper`); on any exception, falls back to rule-only scoring. `finalScore = ruleScore*0.4 + aiScore*0.6` (rounded) when AI ran, else `ruleScore`. Upserts `FraudCheck` by `claimId`. Calls `riskProfileService.recordFraudCheck` only when the `FraudCheck` is newly created (so re-analysis via `reanalyzeClaim` doesn't double-count risk-profile stats). Publishes `FraudDetectedEvent`.
+  - `evaluateClaim(event)`: rule engine computes `ruleScore` (amount-vs-threshold + repeat-high-risk-user checks, capped at 100, each contributing a flag). If `ruleScore >= AI_TRIGGER_THRESHOLD`, calls the LLM for a deeper assessment (`AiAssessment` record: `score`, `explanation`, `flags`, parsed from JSON via `ObjectMapper`); on any exception, falls back to rule-only scoring. The model reply is stripped of markdown code fences (e.g. ` ```json … ``` `) before parsing — Gemini 2.5 Flash wraps JSON in a fenced block, which would otherwise throw `JsonParseException` and silently degrade to rule-only. `finalScore = ruleScore*0.4 + aiScore*0.6` (rounded) when AI ran, else `ruleScore`. Upserts `FraudCheck` by `claimId`. Calls `riskProfileService.recordFraudCheck` only when the `FraudCheck` is newly created (so re-analysis via `reanalyzeClaim` doesn't double-count risk-profile stats). Publishes `FraudDetectedEvent`.
   - `getFraudCheck(claimId)`: throws `NotFoundException` if no `FraudCheck` exists for the claim.
   - `reanalyzeClaim(claimId)`: loads the existing `FraudCheck`, rebuilds a `ClaimSubmittedEvent` from its stored `claimType`/`amount` (this is why those fields were added to `FraudCheck`), and delegates to `evaluateClaim` — avoids a cross-service call back to claim-service for manual re-analysis.
 - `ChatbotService` / `ChatbotServiceImpl`: `SYSTEM_PROMPT` constant sets the assistant's persona (health-insurance helper). `sendMessage(userId, request)`: reuses `request.sessionId()` or generates a new one, loads prior history via `findBySessionIdAndUserIdOrderByCreatedAtAsc`, builds an `OpenAiMessage` list (system prompt + history + new user message), calls `aiClientService.chatCompletion`, persists both the user message and the assistant reply as `ChatMessage` rows, returns `ChatResponse(sessionId, reply, Instant.now())`. `getHistory(userId, sessionId)` maps the same repository query through `ChatMessageMapper`.
@@ -132,3 +132,41 @@
 ### Docker
 - Dockerfile (multi-stage, same pattern as claim/payment): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_ai` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`. `openai.*` properties remain env-var driven (`OPENAI_API_KEY`, etc.) — set via docker-compose environment, no profile override needed.
+
+## Review Findings (see root `check.md` for full detail)
+
+- 🟠 **AI call has no timeout and runs on the Kafka consumer thread.** `AiClientServiceImpl.chatCompletion()`
+  does `.block()` with no `.timeout(...)`, called synchronously from `evaluateClaim` →
+  `ClaimSubmittedEventConsumer`. A hung OpenRouter blocks the consumer and stalls fraud processing
+  for every subsequent claim. Fix: `.timeout(Duration.ofSeconds(15))` (+ connect/response timeouts on
+  the WebClient). The fraud path already falls back to rule-only on exception, so a timeout degrades
+  gracefully — it just needs to fire.
+- 🟡 **Double DB read in `evaluateClaim`.** `findByClaimId` is called twice (once for `isNewCheck`,
+  once for `orElseGet`). Read once and derive `isNewCheck = optional.isEmpty()`.
+- 🟢 **Stale "OpenAI" strings.** `FraudDetectionServiceImpl` still logs `"OpenAI fraud assessment
+  failed..."` after the OpenRouter switch. Cosmetic. (Config keys staying `openai.*` is intentional.)
+- 🟢 **Chatbot AI failure → raw 500.** `ChatbotServiceImpl.sendMessage` doesn't catch
+  `chatCompletion` failures; an LLM outage surfaces as an unhandled 500. A friendly fallback reply is
+  better UX.
+- 🟢 Claim `description` is never sent to the fraud LLM (only type + amount), limiting detection
+  quality.
+
+## Testing (required — not yet implemented)
+
+Stack: JUnit 5 + Mockito + AssertJ (unit); **MockWebServer/WireMock** for OpenRouter; Testcontainers
+Postgres + Kafka (IT).
+- **`FraudDetectionServiceImplTest`** (unit, the core): `computeRuleScore` per-claim-type thresholds
+  (HOSPITALIZATION 10000 / MEDICATION 2000 / DENTAL 1500 / CONSULTATION 500), the above-threshold and
+  far-above-threshold flags, the repeat-high-risk-user bump, and the cap at 100; AI is triggered only
+  at `ruleScore >= 40`; `finalScore = round(rule*0.4 + ai*0.6)` when AI ran, else rule-only;
+  **fallback to rule-only on AI exception**; `recordFraudCheck` is called only when the FraudCheck is
+  newly created (re-analysis doesn't double-count).
+- **AI client** (`AiClientServiceImplTest` with MockWebServer): markdown-fence stripping
+  (` ```json … ``` ` → parsed); empty `choices` → `IllegalStateException`; **timeout fires** (after
+  fix #4) and surfaces as the rule-only fallback.
+- **`RiskProfileServiceImplTest`**: upsert math (running average, highRiskCount increment),
+  `isHighRiskUser` at the threshold of 2, `getRiskProfile` 404 when absent.
+- **`ChatbotServiceImplTest`**: new vs reused `sessionId`; history is scoped by session+user; both
+  user and assistant messages persisted.
+- **`AiFlowIT`** (Testcontainers): publish `ClaimSubmittedEvent` → assert a `FraudCheck` row and a
+  `fraud.detected` event with the combined score.

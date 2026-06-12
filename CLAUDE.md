@@ -4,6 +4,28 @@
 
 E-Health Insurance — microservices backend (Java 17, Spring Boot 3.2.5, Gradle, Kafka, PostgreSQL).
 
+## Scope & Direction
+
+This is a **B2C single-insurer MVP**: the platform *is* the insurer. Customers buy plans,
+submit claims, an AI scores fraud and auto-decides, agents review the uncertain ones.
+Keep it that way — do **not** introduce the multi-tenant model (multiple insurance
+companies, hospitals as providers, doctors, provider contracts, per-company/hospital
+scoping, service-to-service `/internal/*` APIs). The root `apis.md` describes a larger
+"SaglamOL" platform; it is **reference knowledge only** and is intentionally not adopted.
+
+Behaviours already in place (don't re-derive):
+- **Payment flow is automatic.** Purchase policy → Kafka → mock payment completes (~2s) →
+  policy auto-activates (ACTIVE + start/end dates). Claim approval → Kafka → `CLAIM_PAYOUT`
+  payment. The purchase HTTP response returns `PENDING`; re-query a few seconds later.
+- **AI auto-decides claims** on submission via `applyFraudResult` in claim-service:
+  risk score `<40` → auto-APPROVED, `40–69` → UNDER_REVIEW (staff queue), `≥70` →
+  auto-REJECTED. Manual review only overrides UNDER_REVIEW claims.
+
+Planned incremental work (specs live in the per-service docs, not yet built): four IAM
+endpoints (change password, admin change-role, admin suspend/activate, user search) —
+see `docs/e-health-insurance-iam.md` and the frontend wiring in
+`docs/e-health-insurance-frontend.md`, both under "Planned Additions".
+
 ## Repository Structure
 
 Multi-repo: each module below is its own git repository — no monorepo, no Gradle `include()`.
@@ -110,6 +132,22 @@ Update `docs/<service-name>.md`:
 - Paginated lists use `PagedResponse<T>` from infra.
 - Endpoints versioned and prefixed with `/api/v1/` (e.g. `/api/v1/auth/login`).
 
+### Testing
+- **Every microservice must ship with tests.** None exist today (see each `docs/<service>.md`
+  "Testing" section and `check.md`) — this is the biggest structural gap after observability.
+- Stack: **JUnit 5 + Mockito + AssertJ** for unit tests; Spring Boot `@SpringBootTest` +
+  **Testcontainers** (PostgreSQL + Kafka) for integration tests; **MockWebServer/WireMock** for the
+  AI service's OpenRouter calls; **Vitest + React Testing Library + MSW** for the frontend.
+- Unit-test the **service layer** (business rules, decision thresholds, validation, ownership/404
+  logic) with mocked repositories and producers.
+- Integration-test the **event chains**: publish the input event, assert DB state *and* the emitted
+  output event (Testcontainers Kafka or `@EmbeddedKafka`). These are what catch redelivery/ordering
+  regressions like the payment double-charge bug.
+- Tests live under `src/test/java/...` mirroring the main package; name `XxxServiceImplTest`
+  (unit), `XxxControllerTest` (web layer / `@WebMvcTest`), `XxxConsumerIT` / `XxxFlowIT`
+  (integration). `./gradlew test` must pass. Prioritize meaningful coverage of decision logic and
+  consumers over a coverage percentage.
+
 ### Git
 - Do not create `.gitignore`, `README.md`, or CI files unless asked.
 
@@ -139,4 +177,38 @@ gateway (no infra dependency, only routing + JWT filter)
 | Mapping | MapStruct 1.5.5.Final |
 | Gateway | Spring Cloud Gateway |
 | Containers | Docker Compose |
-| AI | OpenAI API (gpt-4o-mini) via WebClient |
+| AI | OpenRouter (OpenAI-compatible API), model `google/gemini-2.5-flash`, via WebClient |
+
+## Known Issues & Tech Debt (cross-cutting)
+
+> Full review with file references and fixes in the root `check.md`. The items below span
+> multiple services; service-specific findings live in each `docs/<service>.md` under
+> "Review Findings". Severity: 🔴 critical · 🟠 high · 🟡 medium · 🟢 low.
+
+- 🔴 **Committed JWT secret / DB creds.** `JWT_SECRET` defaults to the literal
+  `change-me-...` in every `application.yml` and is hardcoded in `docker-compose.yml`; Postgres is
+  `postgres/postgres`. Fine for local dev — but a prod deploy without overriding `JWT_SECRET` lets
+  anyone forge ADMIN tokens. Pre-deploy: inject real secrets via env/secret manager; make the
+  compose default fail-fast when unset.
+- 🟠 **No Kafka error handling / DLT.** No service configures `ErrorHandlingDeserializer`, a
+  `DefaultErrorHandler` with backoff, or a dead-letter topic. A malformed payload can wedge a
+  partition or be silently dropped. Add a shared consumer config (ErrorHandlingDeserializer +
+  `DeadLetterPublishingRecoverer` → `<topic>.DLT` + finite `FixedBackOff`).
+- 🟠 **Double JWT validation; gateway `X-User-*` headers are dead code.** The gateway validates the
+  JWT and injects `X-User-Id`/`X-User-Role`, but no downstream service reads them — each re-parses
+  the `Authorization` header itself. Pick one model: gateway-authoritative (services trust headers,
+  and are only reachable via the gateway) **or** per-service validation (then delete the gateway
+  header injection). If trusting headers, strip client-supplied `X-User-*` first (the gateway
+  currently appends, not replaces).
+- 🟠 **All service ports exposed to host.** `docker-compose.yml` maps `8081..8086`, so services are
+  reachable directly, bypassing the gateway. For non-local, expose only the gateway (`8080`) and
+  frontend; keep services internal.
+- 🟡 **save + publish is not transactional.** Service methods that write then publish a Kafka event
+  (`submitClaim`, `reviewClaim`, `applyFraudResult`, `evaluateClaim`, `processPayment`) lack
+  `@Transactional` and an outbox — a publish failure after commit diverges state from events.
+  Cheap fix: `@Transactional` on the consumer-facing methods. Correct fix: transactional outbox.
+- 🟡 **`ddl-auto: update` + `show-sql: true` everywhere.** Known MVP choice; pre-prod task is to
+  move to Flyway/Liquibase migrations and disable `show-sql`. (This already bites the IAM `active`
+  column, which needs a manual backfill.)
+- 🟢 **No pagination caps.** Paginated endpoints bind `Pageable` straight from the request, so
+  `?size=100000` is allowed. Add `@PageableDefault` + a max page size project-wide.

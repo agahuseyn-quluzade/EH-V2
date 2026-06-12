@@ -31,7 +31,7 @@ export interface UpdateUserRequest {
   lastName: string;
 }
 
-// Backend UserDto: id, email, firstName, lastName, role, createdAt
+// Backend UserDto: id, email, firstName, lastName, role, createdAt, active
 export interface UserProfile {
   id: string;
   email: string;
@@ -40,6 +40,20 @@ export interface UserProfile {
   role: Role;
   createdAt: string;
   updatedAt?: string;
+  active?: boolean;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangeRoleRequest {
+  role: Role;
+}
+
+export interface ChangeStatusRequest {
+  active: boolean;
 }
 
 // ─── Policy ──────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 # e-health-insurance-policy
 
-## Status: DONE
+## Status: DONE (tests complete)
 ## Port: 8082
 ## Database: ehi_policy
 
@@ -92,3 +92,51 @@
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_policy` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
 - Full-stack smoke test (via Docker Compose, gw → iam/policy/claim/payment/ai/notification): register → create plan → purchase policy → policy.created → payment processes POLICY_PREMIUM → payment.completed activates policy → submit claim → ai fraud check → approve claim → payment processes CLAIM_PAYOUT, all verified end-to-end.
 - **Bug fix**: `PolicyServiceImpl.activatePolicy()` threw `LazyInitializationException` on `policy.getPlan().getDurationMonths()` when invoked from `PaymentCompletedEventConsumer` — the repository call's transaction/session closed before the lazy `Plan` proxy was accessed, so policies never activated after payment. Fixed by adding `@Transactional` to `activatePolicy()`.
+
+## Review Findings (see root `check.md` for full detail)
+
+- 🟡 **Cancelling an ACTIVE policy issues no refund.** `cancelPolicy` flips status to CANCELLED; the
+  already-charged premium is never refunded (no REFUND payment emitted). Decide if intended and
+  document.
+- 🟢 **No cap on duplicate purchases.** A customer can buy the same plan repeatedly (N PENDING/ACTIVE
+  policies).
+- 🟢 **`EXPIRED` is never set.** `PolicyStatus.EXPIRED` exists but nothing transitions a policy past
+  its `endDate` — policies stay ACTIVE forever. Missing piece: a scheduled "expire past endDate" job.
+
+## Testing (DONE — 22 tests, all green)
+
+Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + `@EmbeddedKafka` + running Compose
+Postgres (IT).
+
+### Implemented test classes (all passing, 22 tests total)
+
+- **`PlanServiceImplTest`** (4 tests): `createPlan` duplicate-name → `DuplicateResourceException`,
+  new plans start `active=true`; `getActivePlans` returns only active; `getPlanById` 404 on missing.
+- **`PolicyServiceImplTest`** (9 tests): `purchasePolicy` rejects a missing plan (404) and an
+  inactive plan (`BadRequestException`), creates a `PENDING` policy with a `POL-` number, copies the
+  premium, and publishes `PolicyCreatedEvent`; `getPolicyById` ownership → 404 for a non-owner
+  non-admin, admin bypasses ownership; `cancelPolicy` allowed only from PENDING/ACTIVE
+  (`BadRequestException` otherwise); **`activatePolicy` idempotency** — a non-PENDING policy is left
+  unchanged, a PENDING one becomes ACTIVE with `endDate = start + durationMonths`.
+- **`PolicyControllerTest`** (`@WebMvcTest`, 7 tests): public `GET /plans`, ADMIN-only
+  `POST /plans`, CUSTOMER-only `purchasePolicy`, ADMIN-only `getAllPolicies`.
+- **`PolicyActivationIT`** (`@SpringBootTest` + `@EmbeddedKafka` + `ehi_policy_test` DB, 2 tests):
+  publish a `PaymentCompletedEvent` with `referenceType=POLICY_PREMIUM` → assert the policy
+  activates (`ACTIVE`, `startDate`/`endDate` set correctly); a `CLAIM_PAYOUT` event is ignored
+  (policy stays `PENDING`). Guards against the `LazyInitializationException` regression fixed by
+  `@Transactional` on `activatePolicy`.
+
+### Implementation decisions / deviations
+- `@WebMvcTest` doesn't auto-scan `SecurityConfig`, so `PolicyControllerTest` uses an inline
+  `@TestConfiguration @EnableMethodSecurity` + `@MockBean JwtProvider` (same pattern as IAM), with
+  `/api/v1/plans/**` permitted and everything else authenticated. `@WithMockUser(username = "<uuid>")`
+  is required for policy-owning endpoints since `JwtAuthenticationFilter` sets the principal name to
+  the userId (not an email, unlike IAM).
+- `PolicyActivationIT` uses `@EmbeddedKafka` (in-memory broker, `spring-kafka-test`) instead of the
+  Compose Kafka broker — avoids consumer-group/offset coordination with other services and the
+  Testcontainers Docker 29.x incompatibility. `application-it.yml` sets
+  `kafka.bootstrap-servers: ${spring.embedded.kafka.brokers}`. Postgres still uses the running
+  Compose container (`ehi_policy_test` DB, `ddl-auto: create-drop`), same as IAM.
+- `ext['testcontainers.version'] = '1.20.6'` and `org.apache.httpcomponents.client5:httpclient5`
+  carried forward from IAM (kept ready, not directly exercised since IT uses HTTP-free
+  repository/Kafka assertions rather than `TestRestTemplate`).

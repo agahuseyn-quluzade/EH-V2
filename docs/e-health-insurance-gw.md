@@ -59,3 +59,28 @@
 ### Docker
 - Dockerfile (2-stage, no infra dependency): `build` stage compiles `bootJar` with `gradle.properties` removed (container's own JDK 17 used instead), runtime stage `eclipse-temurin:17-jre-jammy`. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` redefines all 8 routes to point at Docker Compose service names (`iam:8081`, `policy:8082`, `claim:8083`, `payment:8084`, `ai:8085`, `notification:8086`) instead of `localhost`, activated via `SPRING_PROFILES_ACTIVE=docker`.
+
+## Review Findings (see root `check.md` and CLAUDE.md cross-cutting for full detail)
+
+- 🟠 **`X-User-Id`/`X-User-Role` injection is dead code** — no downstream service reads them; each
+  re-validates the JWT itself (cross-cutting #6). Decide gateway-trust model. If trusting headers,
+  strip client-supplied `X-User-*` first (the filter currently `.header(...)` appends, not replaces).
+- 🟠 **Services are exposed directly to the host** (cross-cutting #7) — the gateway isn't the sole
+  entry point. Expose only `8080` + frontend in non-local environments.
+- 🟢 **Bare `401` with empty body** on auth failure, vs the structured `ApiResponse` error shape from
+  downstream services. Write a small JSON body for consistency (and so the frontend's `extractError`
+  has a message).
+- ✅ Correct: POST `/api/v1/plans` is **not** public — `public-get-paths` is GET-only, so admin
+  plan-create stays protected.
+
+## Testing (required — not yet implemented)
+
+Stack: JUnit 5 + `WebTestClient` / `@SpringBootTest(webEnvironment=RANDOM_PORT)` (reactive). No
+Postgres/Kafka needed — the gateway is pure routing + filter.
+- **`JwtAuthFilterTest`**: a public path (`/api/v1/auth/**`, GET `/api/v1/plans/**`) passes through
+  without a token; a protected path with no/invalid `Bearer` token → 401; a valid token passes and
+  the request is mutated to carry `X-User-Id`/`X-User-Role`; a **GET-only** public rule does **not**
+  exempt POST `/api/v1/plans`.
+- **`JwtProviderTest`**: valid token → claims extracted; tampered/expired/wrong-secret → invalid.
+- Routing can be asserted with a stubbed downstream (or just verify the filter chain order /
+  `getOrder() == -1`).

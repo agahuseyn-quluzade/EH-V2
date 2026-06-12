@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -142,8 +143,14 @@ public class ClaimServiceImpl implements ClaimService {
             throw new BadRequestException("Decision must be APPROVED or REJECTED");
         }
 
-        if (request.decision() == ClaimStatus.APPROVED && request.approvedAmount() == null) {
-            throw new BadRequestException("approvedAmount is required when approving a claim");
+        if (request.decision() == ClaimStatus.APPROVED) {
+            if (request.approvedAmount() == null) {
+                throw new BadRequestException("approvedAmount is required when approving a claim");
+            }
+            if (request.approvedAmount().compareTo(BigDecimal.ZERO) <= 0
+                    || request.approvedAmount().compareTo(claim.getAmount()) > 0) {
+                throw new BadRequestException("approvedAmount must be between 0 and the claimed amount");
+            }
         }
 
         if (request.decision() == ClaimStatus.REJECTED && request.rejectionReason() == null) {

@@ -1,6 +1,6 @@
 # e-health-insurance-payment
 
-## Status: DONE
+## Status: DONE (tests complete)
 ## Port: 8084
 ## Database: ehi_payment
 
@@ -68,3 +68,71 @@
 - Build verification: `./gradlew build` → BUILD SUCCESSFUL. Service complete.
 - Dockerfile (multi-stage, same pattern as claim): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_payment` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
+
+## Review Findings (see root `check.md` for full detail)
+
+- ✅ **Fixed** — payments were not idempotent (duplicate Kafka delivery = double charge / double
+  payout). `processPayment` now calls
+  `PaymentRepository.findFirstByReferenceIdAndReferenceTypeAndStatusNot(referenceId, referenceType, FAILED)`
+  first — if a non-FAILED payment already exists for that `(referenceId, referenceType)`, it is
+  returned as-is instead of inserting a duplicate. Covered by
+  `PaymentServiceImplTest#processPayment_idempotent_returnsExistingPayment_whenNonFailedPaymentExists`
+  and `#processPayment_createsNew_whenExistingPaymentForReferenceIsFailed`.
+- 🟡 **Async read-after-write race.** `processPayment` saves a PENDING row then hands the id to
+  `@Async MockPaymentProcessor.process`, which `findById`s it; this works only because the 2s sleep
+  masks the commit. With a real fast processor it races. Pass the data into the async call, or make
+  the write transactional and fire the async step after commit (`@TransactionalEventListener`).
+- 🟢 `MockPaymentProcessor` swallows `InterruptedException` and returns, leaving the payment PENDING
+  forever with no retry (acceptable for a mock).
+
+## Testing (DONE — 22 tests, all green)
+
+Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + `@EmbeddedKafka` + running Compose
+Postgres (IT).
+
+### Implemented test classes (all passing, 22 tests total)
+
+- **`PaymentServiceImplTest`** (9 tests): `processPayment` saves PENDING and hands off to
+  `MockPaymentProcessor` for positive amounts; saves FAILED + publishes `PaymentFailedEvent` for
+  zero/negative amounts; **idempotency (fix #1)** — a non-FAILED payment already existing for the
+  same `(referenceId, referenceType)` is returned as-is with no new save/processor call/event, while
+  an existing **FAILED** payment for that reference does not block a new attempt; `getPaymentById`
+  throws `NotFoundException` for a missing payment and for a non-owner non-privileged requester, and
+  succeeds for a privileged requester regardless of owner; `getAllPayments` pagination shape
+  (`PagedResponse` record accessors).
+- **`MockPaymentProcessorTest`** (2 tests): a PENDING payment is completed with a `TXN-` transaction
+  id and `PaymentCompletedEvent` is published; a missing payment id is a no-op (no save, no publish).
+- **`PaymentControllerTest`** (`@WebMvcTest`, 8 tests): `POST /payments/process` is ADMIN-only (200
+  for ADMIN, 403 for CUSTOMER); `GET /payments/me` is CUSTOMER-only (200 for CUSTOMER, 403 for
+  ADMIN); `GET /payments/{id}` (no `@PreAuthorize`) works for any authenticated role and is rejected
+  when unauthenticated; `GET /payments` is ADMIN-only (200 for ADMIN, 403 for CUSTOMER).
+- **`PaymentFlowIT`** (`@SpringBootTest` + `@EmbeddedKafka` + `ehi_payment_test` DB, 3 tests):
+  publishing `PolicyCreatedEvent` results in a COMPLETED `POLICY_PREMIUM` payment (awaiting the 2s
+  async `MockPaymentProcessor`) with `payment.completed` emitted, keyed by `paymentId`, carrying the
+  matching `referenceId`/`referenceType`; an approved `ClaimDecisionEvent` results in a COMPLETED
+  `CLAIM_PAYOUT` payment for the correct user/amount; a `REJECTED` `ClaimDecisionEvent` creates no
+  payment for that `claimId`.
+
+### Implementation decisions / deviations
+- **Fix #1 implemented first** (per check.md 🔴 finding): added
+  `PaymentRepository.findFirstByReferenceIdAndReferenceTypeAndStatusNot(referenceId, referenceType, status)`
+  and, at the top of `processPayment`, return the existing non-FAILED payment for that reference
+  instead of inserting a duplicate — see Review Findings above.
+- `@WebMvcTest` doesn't auto-scan `SecurityConfig`, so `PaymentControllerTest` uses an inline
+  `@TestConfiguration @EnableMethodSecurity` + `@MockBean JwtProvider` (same pattern as
+  IAM/policy/claim), with `.anyRequest().authenticated()` — payment has no public endpoints.
+  `@WithMockUser(username = "<uuid>")` is required since `JwtAuthenticationFilter` sets the principal
+  name to the userId.
+- `PaymentFlowIT` uses `@EmbeddedKafka` (same as `ClaimFlowIT`) with Compose Postgres
+  (`ehi_payment_test` DB, `ddl-auto: create-drop`). To verify the emitted `payment.completed` event,
+  the test creates its own `Consumer<String, Object>` via `DefaultKafkaConsumerFactory`
+  (key=`StringDeserializer`, value=`JsonDeserializer<Object>` with `trustedPackages("*")`) subscribed
+  to `payment.completed`, polling/filtering by `paymentId` key. Payment-status assertions poll
+  `PaymentRepository.findFirstByReferenceIdAndReferenceTypeAndStatusNot(...)` via Awaitility
+  (`Optional` checked with `assertThat(...).isPresent()` rather than `orElseThrow()`, so Awaitility
+  retries instead of failing fast on the first empty poll).
+- `BigDecimal` amount assertions use `isEqualByComparingTo` (not `isEqualTo`) since Postgres returns
+  `150.00` for a stored `150`.
+- `ext['testcontainers.version'] = '1.20.6'`, `org.apache.httpcomponents.client5:httpclient5`, and
+  `spring-kafka-test` carried forward from IAM/policy/claim (testcontainers/httpclient5 kept ready but
+  not directly exercised — IT uses `@EmbeddedKafka` + repository assertions, no `TestRestTemplate`).

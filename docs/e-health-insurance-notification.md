@@ -60,3 +60,28 @@
 - `./gradlew build` passes (BUILD SUCCESSFUL).
 - Dockerfile (multi-stage, same pattern as claim/payment/ai): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_notification` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
+
+## Review Findings (see root `check.md` for full detail)
+
+- 🟢 **`recipient` is a `userId.toString()` placeholder for every event except registration**, so
+  nothing could actually be emailed/SMSed even with a real sender wired in — the channel is
+  non-functional beyond the welcome path. To make it real, notification needs the user's email:
+  either enrich the domain events with it, or consume `user.registered` into a local
+  `{userId → email}` table.
+- 🟢 **Retry scheduler isn't multi-instance safe.** With >1 notification replica, two `RetryScheduler`s
+  would double-send (no locking/`ShedLock`). Note for scaling.
+
+## Testing (required — not yet implemented)
+
+Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + Testcontainers Postgres + Kafka (IT).
+- **Consumer mapping tests** (unit, one per consumer): each event maps to the correct
+  `NotificationType` — `user.registered` → WELCOME (recipient = event email); `policy.created` →
+  POLICY_PENDING; `payment.completed` → POLICY_ACTIVATED (POLICY_PREMIUM) vs PAYMENT_SUCCESS
+  (CLAIM_PAYOUT); `payment.failed` → PAYMENT_FAILED; `claim.submitted` → CLAIM_SUBMITTED;
+  `claim.decision` → CLAIM_APPROVED/CLAIM_REJECTED (ignored otherwise); `fraud.detected` →
+  FRAUD_ALERT **only when riskScore ≥ 70**.
+- **`NotificationSenderTest`**: a "sent" notification is saved as SENT.
+- **`RetrySchedulerTest`**: only FAILED notifications with `retryCount < 3` are retried, and
+  `retryCount` increments each attempt.
+- **`NotificationFlowIT`** (Testcontainers): publish each domain event → assert the persisted
+  notification row.

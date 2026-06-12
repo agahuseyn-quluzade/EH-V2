@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.policy.service.impl.PlanServiceImplTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-12T16:17:00" hostname="Nijats-MacBook-Pro.local" time="0.089">
+  <properties/>
+  <testcase name="getActivePlans_returnsOnlyActivePlans()" classname="com.ehi.policy.service.impl.PlanServiceImplTest" time="0.081"/>
+  <testcase name="getPlanById_throwsNotFound_whenMissing()" classname="com.ehi.policy.service.impl.PlanServiceImplTest" time="0.002"/>
+  <testcase name="createPlan_throwsDuplicateResource_whenNameExists()" classname="com.ehi.policy.service.impl.PlanServiceImplTest" time="0.003"/>
+  <testcase name="createPlan_savesActivePlan_whenNameIsNew()" classname="com.ehi.policy.service.impl.PlanServiceImplTest" time="0.002"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

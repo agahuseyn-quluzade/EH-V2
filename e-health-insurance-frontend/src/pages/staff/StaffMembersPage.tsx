@@ -1,34 +1,37 @@
 import { FormEvent, useState } from "react";
 import { extractError } from "../../api/client";
 import { iamApi } from "../../api/iam";
-import { Badge, Field } from "../../components/ui";
+import { Badge, EmptyState, Field, Spinner } from "../../components/ui";
 import { useToast } from "../../context/ToastContext";
-import { UserProfile } from "../../types";
+import { SpringPage, UserProfile } from "../../types";
 import { formatDateTime, roleLabels } from "../../utils/format";
 
 export function StaffMembersPage() {
   const toast = useToast();
 
-  const [memberId, setMemberId] = useState("");
-  const [member, setMember] = useState<UserProfile | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [searched, setSearched] = useState(false);
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState<SpringPage<UserProfile> | null>(null);
+  const [page, setPage] = useState(0);
+  const [searching, setSearching] = useState(false);
 
-  const onSearch = async (e: FormEvent) => {
-    e.preventDefault();
-    const id = memberId.trim();
-    if (!id) return;
-    setLoading(true);
-    setMember(null);
+  const doSearch = async (p = 0) => {
+    const q = query.trim();
+    if (!q) return;
+    setSearching(true);
     try {
-      const profile = await iamApi.getUser(id);
-      setMember(profile);
+      const res = await iamApi.searchUsers(q, p, 20);
+      setResults(res);
+      setPage(p);
     } catch (err) {
       toast.error(extractError(err));
     } finally {
-      setSearched(true);
-      setLoading(false);
+      setSearching(false);
     }
+  };
+
+  const onSearch = (e: FormEvent) => {
+    e.preventDefault();
+    doSearch(0);
   };
 
   return (
@@ -36,63 +39,97 @@ export function StaffMembersPage() {
       <div className="page-header">
         <div>
           <h1>Üzv axtarışı</h1>
-          <p>İstifadəçi ID ilə üzv məlumatlarını tapın</p>
+          <p>Ad, soyad və ya e-poçt ilə üzv tapın</p>
         </div>
       </div>
 
       <div className="card">
         <form onSubmit={onSearch} style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
           <div style={{ flex: 1 }}>
-            <Field label="Üzv ID (UUID)">
+            <Field label="Axtarış sorğusu">
               <input
-                value={memberId}
-                onChange={(e) => setMemberId(e.target.value)}
-                placeholder="məs: 4f8a2c3e-...-..."
-                className="mono"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Ad, soyad və ya e-poçt"
               />
             </Field>
           </div>
           <button
             className="btn btn-primary"
-            disabled={loading || !memberId.trim()}
+            disabled={searching || !query.trim()}
             style={{ marginBottom: 14 }}
           >
-            {loading ? "Axtarılır..." : "Axtar"}
+            {searching ? "Axtarılır..." : "Axtar"}
           </button>
         </form>
       </div>
 
-      {member && (
-        <div className="card">
-          <div className="card-title">
-            <h2>
-              {member.firstName} {member.lastName}
-            </h2>
-            <Badge status="ACTIVE" label={roleLabels[member.role]} />
-          </div>
-          <dl className="detail-list">
-            <div>
-              <dt>E-poçt</dt>
-              <dd>{member.email}</dd>
-            </div>
-            <div>
-              <dt>Rol</dt>
-              <dd>{roleLabels[member.role]}</dd>
-            </div>
-            <div>
-              <dt>Qeydiyyat</dt>
-              <dd>{formatDateTime(member.createdAt)}</dd>
-            </div>
-            <div>
-              <dt>ID</dt>
-              <dd className="mono">{member.id}</dd>
-            </div>
-          </dl>
-        </div>
-      )}
+      {searching && <Spinner />}
 
-      {searched && !member && !loading && (
-        <div className="alert alert-warning">Bu ID ilə üzv tapılmadı.</div>
+      {results && !searching && (
+        results.content.length === 0 ? (
+          <EmptyState title="Üzv tapılmadı" hint="Başqa sorğu ilə cəhd edin." />
+        ) : (
+          <>
+            <div className="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Ad Soyad</th>
+                    <th>E-poçt</th>
+                    <th>Rol</th>
+                    <th>Status</th>
+                    <th>Qeydiyyat</th>
+                    <th>ID</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {results.content.map((u) => (
+                    <tr key={u.id}>
+                      <td>
+                        {u.firstName} {u.lastName}
+                      </td>
+                      <td>{u.email}</td>
+                      <td>
+                        <Badge status="ACTIVE" label={roleLabels[u.role]} />
+                      </td>
+                      <td>
+                        <Badge
+                          status={u.active === false ? "CANCELLED" : "ACTIVE"}
+                          label={u.active === false ? "Blok" : "Aktiv"}
+                        />
+                      </td>
+                      <td>{formatDateTime(u.createdAt)}</td>
+                      <td className="mono">{u.id.slice(0, 8)}…</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {(results.totalPages ?? 0) > 1 && (
+              <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 16, alignItems: "center" }}>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  disabled={page === 0}
+                  onClick={() => doSearch(page - 1)}
+                >
+                  ← Əvvəlki
+                </button>
+                <span className="muted">
+                  Səhifə {page + 1} / {results.totalPages}
+                </span>
+                <button
+                  className="btn btn-secondary btn-sm"
+                  disabled={page + 1 >= (results.totalPages ?? 0)}
+                  onClick={() => doSearch(page + 1)}
+                >
+                  Növbəti →
+                </button>
+              </div>
+            )}
+          </>
+        )
       )}
     </>
   );

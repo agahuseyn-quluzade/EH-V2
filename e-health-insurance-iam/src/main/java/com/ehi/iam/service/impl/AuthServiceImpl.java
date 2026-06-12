@@ -60,6 +60,10 @@ public class AuthServiceImpl implements AuthService {
             throw new UnauthorizedException("Invalid email or password");
         }
 
+        if (Boolean.FALSE.equals(user.getActive())) {
+            throw new UnauthorizedException("Account is suspended");
+        }
+
         return buildAuthResponse(user);
     }
 

@@ -1,6 +1,6 @@
 # e-health-insurance-iam
 
-## Status: DONE
+## Status: DONE (tests complete)
 ## Port: 8081
 ## Database: ehi_iam
 
@@ -41,9 +41,108 @@
 | GET | /api/v1/users | All users | ADMIN |
 | GET | /api/v1/users/{id} | User by ID | ADMIN, AGENT |
 
+> Four more endpoints are planned but not yet built — see "Planned Additions" below.
+
 ## Kafka
 - Produces: user.registered (`UserRegisteredEventProducer`, `kafka/`, fires from `AuthServiceImpl.register()` after save, key = userId, value = `UserRegisteredEvent`)
 - Consumes: (none)
+
+## Planned Additions (incremental — NOT yet implemented)
+
+> Scope: B2C MVP. Add the following to the existing IAM service only. Gateway already
+> routes `/api/v1/**`, so no gateway change is needed. Follow existing conventions
+> (records for DTOs, `XxxService` interface + `XxxServiceImpl`, infra exceptions,
+> `ApiResponse<T>` wrapping, MapStruct mapper). Build & verify with `./gradlew build`,
+> then rebuild the Docker image and live-test through the gateway on :8080.
+
+### New endpoints
+| Method | Path | Description | Auth |
+|---|---|---|---|
+| POST | /api/v1/users/me/password | Change own password | Bearer (any role) |
+| PATCH | /api/v1/users/{id}/role | Change a user's role | ADMIN |
+| PATCH | /api/v1/users/{id}/status | Suspend / re-activate a user | ADMIN |
+| GET | /api/v1/users/search?query= | Search users by email/name (paginated) | ADMIN, AGENT |
+
+### 1. User entity (`entity/User.java`)
+- Add field:
+  ```java
+  @Builder.Default
+  @Column
+  private Boolean active = true;
+  ```
+- Use a **nullable** column (plain `@Column`, NOT `nullable=false`): Hibernate
+  `ddl-auto=update` cannot add a NOT NULL column to a table that already has rows.
+  Treat `null` as active everywhere (only an explicit `false` blocks login).
+- After deploying, backfill existing rows once:
+  `UPDATE users SET active = true WHERE active IS NULL;`
+
+### 2. UserDto (`dto/response/UserDto.java`)
+- Add `Boolean active` as the last record component. MapStruct `UserMapper` needs no
+  change (direct field-name match).
+
+### 3. New request DTOs (`dto/request/`, records)
+- `ChangePasswordRequest(@NotBlank String currentPassword, @NotBlank String newPassword)`
+  — add `@Size(min = 8)` on `newPassword`.
+- `ChangeRoleRequest(@NotNull UserRole role)` — `UserRole` is the infra enum
+  (`ADMIN`/`AGENT`/`CUSTOMER`); Jackson binds the string value.
+- `ChangeStatusRequest(@NotNull Boolean active)`.
+
+### 4. UserRepository (`repository/UserRepository.java`)
+- Add a search query (email OR first/last name, case-insensitive):
+  ```java
+  @Query("""
+      SELECT u FROM User u
+      WHERE LOWER(u.email) LIKE LOWER(CONCAT('%', :q, '%'))
+         OR LOWER(u.firstName) LIKE LOWER(CONCAT('%', :q, '%'))
+         OR LOWER(u.lastName) LIKE LOWER(CONCAT('%', :q, '%'))
+      """)
+  Page<User> search(@Param("q") String q, Pageable pageable);
+  ```
+
+### 5. UserService / UserServiceImpl
+- Inject `PasswordEncoder` into `UserServiceImpl` (the `BCryptPasswordEncoder` bean
+  already exists in `SecurityConfig`).
+- Add methods:
+  - `UserDto changePassword(String email, ChangePasswordRequest req)` — load by email
+    (`authentication.getName()` is the **email** in IAM, unlike other services where it
+    is the userId); if `!passwordEncoder.matches(req.currentPassword(), user.getPassword())`
+    throw `BadRequestException("Current password is incorrect")`; else set
+    `passwordEncoder.encode(req.newPassword())`, save, return dto.
+  - `UserDto changeRole(UUID id, UserRole role)` — load by id (`NotFoundException` if
+    missing), set role, save, return dto.
+  - `UserDto changeStatus(UUID id, Boolean active)` — load by id, set active, save,
+    return dto.
+  - `PagedResponse<UserDto> searchUsers(String query, Pageable pageable)` — mirror the
+    existing `getAllUsers` paging code but call `userRepository.search(query, pageable)`.
+
+### 6. UserController (`controller/UserController.java`)
+- `POST /me/password` — `Authentication` + `@Valid ChangePasswordRequest` →
+  `userService.changePassword(authentication.getName(), req)`. No `@PreAuthorize`
+  (any authenticated user).
+- `PATCH /{id}/role` — `@PreAuthorize("hasRole('ADMIN')")`, `@PathVariable UUID id` +
+  `@Valid ChangeRoleRequest` → `userService.changeRole(id, req.role())`.
+- `PATCH /{id}/status` — `@PreAuthorize("hasRole('ADMIN')")` →
+  `userService.changeStatus(id, req.active())`.
+- `GET /search` — `@PreAuthorize("hasRole('ADMIN') or hasRole('AGENT')")`,
+  `@RequestParam String query`, `Pageable` → `ApiResponse<PagedResponse<UserDto>>`.
+
+### 7. AuthServiceImpl (`service/impl/AuthServiceImpl.java`)
+- In `login(...)`, after the password check passes, reject suspended users:
+  ```java
+  if (Boolean.FALSE.equals(user.getActive())) {
+      throw new UnauthorizedException("Account is suspended");
+  }
+  ```
+- In `register(...)`, the `@Builder.Default` already sets `active = true`; no change
+  needed beyond confirming the builder keeps it.
+
+### Notes / deliberately skipped
+- **No server-side logout.** Tokens are stateless JWTs; logout stays client-side
+  (frontend clears localStorage). Adding token revocation would need a refresh-token
+  store — over-engineering for the MVP.
+- **No email password-reset** (`reset-request`/`reset-confirm`) — needs SMTP infra.
+- **No self-guard** on role/status changes (admin demoting/suspending themselves) — keep
+  it simple; the frontend simply won't surface those actions for the current user.
 
 ## Decisions & Notes
 - Package root: `com.ehi.iam`.
@@ -69,3 +168,43 @@
 - Step 10 (Build & verify): `./gradlew build` → BUILD SUCCESSFUL (compile, processResources, classes, bootJar, jar, assemble all pass; no test sources yet so `test`/`check` are NO-SOURCE/UP-TO-DATE). A full `bootRun` smoke test was not run since this environment has no local Postgres (`ehi_iam` on 5432) or Kafka (9092) available — needed once those are provisioned (e.g. via docker-compose).
 - Dockerfile (multi-stage): an `infra-build` stage builds+publishes `e-health-insurance-infra` (provided via Compose's `additional_contexts: infra`) to `/root/.m2`, a `build` stage compiles this service's `bootJar` against that local repo, and the runtime stage is `eclipse-temurin:17-jre-jammy`. `gradle.properties` (host-only JDK path) is deleted before building so the container's own JDK 17 is used. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_iam` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker` in docker-compose.
+
+## Review Findings (see root `check.md` for full detail)
+
+- 🟡 **No self-guard on role/status change.** `changeRole`/`changeStatus` let an ADMIN demote or
+  suspend themselves (frontend hides it, API allows it). Add `if (id.equals(currentUserId)) throw ...`
+  so it can't be done by hand. (Documented as deliberately skipped in "Planned Additions"; revisit.)
+- 🟢 **`search` Pageable uncapped** — `?size=100000` is allowed. Add `@PageableDefault(size=20)` + a
+  max (applies to `getAllUsers` too; cross-cutting).
+- 🟢 MapStruct `UserMapper` maps the new `active` field by name (compiles, so confirmed); `UserDto`
+  correctly omits `password`.
+
+## Testing (DONE — 30 tests, all green)
+
+Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + running Compose Postgres (IT).
+
+### Implemented test classes (all passing, 30 tests total)
+
+- **`AuthServiceImplTest`** (8 tests): `register` hashes password + defaults CUSTOMER + throws
+  `DuplicateResourceException` on dupe email + publishes `UserRegisteredEvent`; `login` throws
+  `UnauthorizedException` on bad credentials and on suspended user; `refresh` validates token.
+- **`UserServiceImplTest`** (6 tests): `changePassword` rejects wrong current password
+  (`BadRequestException`) and encodes the new one; `changeRole`/`changeStatus` 404 on missing id;
+  `searchUsers` paging shape; `getCurrentUser` resolves by email.
+- **`JwtProviderTest`** (4 tests): access/refresh tokens carry `userId`/`role` claims and validate;
+  token signed with wrong secret rejected; malformed token rejected.
+- **`UserControllerTest`** (`@WebMvcTest`, 9 tests): ADMIN-only on `/{id}/role` and `/{id}/status`;
+  ADMIN/AGENT on `/search`; any authenticated user on `/me/password`; unauthenticated blocked.
+- **`IamAuthIT`** (`@SpringBootTest` + `ehi_iam_test` DB, 2 tests): register → login → `/users/me`
+  full HTTP flow; suspended user → 401 on login.
+
+### Implementation decisions / deviations
+- `@WebMvcTest` doesn't auto-scan `SecurityConfig` so uses inline `@TestConfiguration
+  @EnableMethodSecurity` + `@MockBean JwtProvider` to wire method security without the real JWT
+  filter chain.
+- IT test uses the already-running Compose PostgreSQL (`ehi_iam_test` DB, `ddl-auto: create-drop`)
+  rather than Testcontainers — docker-java 3.4.1 has a known HTTP/2 incompatibility with Docker
+  Engine 29.x that returns 400 from the Unix socket. `ext['testcontainers.version'] = '1.20.6'`
+  is set for future use when the socket issue is resolved.
+- Added `org.apache.httpcomponents.client5:httpclient5` to testImplementation so `TestRestTemplate`
+  uses Apache HttpClient instead of Java's URLConnection (avoids `HttpRetryException` on 401 POST).

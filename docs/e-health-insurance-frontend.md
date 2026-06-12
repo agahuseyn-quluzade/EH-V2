@@ -97,3 +97,84 @@ Per project decision: these are **not implemented**. The corresponding frontend 
 
 ### Auth
 - **Refresh token rotation** — `POST /api/v1/auth/refresh` exists and is called, but the IAM service may not implement token revocation; logout is client-side only.
+
+## Planned Additions (incremental — wire after IAM backend is built)
+
+> Depends on the four new IAM endpoints in `docs/e-health-insurance-iam.md` →
+> "Planned Additions". Build the backend first, then wire the frontend below.
+> Verify with `tsc -b --noEmit` (run from the frontend dir; the binary lives at
+> `node_modules/.bin/tsc`). These REPLACE the corresponding gaps noted above
+> (the "no role change endpoint" and AdminUsersPage limitations).
+
+### Types (`src/types.ts`)
+- Add `active?: boolean` to `UserProfile` (backend `UserDto` will include it; treat
+  missing/undefined as active).
+- Add request types:
+  ```ts
+  export interface ChangePasswordRequest { currentPassword: string; newPassword: string; }
+  export interface ChangeRoleRequest { role: Role; }
+  export interface ChangeStatusRequest { active: boolean; }
+  ```
+
+### API client (`src/api/iam.ts`)
+- Add to `iamApi` (ROOT is already `/api/v1`):
+  ```ts
+  changePassword: (body: ChangePasswordRequest) =>
+    api.post<void>(`${ROOT}/users/me/password`, body).then((r) => r.data),
+
+  changeRole: (id: string, body: ChangeRoleRequest) =>
+    api.patch<UserProfile>(`${ROOT}/users/${id}/role`, body).then((r) => r.data),
+
+  changeStatus: (id: string, body: ChangeStatusRequest) =>
+    api.patch<UserProfile>(`${ROOT}/users/${id}/status`, body).then((r) => r.data),
+
+  searchUsers: (query: string, page = 0, size = 20) =>
+    api.get<SpringPage<UserProfile>>(
+      `${ROOT}/users/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`
+    ).then((r) => r.data),
+  ```
+  (`SpringPage<T>` is already defined in `types.ts` and used by claim/policy modules.)
+
+### ProfilePage (`src/pages/member/ProfilePage.tsx`)
+- Add a "Şifrəni dəyiş" (change password) card/form: `currentPassword`, `newPassword`,
+  `newPasswordConfirm` fields. Validate `newPassword.length >= 8` and the confirm match
+  client-side, then call `iamApi.changePassword({ currentPassword, newPassword })`.
+  Toast success "Şifrə yeniləndi"; on error use `extractError`.
+
+### AdminUsersPage (`src/pages/admin/AdminUsersPage.tsx`)
+- **Remove** the info banner that says role change / user list aren't supported.
+- Add a **search box** using `iamApi.searchUsers(query)` → render a paginated table
+  (reuse the pagination pattern from `AdminPoliciesPage`). Keep the existing
+  lookup-by-UUID as a fallback if desired.
+- Per row / on the detail card, add:
+  - a **role dropdown** (`CUSTOMER` / `AGENT` / `ADMIN` from `roleLabels`) that calls
+    `iamApi.changeRole(id, { role })` and refreshes;
+  - a **suspend/activate toggle** that calls `iamApi.changeStatus(id, { active: !active })`;
+    show an active/suspended badge driven by `user.active` (undefined ⇒ active).
+- Do not surface role/status actions for the currently logged-in admin (the backend has
+  no self-guard; avoid letting an admin lock themselves out from the UI).
+
+### StaffMembersPage (`src/pages/staff/StaffMembersPage.tsx`)
+- Optionally upgrade the UUID-only lookup to use `iamApi.searchUsers(query)` (AGENT is
+  allowed on `/users/search`). Read-only — no role/status controls for agents.
+
+## Review Findings (see root `check.md` for full detail)
+
+- 🟢 The gateway returns a bare `401` with an empty body (see gw doc), so `extractError` should keep
+  a sensible fallback message for empty-body error responses.
+- 🟢 `ApiResponse` unwrap and pagination handling are consistent; no functional issues found.
+
+## Testing (required — not yet implemented)
+
+Stack: **Vitest + React Testing Library + MSW** (mock the gateway at the network layer).
+- **API modules** (`src/api/*.ts`): `client.ts` unwraps `ApiResponse<T>` to `T`, decodes the
+  `userId` JWT claim, and routes 401s to `onAuthFailure`; `iam.ts`/`policy.ts`/`claim.ts` hit the
+  correct `/api/v1/...` paths with the right verbs (e.g. `changeRole` → PATCH `/users/{id}/role`).
+- **Auth/role flows**: `AuthContext` login stores tokens and resolves the role;
+  `homePathForRole` maps CUSTOMER→/dashboard, AGENT→/staff, ADMIN→/admin; route guards block the
+  wrong role.
+- **Key pages** (with MSW): `ProfilePage` change-password client validation (min 8, confirm match);
+  `AdminUsersPage` search → role dropdown → suspend toggle, and the **self-guard** (no
+  role/status controls on the current admin's own row); claim submit and review happy paths.
+- `extractError` falls back to a sensible message on an empty-body 401 (the gateway case).
+- Keep the existing `tsc -b --noEmit` as the type gate in addition to the test suite.

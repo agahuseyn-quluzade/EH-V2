@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -31,6 +32,12 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public PaymentDto processPayment(UUID userId, UUID referenceId, PaymentReferenceType referenceType, BigDecimal amount) {
+        Optional<Payment> existing = paymentRepository.findFirstByReferenceIdAndReferenceTypeAndStatusNot(
+                referenceId, referenceType, PaymentStatus.FAILED);
+        if (existing.isPresent()) {
+            return paymentMapper.toDto(existing.get());
+        }
+
         Payment payment = Payment.builder()
                 .userId(userId)
                 .referenceId(referenceId)

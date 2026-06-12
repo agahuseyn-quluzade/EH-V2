@@ -13,6 +13,9 @@ export function ProfilePage() {
   const [form, setForm] = useState({ firstName: "", lastName: "" });
   const [saving, setSaving] = useState(false);
 
+  const [pwForm, setPwForm] = useState({ currentPassword: "", newPassword: "", confirmPassword: "" });
+  const [pwSaving, setPwSaving] = useState(false);
+
   useEffect(() => {
     if (user) {
       setForm({ firstName: user.firstName, lastName: user.lastName });
@@ -38,6 +41,31 @@ export function ProfilePage() {
     }
   };
 
+  const onChangePassword = async (e: FormEvent) => {
+    e.preventDefault();
+    if (pwForm.newPassword.length < 8) {
+      toast.error("Yeni şifrə ən az 8 simvol olmalıdır");
+      return;
+    }
+    if (pwForm.newPassword !== pwForm.confirmPassword) {
+      toast.error("Yeni şifrələr uyğun gəlmir");
+      return;
+    }
+    setPwSaving(true);
+    try {
+      await iamApi.changePassword({
+        currentPassword: pwForm.currentPassword,
+        newPassword: pwForm.newPassword,
+      });
+      toast.success("Şifrə yeniləndi");
+      setPwForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
+    } catch (err) {
+      toast.error(extractError(err));
+    } finally {
+      setPwSaving(false);
+    }
+  };
+
   return (
     <>
       <div className="page-header">
@@ -48,31 +76,67 @@ export function ProfilePage() {
       </div>
 
       <div className="grid grid-2" style={{ alignItems: "start" }}>
-        <div className="card">
-          <h2>Məlumatları redaktə et</h2>
-          <form onSubmit={onSave}>
-            <div className="form-row">
-              <Field label="Ad" required>
+        <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
+          <div className="card">
+            <h2>Məlumatları redaktə et</h2>
+            <form onSubmit={onSave}>
+              <div className="form-row">
+                <Field label="Ad" required>
+                  <input
+                    value={form.firstName}
+                    onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                    required
+                    maxLength={100}
+                  />
+                </Field>
+                <Field label="Soyad" required>
+                  <input
+                    value={form.lastName}
+                    onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                    required
+                    maxLength={100}
+                  />
+                </Field>
+              </div>
+              <button className="btn btn-primary" disabled={saving}>
+                {saving ? "Yadda saxlanılır..." : "Yadda saxla"}
+              </button>
+            </form>
+          </div>
+
+          <div className="card">
+            <h2>Şifrəni dəyiş</h2>
+            <form onSubmit={onChangePassword}>
+              <Field label="Cari şifrə" required>
                 <input
-                  value={form.firstName}
-                  onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
+                  type="password"
+                  value={pwForm.currentPassword}
+                  onChange={(e) => setPwForm((f) => ({ ...f, currentPassword: e.target.value }))}
                   required
-                  maxLength={100}
                 />
               </Field>
-              <Field label="Soyad" required>
+              <Field label="Yeni şifrə" required>
                 <input
-                  value={form.lastName}
-                  onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
+                  type="password"
+                  value={pwForm.newPassword}
+                  onChange={(e) => setPwForm((f) => ({ ...f, newPassword: e.target.value }))}
                   required
-                  maxLength={100}
+                  minLength={8}
                 />
               </Field>
-            </div>
-            <button className="btn btn-primary" disabled={saving}>
-              {saving ? "Yadda saxlanılır..." : "Yadda saxla"}
-            </button>
-          </form>
+              <Field label="Yeni şifrəni təsdiqlə" required>
+                <input
+                  type="password"
+                  value={pwForm.confirmPassword}
+                  onChange={(e) => setPwForm((f) => ({ ...f, confirmPassword: e.target.value }))}
+                  required
+                />
+              </Field>
+              <button className="btn btn-primary" disabled={pwSaving}>
+                {pwSaving ? "Yenilənir..." : "Şifrəni yenilə"}
+              </button>
+            </form>
+          </div>
         </div>
 
         <div className="card">

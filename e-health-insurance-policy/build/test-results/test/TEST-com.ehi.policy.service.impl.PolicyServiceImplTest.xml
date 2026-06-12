@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.policy.service.impl.PolicyServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-12T16:17:00" hostname="Nijats-MacBook-Pro.local" time="0.093">
+  <properties/>
+  <testcase name="cancelPolicy_throwsBadRequest_whenAlreadyCancelled()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.079"/>
+  <testcase name="getPolicyById_returnsPolicy_forAdmin_regardlessOfOwner()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
+  <testcase name="purchasePolicy_throwsBadRequest_whenPlanInactive()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
+  <testcase name="cancelPolicy_allowsFromPendingOrActive()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.002"/>
+  <testcase name="purchasePolicy_createsPendingPolicy_copiesPremium_andPublishesEvent()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.004"/>
+  <testcase name="activatePolicy_activatesPendingPolicy_withEndDateFromDuration()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
+  <testcase name="activatePolicy_skipsNonPendingPolicy()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
+  <testcase name="getPolicyById_throwsNotFound_whenNonOwnerNonAdmin()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
+  <testcase name="purchasePolicy_throwsNotFound_whenPlanMissing()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

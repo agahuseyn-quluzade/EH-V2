@@ -1,0 +1,15 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ehi_iam_test
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  kafka:
+    bootstrap-servers: localhost:9999
+jwt:
+  secret: test-secret-key-that-is-at-least-256-bits-long-for-hmacsha256-tests-ok
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000

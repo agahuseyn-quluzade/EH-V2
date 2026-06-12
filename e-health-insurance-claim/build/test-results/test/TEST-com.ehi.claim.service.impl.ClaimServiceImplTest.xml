@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.claim.service.impl.ClaimServiceImplTest" tests="14" skipped="0" failures="0" errors="0" timestamp="2026-06-12T16:32:25" hostname="Nijats-MacBook-Pro.local" time="0.159">
+  <properties/>
+  <testcase name="applyFraudResult_midScore_setsUnderReview_andPublishesNoDecisionEvent()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.124"/>
+  <testcase name="applyFraudResult_highScore_autoRejects_andPublishesEvent()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.001"/>
+  <testcase name="reviewClaim_throwsBadRequest_whenApprovedAmountNotPositive()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.001"/>
+  <testcase name="reviewClaim_throwsBadRequest_whenRejectionReasonMissing()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.001"/>
+  <testcase name="uploadEvidence_throwsNotFound_whenNonOwnerNonPrivileged()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.017"/>
+  <testcase name="applyFraudResult_lowScore_autoApproves_withFullAmount_andPublishesEvent()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.002"/>
+  <testcase name="submitClaim_setsSubmittedStatus_generatesClmNumber_andPublishesEvent()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.002"/>
+  <testcase name="reviewClaim_throwsBadRequest_whenApprovedAmountMissing()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.001"/>
+  <testcase name="applyFraudResult_skipsNonSubmittedClaim_noOverwrite()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.001"/>
+  <testcase name="reviewClaim_throwsBadRequest_whenStatusNotReviewable()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.001"/>
+  <testcase name="reviewClaim_approves_setsFields_andPublishesDecisionEvent()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.001"/>
+  <testcase name="getClaimById_allowsPrivilegedRequester_regardlessOfOwner()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.0"/>
+  <testcase name="getClaimById_throwsNotFound_whenNonOwnerNonPrivileged()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.0"/>
+  <testcase name="reviewClaim_throwsBadRequest_whenApprovedAmountExceedsClaimAmount()" classname="com.ehi.claim.service.impl.ClaimServiceImplTest" time="0.0"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

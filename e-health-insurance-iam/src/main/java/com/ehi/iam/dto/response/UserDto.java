@@ -13,6 +13,7 @@ public record UserDto(
         String firstName,
         String lastName,
         UserRole role,
-        Instant createdAt
+        Instant createdAt,
+        Boolean active
 ) {
 }

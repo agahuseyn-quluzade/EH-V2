@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.iam.service.impl.AuthServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-12T16:06:28" hostname="Nijats-MacBook-Pro.local" time="0.066">
+  <properties/>
+  <testcase name="login_throwsUnauthorized_whenUserSuspended()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.055"/>
+  <testcase name="login_throwsUnauthorized_whenPasswordWrong()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
+  <testcase name="register_throwsDuplicateResourceException_whenEmailExists()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
+  <testcase name="login_succeeds_forActiveUser()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
+  <testcase name="register_hashesPassword_andDefaultsToCustomer()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.004"/>
+  <testcase name="refresh_throwsUnauthorized_whenTokenInvalid()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
+  <testcase name="refresh_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
+  <testcase name="register_publishesUserRegisteredEvent()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
+  <testcase name="login_throwsUnauthorized_whenEmailNotFound()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
