@@ -158,6 +158,105 @@ Per project decision: these are **not implemented**. The corresponding frontend 
 - Optionally upgrade the UUID-only lookup to use `iamApi.searchUsers(query)` (STAFF is
   allowed on `/users/search`). Read-only — no role/status controls for agents.
 
+## UI Cleanup & English Localization (Planned — frontend only, NO backend changes)
+
+> Scope: presentation only. Do **not** add/remove/rename any backend field, DTO, endpoint,
+> or API call. Keep all existing data fetches; only change what is rendered and the language.
+> Type gate after the work: `node_modules/.bin/tsc -b --noEmit` (run from the frontend dir).
+
+### 0. Global — translate the whole UI to English
+Every Azerbaijani string in `src/**` becomes English: page headers, buttons, table headers,
+form labels/placeholders, toasts, alerts, empty/error states, and the comments that label
+sections. Touch all pages under `pages/{auth,public,member,staff,admin}`, plus
+`components/Layout.tsx`, `components/ui.tsx`, `context/*`.
+- `src/utils/format.ts`:
+  - Switch locales `"az-Latn-AZ"` → `"en-US"` in `money`, `formatDate`, `formatDateTime`
+    (keep `currency: "AZN"` — amounts are still AZN).
+  - `roleLabels`: Customer / Agent / Administrator.
+  - `policyStatusLabels`: Pending / Active / Cancelled.
+  - `claimStatusLabels`: Submitted / Under review / Approved / Rejected.
+  - `notificationStatusLabels`: Pending / Sent / Failed.
+  - `claimTypeLabels`: Hospitalization / Medication / Dental / Consultation.
+- `Layout.tsx`: brand "E-Sağlamlıq" → "E-Health", "Sığorta Platforması" → "Insurance Platform",
+  all `*Nav` labels, "Çıxış" → "Log out", "İstifadəçi" → "User".
+
+### 1. Member · ProfilePage (`pages/member/ProfilePage.tsx`)
+In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>` at lines ~143-163):
+- **Remove the "Rol" row** (the `<dt>Rol</dt>` block with the role `<Badge>`).
+- **Remove the "İstifadəçi ID" row** (the `<dt>İstifadəçi ID</dt>` block showing `user.id`).
+- Drop the now-unused `roleLabels` / `Badge` imports if nothing else uses them.
+- Keep E-mail and Registration date rows.
+
+### 2. Member · NotificationsPage (`pages/member/NotificationsPage.tsx`)
+- **Remove the status `<Badge>`** (the "Göndərilib"/Sent badge) from each notification row
+  (lines ~67-71). Keep the timestamp. Drop the `notificationStatusLabels` import (and `Badge`
+  if unused).
+
+### 3. Member · ChatPage (`pages/member/ChatPage.tsx`)
+- **Delete the header subtitle** `<p>Sığorta ilə bağlı suallarınızı verin</p>` (line ~64).
+  Keep the title (→ "AI Assistant"). (The big empty-state example text in the chat body is
+  separate — leave it, just translate it.)
+
+### 4. Member · ClaimsPage (`pages/member/ClaimsPage.tsx`)
+- **Remove the `SUBMITTED` filter button** — delete the `{ value: "SUBMITTED", label: ... }`
+  entry from the `FILTERS` array (line ~11). Rationale: AI auto-decides on submit, so claims
+  effectively never sit in `SUBMITTED`; the filter is dead. Leave the `Badge`/label mapping in
+  place (still referenced by `claimStatusLabels`).
+
+### 5. Member · PlansPage (`pages/member/PlansPage.tsx`) — plan-details popup
+- Keep the short `plan.description` on the card.
+- Make each plan card **clickable** (or add a small "Details" link/button) that opens a small
+  `Modal` (already imported in this file) showing that plan's full details — using **only the
+  existing fields**: `name`, `description`, `premiumAmount`, `coverageAmount`, `durationMonths`.
+  No new backend fields, no new API call. Keep the existing "Sığorta al" (Buy) flow working;
+  make sure the details-modal click and the buy-button click don't collide.
+- **"Remove smoke test in the plans":** there is *no* smoke-test code in the frontend. This is a
+  leftover seeded/test plan (a `Plan` literally named e.g. "Smoke Test"/"Test") coming from the
+  DB. Backend is off-limits, so the frontend-only fix is to **filter it out of `activePlans`**
+  (e.g. drop plans whose `name` matches `/smoke|test/i`). ⚠️ Confirm the exact plan name with
+  the user before hardcoding a filter — see Open Questions.
+
+### 6. Admin · AdminDashboardPage (`pages/admin/AdminDashboardPage.tsx`)
+- **Remove statistics entirely** ("statistika endpoint"): delete the info alert at lines ~38-41
+  ("Statistika endpoint-i ... dəstəklənmir") **and** the three `StatCard`s grid (lines ~43-60).
+  Remove the now-dead state/fetch they depended on (`plans`, `queue`, the `Promise.allSettled`)
+  unless still needed by item below.
+- **Remove the claim-approval access** ("claim təsdiq et" function): delete the
+  "🗂️ Baxış növbəsi" quick-link (lines ~74-76). After this the page is just the title +
+  "Quick links" (Plan management, Policies, Users). If nothing else needs `claimApi`, remove its
+  import and the queue fetch.
+
+### 7. Admin · remove claim-review access elsewhere (duplicates of item 6)
+The admin's ability to approve claims is also wired here — remove for consistency:
+- `components/Layout.tsx` → `adminNav`: delete the `{ to: "/staff/queue", label: "Baxış növbəsi" }`
+  entry (line ~35).
+- `App.tsx`: drop `"ADMIN"` from the role guards on `/staff/queue` and `/staff/claims/:id`
+  (lines ~63-64). ⚠️ Decide whether ADMIN should keep *any* staff access (`/staff`, `/staff/members`)
+  — see Open Questions. (`homePathForRole` already sends ADMIN to `/admin`, so this is safe.)
+
+### 8. Admin · AdminUsersPage (`pages/admin/AdminUsersPage.tsx`)
+- In the "Search by ID" card, change the field label **`İstifadəçi ID (UUID)` → `User ID`**
+  (drop the "(UUID)" parenthetical only — line ~225). No other change; the lookup still works.
+
+### Duplicate-logic audit (where the same removed concept appears elsewhere — for awareness)
+- **Role shown elsewhere:** the sidebar user chip (`Layout.tsx` line ~85) and the AdminUsers
+  management table also render the role. The user only asked to remove it from the **member
+  profile** card — leave the sidebar chip and the admin management table (the table is the role
+  *management* control). Translate them, don't remove.
+- **"User ID" shown elsewhere:** `StaffClaimReviewPage` shows the claimant's `userId` (line ~110)
+  and `StaffClaimReviewPage`/admin show policy/claim IDs — these are operational identifiers for
+  agents, a different context from the member's own-profile ID. Out of scope; leave them.
+- **`SUBMITTED` ("Təqdim edilib") elsewhere:** `StaffDashboardPage` has a column **header**
+  literally "Təqdim edilib" (line ~74) that means *submitted date* (renders `createdAt`), not the
+  status — translate it to "Submitted" (date), don't delete the column. `DashboardPage` counts
+  `SUBMITTED || UNDER_REVIEW` as "pending" — keep the logic, just translate the label.
+- **Notification status badge:** only the member `NotificationsPage` renders it; no staff/admin
+  notifications page exists.
+
+### Open Questions (confirm before implementing the ⚠️ items)
+1. Exact name of the "smoke test" plan to filter out of the plans list (item 5).
+2. Should ADMIN lose **all** staff-area access, or only the claim-review queue? (item 7).
+
 ## Review Findings (see root `check.md` for full detail)
 
 - 🟢 The gateway returns a bare `401` with an empty body (see gw doc), so `extractError` should keep
