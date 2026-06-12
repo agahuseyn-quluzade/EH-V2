@@ -1,0 +1,24 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: e-health-insurance-iam
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ehi_iam
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+jwt:
+  secret: ${JWT_SECRET:change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please}
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000

@@ -1,0 +1,33 @@
+package com.ehi.iam.exception;
+
+import com.ehi.infra.exception.BaseErrorService;
+
+public enum IamErrorEnum implements BaseErrorService {
+
+    FORBIDDEN("IAM-FORBIDDEN-0001", "Access denied", 403);
+
+    private final String errorCode;
+    private final String message;
+    private final int httpStatus;
+
+    IamErrorEnum(String errorCode, String message, int httpStatus) {
+        this.errorCode = errorCode;
+        this.message = message;
+        this.httpStatus = httpStatus;
+    }
+
+    @Override
+    public String getErrorCode() {
+        return errorCode;
+    }
+
+    @Override
+    public String getMessage() {
+        return message;
+    }
+
+    @Override
+    public int getHttpStatus() {
+        return httpStatus;
+    }
+}

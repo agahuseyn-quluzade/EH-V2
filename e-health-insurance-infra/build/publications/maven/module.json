@@ -1,0 +1,106 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.ehi",
+    "module": "e-health-insurance-infra",
+    "version": "0.0.1-SNAPSHOT",
+    "attributes": {
+      "org.gradle.status": "integration"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "9.3.0"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.15.4"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-annotations",
+          "version": {
+            "requires": "2.15.4"
+          }
+        },
+        {
+          "group": "jakarta.validation",
+          "module": "jakarta.validation-api",
+          "version": {
+            "requires": "3.0.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
+          "url": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
+          "size": 35939,
+          "sha512": "44c970552be51e41139afffcb3eefbc8ee02d4784d61d3b780a088013ffb2f49019c1a780a11504a439fd0ac9239c358ce512dd71ae94dc809b466f092429e87",
+          "sha256": "4a163a7f5610336e41926fc71c9864697fcfe6bf5417208f6f0ddc7fbf78d2d6",
+          "sha1": "f3e947d1d4e4d105a8a49c151381c8737c7d6889",
+          "md5": "10d00e123bfe799c9c21a717a5637fdb"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-databind",
+          "version": {
+            "requires": "2.15.4"
+          }
+        },
+        {
+          "group": "com.fasterxml.jackson.core",
+          "module": "jackson-annotations",
+          "version": {
+            "requires": "2.15.4"
+          }
+        },
+        {
+          "group": "jakarta.validation",
+          "module": "jakarta.validation-api",
+          "version": {
+            "requires": "3.0.2"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
+          "url": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
+          "size": 35939,
+          "sha512": "44c970552be51e41139afffcb3eefbc8ee02d4784d61d3b780a088013ffb2f49019c1a780a11504a439fd0ac9239c358ce512dd71ae94dc809b466f092429e87",
+          "sha256": "4a163a7f5610336e41926fc71c9864697fcfe6bf5417208f6f0ddc7fbf78d2d6",
+          "sha1": "f3e947d1d4e4d105a8a49c151381c8737c7d6889",
+          "md5": "10d00e123bfe799c9c21a717a5637fdb"
+        }
+      ]
+    }
+  ]
+}

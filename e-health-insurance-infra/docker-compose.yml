@@ -1,0 +1,206 @@
+name: e-health-insurance
+
+x-jwt-secret: &jwt-secret
+  JWT_SECRET: change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please
+
+networks:
+  ehi-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  claim-uploads:
+
+services:
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - ehi-network
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - ehi-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    networks:
+      - ehi-network
+
+  iam:
+    build:
+      context: ../e-health-insurance-iam
+      dockerfile: Dockerfile
+      additional_contexts:
+        infra: ../e-health-insurance-infra
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      <<: *jwt-secret
+    ports:
+      - "8081:8081"
+    networks:
+      - ehi-network
+
+  policy:
+    build:
+      context: ../e-health-insurance-policy
+      dockerfile: Dockerfile
+      additional_contexts:
+        infra: ../e-health-insurance-infra
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      <<: *jwt-secret
+    ports:
+      - "8082:8082"
+    networks:
+      - ehi-network
+
+  claim:
+    build:
+      context: ../e-health-insurance-claim
+      dockerfile: Dockerfile
+      additional_contexts:
+        infra: ../e-health-insurance-infra
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      <<: *jwt-secret
+    ports:
+      - "8083:8083"
+    volumes:
+      - claim-uploads:/app/uploads
+    networks:
+      - ehi-network
+
+  payment:
+    build:
+      context: ../e-health-insurance-payment
+      dockerfile: Dockerfile
+      additional_contexts:
+        infra: ../e-health-insurance-infra
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      <<: *jwt-secret
+    ports:
+      - "8084:8084"
+    networks:
+      - ehi-network
+
+  ai:
+    build:
+      context: ../e-health-insurance-ai
+      dockerfile: Dockerfile
+      additional_contexts:
+        infra: ../e-health-insurance-infra
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      <<: *jwt-secret
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
+    ports:
+      - "8085:8085"
+    networks:
+      - ehi-network
+
+  notification:
+    build:
+      context: ../e-health-insurance-notification
+      dockerfile: Dockerfile
+      additional_contexts:
+        infra: ../e-health-insurance-infra
+    depends_on:
+      postgres:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      <<: *jwt-secret
+    ports:
+      - "8086:8086"
+    networks:
+      - ehi-network
+
+  gw:
+    build:
+      context: ../e-health-insurance-gw
+      dockerfile: Dockerfile
+    depends_on:
+      - iam
+      - policy
+      - claim
+      - payment
+      - ai
+      - notification
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+      <<: *jwt-secret
+    ports:
+      - "8080:8080"
+    networks:
+      - ehi-network
+
+  frontend:
+    build:
+      context: ../e-health-insurance-frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - gw
+    environment:
+      VITE_GATEWAY_URL: http://gw:8080
+    ports:
+      - "5173:5173"
+    networks:
+      - ehi-network

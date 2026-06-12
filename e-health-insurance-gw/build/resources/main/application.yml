@@ -1,0 +1,51 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: e-health-insurance-gw
+  cloud:
+    gateway:
+      routes:
+        - id: auth
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/auth/**
+        - id: users
+          uri: http://localhost:8081
+          predicates:
+            - Path=/api/v1/users/**
+        - id: plans
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v1/plans/**
+        - id: policies
+          uri: http://localhost:8082
+          predicates:
+            - Path=/api/v1/policies/**
+        - id: claims
+          uri: http://localhost:8083
+          predicates:
+            - Path=/api/v1/claims/**
+        - id: payments
+          uri: http://localhost:8084
+          predicates:
+            - Path=/api/v1/payments/**
+        - id: ai
+          uri: http://localhost:8085
+          predicates:
+            - Path=/api/v1/ai/**
+        - id: notifications
+          uri: http://localhost:8086
+          predicates:
+            - Path=/api/v1/notifications/**
+
+jwt:
+  secret: ${JWT_SECRET:change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please}
+
+gateway:
+  security:
+    public-paths:
+      - /api/v1/auth/**
+    public-get-paths:
+      - /api/v1/plans/**
