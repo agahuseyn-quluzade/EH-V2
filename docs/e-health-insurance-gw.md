@@ -73,14 +73,40 @@
 - ✅ Correct: POST `/api/v1/plans` is **not** public — `public-get-paths` is GET-only, so admin
   plan-create stays protected.
 
-## Testing (required — not yet implemented)
+## Testing (DONE — 14 tests, all green)
 
-Stack: JUnit 5 + `WebTestClient` / `@SpringBootTest(webEnvironment=RANDOM_PORT)` (reactive). No
-Postgres/Kafka needed — the gateway is pure routing + filter.
-- **`JwtAuthFilterTest`**: a public path (`/api/v1/auth/**`, GET `/api/v1/plans/**`) passes through
-  without a token; a protected path with no/invalid `Bearer` token → 401; a valid token passes and
-  the request is mutated to carry `X-User-Id`/`X-User-Role`; a **GET-only** public rule does **not**
-  exempt POST `/api/v1/plans`.
-- **`JwtProviderTest`**: valid token → claims extracted; tampered/expired/wrong-secret → invalid.
-- Routing can be asserted with a stubbed downstream (or just verify the filter chain order /
-  `getOrder() == -1`).
+Stack: JUnit 5 + Mockito + AssertJ + `reactor-test` (`StepVerifier`) for unit tests;
+`@SpringBootTest(webEnvironment=RANDOM_PORT)` + `WebTestClient` + WireMock
+(`org.wiremock:wiremock-standalone:3.9.1`) for the routing IT. No Postgres/Kafka needed — the
+gateway is pure routing + filter.
+
+### Implemented test classes (all passing, 14 tests total)
+- **`JwtProviderTest`** (4): valid token → `isTokenValid() == true` and `userId`/`role` claims
+  extracted correctly; token signed with a different secret, expired token, and malformed/empty
+  string → `isTokenValid() == false`.
+- **`JwtAuthFilterTest`** (7, using `MockServerWebExchange` + a mocked `GatewayFilterChain` +
+  `StepVerifier`): public path (`/api/v1/auth/**`) and public GET-only path (`/api/v1/plans/**`)
+  pass through without a token; POST to `/api/v1/plans` (GET-only public rule does **not** exempt
+  POST) → 401 without invoking the chain; protected path with missing or invalid `Bearer` token →
+  401, chain never invoked; protected path with a valid token → chain invoked with the request
+  mutated to carry `X-User-Id`/`X-User-Role` from the JWT claims (verified via
+  `ArgumentCaptor<ServerWebExchange>`); `getOrder() == -1`.
+- **`GatewayRoutingIT`** (3, `@SpringBootTest(webEnvironment=RANDOM_PORT)` + WireMock +
+  `WebTestClient`): `/api/v1/auth/login` (public) forwards without a token to the stubbed
+  downstream; `/api/v1/claims/123` without a token → 401 and never reaches the downstream; the
+  same path with a valid JWT forwards to the downstream carrying `X-User-Id`/`X-User-Role` headers
+  matching the token's claims.
+
+### Implementation decisions / deviations
+- `GatewayRoutingIT` overrides `spring.cloud.gateway.routes[0]` (auth, public) and `[1]` (claims,
+  protected) via `@DynamicPropertySource` to point at a WireMock instance on a dynamic port —
+  Spring Boot binds an indexed list property entirely from the highest-priority source that
+  defines it, so this 2-route override fully replaces the 8-route list from `application.yml` for
+  the test context (the other 6 routes aren't needed for these assertions).
+- Test JWTs are built manually with `Jwts.builder()` (the gateway's `JwtProvider` is
+  validation-only, with no `generateAccessToken`), signed with the same default secret as
+  `application.yml`'s `jwt.secret` (`change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please`,
+  well over the 32-byte HMAC-SHA256 minimum).
+- `build.gradle` test deps: added `io.projectreactor:reactor-test` and
+  `org.wiremock:wiremock-standalone:3.9.1` (raw coordinates — no version-catalog entries needed).
+- `./gradlew test` passes (BUILD SUCCESSFUL, 14/14).

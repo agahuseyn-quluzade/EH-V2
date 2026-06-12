@@ -135,14 +135,14 @@
 
 ## Review Findings (see root `check.md` for full detail)
 
-- 🟠 **AI call has no timeout and runs on the Kafka consumer thread.** `AiClientServiceImpl.chatCompletion()`
-  does `.block()` with no `.timeout(...)`, called synchronously from `evaluateClaim` →
-  `ClaimSubmittedEventConsumer`. A hung OpenRouter blocks the consumer and stalls fraud processing
-  for every subsequent claim. Fix: `.timeout(Duration.ofSeconds(15))` (+ connect/response timeouts on
-  the WebClient). The fraud path already falls back to rule-only on exception, so a timeout degrades
-  gracefully — it just needs to fire.
-- 🟡 **Double DB read in `evaluateClaim`.** `findByClaimId` is called twice (once for `isNewCheck`,
-  once for `orElseGet`). Read once and derive `isNewCheck = optional.isEmpty()`.
+- ✅ **AI call has no timeout and runs on the Kafka consumer thread** (resolved). Added
+  `openai.timeout-seconds` (`OpenAiProperties`, default 15, env `OPENROUTER_TIMEOUT_SECONDS`) and
+  `.timeout(Duration.ofSeconds(...))` on the `bodyToMono(...)` chain in
+  `AiClientServiceImpl.chatCompletion()`. The fraud path already falls back to rule-only on
+  exception, so the timeout degrades gracefully. Covered by
+  `AiClientServiceImplTest.chatCompletion_slowResponse_timesOut`.
+- ✅ **Double DB read in `evaluateClaim`** (resolved). `findByClaimId` is now called once;
+  `isNewCheck = existing.isEmpty()` and `FraudCheck` is built via `existing.orElseGet(...)`.
 - 🟢 **Stale "OpenAI" strings.** `FraudDetectionServiceImpl` still logs `"OpenAI fraud assessment
   failed..."` after the OpenRouter switch. Cosmetic. (Config keys staying `openai.*` is intentional.)
 - 🟢 **Chatbot AI failure → raw 500.** `ChatbotServiceImpl.sendMessage` doesn't catch
@@ -151,22 +151,62 @@
 - 🟢 Claim `description` is never sent to the fraud LLM (only type + amount), limiting detection
   quality.
 
-## Testing (required — not yet implemented)
+## Testing (DONE — 40 tests, all green)
 
-Stack: JUnit 5 + Mockito + AssertJ (unit); **MockWebServer/WireMock** for OpenRouter; Testcontainers
-Postgres + Kafka (IT).
-- **`FraudDetectionServiceImplTest`** (unit, the core): `computeRuleScore` per-claim-type thresholds
+Stack: JUnit 5 + Mockito + AssertJ (unit); MockWebServer for OpenRouter; `@SpringBootTest` +
+`@EmbeddedKafka` + running Compose Postgres (IT).
+
+### Implemented test classes (all passing, 40 tests total)
+
+- **`FraudDetectionServiceImplTest`** (7 tests): `computeRuleScore` per-claim-type thresholds
   (HOSPITALIZATION 10000 / MEDICATION 2000 / DENTAL 1500 / CONSULTATION 500), the above-threshold and
-  far-above-threshold flags, the repeat-high-risk-user bump, and the cap at 100; AI is triggered only
-  at `ruleScore >= 40`; `finalScore = round(rule*0.4 + ai*0.6)` when AI ran, else rule-only;
-  **fallback to rule-only on AI exception**; `recordFraudCheck` is called only when the FraudCheck is
-  newly created (re-analysis doesn't double-count).
-- **AI client** (`AiClientServiceImplTest` with MockWebServer): markdown-fence stripping
-  (` ```json … ``` ` → parsed); empty `choices` → `IllegalStateException`; **timeout fires** (after
-  fix #4) and surfaces as the rule-only fallback.
-- **`RiskProfileServiceImplTest`**: upsert math (running average, highRiskCount increment),
-  `isHighRiskUser` at the threshold of 2, `getRiskProfile` 404 when absent.
-- **`ChatbotServiceImplTest`**: new vs reused `sessionId`; history is scoped by session+user; both
-  user and assistant messages persisted.
+  far-above-threshold flags, and the repeat-high-risk-user bump; AI is triggered only at
+  `ruleScore >= 40`; markdown-fence stripping (` ```json … ``` `) + JSON parsing of the AI response;
+  `finalScore = round(rule*0.4 + ai*0.6)` when AI ran, else rule-only; **fallback to rule-only on AI
+  exception**; `recordFraudCheck` called only when the `FraudCheck` is newly created (re-analysis via
+  `reanalyzeClaim` doesn't double-count); `getFraudCheck` 404 when missing.
+- **`AiClientServiceImplTest`** (3 tests, MockWebServer): successful `chatCompletion` parses
+  `choices[0].message.content`; empty `choices` → `IllegalStateException`; a slow response with
+  `openai.timeout-seconds=1` throws (timeout fires).
+- **`RiskProfileServiceImplTest`** (8 tests): `getRiskProfile` returns the mapped DTO / throws
+  `NotFoundException` when absent; `recordFraudCheck` creates a new profile (`totalClaims=1`,
+  `averageRiskScore=score`, `highRiskCount=0`) when none exists, updates the running average
+  (`(oldAvg*oldTotal + newScore) / newTotal`) and increments `highRiskCount` only when `highRisk` is
+  true; `isHighRiskUser` is true at `highRiskCount >= 2`, false below, and false when no profile.
+- **`ChatbotServiceImplTest`** (5 tests): `sendMessage` generates a new `sessionId` when none is
+  provided and reuses a provided one; the AI prompt sent to `aiClientService.chatCompletion` is
+  `[system prompt, ...session history, new user message]`; both the user and assistant messages are
+  persisted as `ChatMessage` rows; `getHistory` returns mapped `ChatMessageDto`s scoped by
+  `sessionId` + `userId`.
+- **`FraudControllerTest` / `RiskProfileControllerTest` / `ChatbotControllerTest`** (`@WebMvcTest`,
+  6 + 4 + 5 tests): fraud-check and risk-profile endpoints are AGENT/ADMIN-only (403 for CUSTOMER);
+  chatbot endpoints are CUSTOMER-only (403 for AGENT); all endpoints reject unauthenticated requests.
+- **`AiFlowIT`** (`@SpringBootTest` + `@EmbeddedKafka` + `ehi_ai_test` DB, 2 tests): publishing
+  `ClaimSubmittedEvent` on `claim.submitted` creates a `FraudCheck` row and publishes
+  `fraud.detected` with the matching `riskScore` — below-threshold (`ruleScore=0`, no AI call) and
+  above-threshold (`ruleScore=40`, AI call falls back to rule-only since `openai.base-url` is
+  unreachable in the test profile).
+
+### Implementation decisions / deviations
+- Fix #4 (AI timeout) and the double-DB-read fix were implemented first (Step 2), ahead of the test
+  suite, per the Review Findings above.
+- `FraudDetectionServiceImplTest` constructs `FraudDetectionServiceImpl` manually via its
+  constructor (not `@InjectMocks`) so a real `ObjectMapper` can be passed alongside the mocked
+  repository/mapper/clients — needed because the private nested `AiAssessment` record can't be
+  referenced from the test class, and Jackson 2.12+ deserializes records natively from a plain
+  `new ObjectMapper()`. The class is annotated `@MockitoSettings(strictness = Strictness.LENIENT)`
+  since the shared `@BeforeEach` `fraudCheckRepository.save(...)` stub isn't exercised by every test.
+- `AiClientServiceImplTest` builds a real `WebClient` pointed at a `MockWebServer` instance and a
+  real `OpenAiProperties` (not mocked) — the timeout test lowers `timeoutSeconds` to 1 and uses
+  `MockResponse#setBodyDelay(3, SECONDS)`.
+- Controller tests follow the established inline `@TestConfiguration @EnableMethodSecurity` +
+  `@MockBean JwtProvider` + `.anyRequest().authenticated()` pattern from claim/payment, with
+  `@WithMockUser(username="<uuid>", roles="...")`.
+- `AiFlowIT` reuses the `StringDeserializer` key + `JsonDeserializer<Object>` value test-consumer
+  pattern from `ClaimFlowIT`/`PaymentFlowIT`. `application-it.yml` points `openai.base-url` at
+  `http://localhost:0` (unreachable), so the above-threshold case exercises the rule-only fallback
+  end-to-end. Polling uses `assertThat(Optional).isPresent()` (not `.orElseThrow()`) inside
+  `await().untilAsserted` since Awaitility only retries on `AssertionError`, and the `flags`
+  `@ElementCollection` is not asserted in the IT (lazy-loaded, already covered by the unit test).
 - **`AiFlowIT`** (Testcontainers): publish `ClaimSubmittedEvent` → assert a `FraudCheck` row and a
   `fraud.detected` event with the combined score.

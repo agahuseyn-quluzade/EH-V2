@@ -71,17 +71,41 @@
 - 🟢 **Retry scheduler isn't multi-instance safe.** With >1 notification replica, two `RetryScheduler`s
   would double-send (no locking/`ShedLock`). Note for scaling.
 
-## Testing (required — not yet implemented)
+## Testing (DONE — 33 tests, all green)
 
-Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + Testcontainers Postgres + Kafka (IT).
-- **Consumer mapping tests** (unit, one per consumer): each event maps to the correct
-  `NotificationType` — `user.registered` → WELCOME (recipient = event email); `policy.created` →
-  POLICY_PENDING; `payment.completed` → POLICY_ACTIVATED (POLICY_PREMIUM) vs PAYMENT_SUCCESS
-  (CLAIM_PAYOUT); `payment.failed` → PAYMENT_FAILED; `claim.submitted` → CLAIM_SUBMITTED;
-  `claim.decision` → CLAIM_APPROVED/CLAIM_REJECTED (ignored otherwise); `fraud.detected` →
-  FRAUD_ALERT **only when riskScore ≥ 70**.
-- **`NotificationSenderTest`**: a "sent" notification is saved as SENT.
-- **`RetrySchedulerTest`**: only FAILED notifications with `retryCount < 3` are retried, and
-  `retryCount` increments each attempt.
-- **`NotificationFlowIT`** (Testcontainers): publish each domain event → assert the persisted
-  notification row.
+Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + `@EmbeddedKafka` + Postgres
+(`ehi_notification_test`, `create-drop`) for the flow IT. `ext['testcontainers.version'] = '1.20.6'`
+override applied for Docker 29.x compatibility (testcontainers/spring-kafka-test added even though
+the IT ultimately uses `@EmbeddedKafka` rather than a Testcontainers Kafka broker).
+
+### Implemented test classes (all passing, 33 tests total)
+- **`NotificationServiceImplTest`** (4): `send()` persists PENDING then updates to SENT when
+  `NotificationSender` returns true (and FAILED when it returns false), passing the correctly
+  built `Notification` to the sender and returning the mapped DTO; `getMyNotifications` scoped by
+  `userId`; `getAllNotifications` pagination/mapping via `PagedResponse`.
+- **Consumer mapping tests** (13 across 7 classes, one class per consumer):
+  `UserRegisteredEventConsumerTest` (WELCOME, recipient = event email),
+  `PolicyCreatedEventConsumerTest` (POLICY_PENDING),
+  `PaymentCompletedEventConsumerTest` (POLICY_ACTIVATED for POLICY_PREMIUM, PAYMENT_SUCCESS for
+  CLAIM_PAYOUT), `PaymentFailedEventConsumerTest` (PAYMENT_FAILED),
+  `ClaimSubmittedEventConsumerTest` (CLAIM_SUBMITTED), `ClaimDecisionEventConsumerTest`
+  (CLAIM_APPROVED / CLAIM_REJECTED / no-send for UNDER_REVIEW), `FraudDetectedEventConsumerTest`
+  (FRAUD_ALERT only when `riskScore >= 70`; no-send when below threshold or `null`).
+- **`RetrySchedulerTest`** (3): queries `findByStatusAndRetryCountLessThan(FAILED, 3)`; increments
+  `retryCount` and sets SENT/FAILED based on `NotificationSender` result.
+- **`NotificationControllerTest`** (5, `@WebMvcTest`): `GET /me` CUSTOMER-only, `GET ` (paginated)
+  ADMIN-only, forbidden for other roles, unauthenticated → 4xx.
+- **`NotificationFlowIT`** (9, `@EmbeddedKafka`): publishes each of the 7 domain events (2 cases for
+  `payment.completed` and `claim.decision`) and asserts the persisted `Notification` row has the
+  expected `type`/`subject`/`status`.
+
+### Implementation decisions / deviations
+- `NotificationServiceImplTest`: `ArgumentCaptor` can't be used to compare the PENDING vs SENT
+  saves because `send()` mutates and re-saves the *same* `Notification` instance — both captured
+  values reflect the final state. Instead, the mock `save()` answer records `getStatus()` at call
+  time into a list, asserting `[PENDING, SENT]` (or `[PENDING, FAILED]`) in order.
+- `NotificationFlowIT`: `awaitNotification` polls `findByUserId` filtering on
+  `type == expectedType && status != PENDING` (not just "row exists") — otherwise the poll can
+  observe the row between the two `save()` calls inside `send()` (status still PENDING), pass the
+  `isPresent()` check, and fail the subsequent `status == SENT` assertion. This was flaky only
+  under the full-suite run, not in isolation.

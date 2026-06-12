@@ -36,6 +36,8 @@ dependencies {
     testCompileOnly libs.lombok
     testAnnotationProcessor libs.lombok
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'io.projectreactor:reactor-test'
+    testImplementation 'org.wiremock:wiremock-standalone:3.9.1'
 }
 
 tasks.named('test') {

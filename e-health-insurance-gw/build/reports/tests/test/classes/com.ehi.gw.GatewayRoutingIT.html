@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - GatewayRoutingIT</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>GatewayRoutingIT</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.ehi.gw.html">com.ehi.gw</a> &gt; GatewayRoutingIT</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">3</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.482s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">protectedRoute_withValidToken_forwardsRequest_withUserHeaders()</td>
+<td class="success">0.467s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">protectedRoute_withoutToken_returnsUnauthorized_andNeverReachesDownstream()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">publicAuthRoute_forwardsWithoutToken_toDownstreamService()</td>
+<td class="success">0.010s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>21:24:56.592 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ehi.gw.GatewayRoutingIT]: GatewayRoutingIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+21:24:56.617 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.gw.GatewayApplication for test class com.ehi.gw.GatewayRoutingIT
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.5)
+
+2026-06-12T21:24:56.922+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Starting GatewayRoutingIT using Java 17.0.19 with PID 9544 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-gw)
+2026-06-12T21:24:56.923+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2026-06-12T21:24:57.094+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.cloud.context.scope.GenericScope     : BeanFactory id=49a05afb-7a75-343f-85ba-05dd67503a50
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [After]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Before]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Between]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Cookie]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Header]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Host]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Method]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Path]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Query]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [ReadBody]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [RemoteAddr]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [XForwardedRemoteAddr]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Weight]
+2026-06-12T21:24:57.320+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [CloudFoundryRouteService]
+2026-06-12T21:24:57.410+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 54844
+2026-06-12T21:24:57.428+04:00  INFO 9544 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Started GatewayRoutingIT in 0.779 seconds (process running for 1.083)
+2026-06-12T21:24:57.783+04:00 ERROR 9544 --- [e-health-insurance-gw] [    Test worker] i.n.r.d.DnsServerAddressStreamProviders  : Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 9:25:00 PM</p>
+</div>
+</div>
+</body>
+</html>

@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+import java.time.Duration;
 import java.util.List;
 
 @Service
@@ -27,6 +28,7 @@ public class AiClientServiceImpl implements AiClientService {
                 .bodyValue(request)
                 .retrieve()
                 .bodyToMono(OpenAiChatResponse.class)
+                .timeout(Duration.ofSeconds(openAiProperties.getTimeoutSeconds()))
                 .block();
 
         if (response == null || response.choices() == null || response.choices().isEmpty()) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.gw.security.JwtAuthFilterTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:24:57" hostname="Nijats-MacBook-Pro.local" time="0.107">
+  <properties/>
+  <testcase name="protectedPath_withValidToken_forwardsRequest_withUserHeaders()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.093"/>
+  <testcase name="protectedPath_returnsUnauthorized_whenAuthorizationHeaderMissing()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.004"/>
+  <testcase name="getOrder_isMinusOne()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
+  <testcase name="publicPath_passesThrough_withoutToken()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.002"/>
+  <testcase name="publicGetPath_passesThrough_withoutToken()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
+  <testcase name="postToPublicGetPath_isProtected_andReturnsUnauthorized_withoutToken()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
+  <testcase name="protectedPath_returnsUnauthorized_whenTokenInvalid()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

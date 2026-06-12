@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.notification.kafka.ClaimDecisionEventConsumerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:15:53" hostname="Nijats-MacBook-Pro.local" time="0.013">
+  <properties/>
+  <testcase name="consume_sendsNothing_whenDecisionIsUnderReview()" classname="com.ehi.notification.kafka.ClaimDecisionEventConsumerTest" time="0.009"/>
+  <testcase name="consume_sendsClaimRejectedNotification_whenRejected()" classname="com.ehi.notification.kafka.ClaimDecisionEventConsumerTest" time="0.003"/>
+  <testcase name="consume_sendsClaimApprovedNotification_whenApproved()" classname="com.ehi.notification.kafka.ClaimDecisionEventConsumerTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-12T21:15:53.928+04:00  INFO 8268 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimDecisionEventConsumer   : Received ClaimDecisionEvent for claimId=9c886566-b393-40a8-b0c5-f85dfb8edfd1, userId=cf1959b7-bfc9-4a03-b2c0-f9e60ca5c727, decision=UNDER_REVIEW
+2026-06-12T21:15:53.931+04:00  INFO 8268 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimDecisionEventConsumer   : Received ClaimDecisionEvent for claimId=fc2b5da3-8ec2-4aa0-81dc-3f7af1233761, userId=c97ff190-84a1-415d-a072-9ec4d75814db, decision=REJECTED
+2026-06-12T21:15:53.934+04:00  INFO 8268 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimDecisionEventConsumer   : Received ClaimDecisionEvent for claimId=c6760931-0f7c-4af5-9d85-3d7b9193a189, userId=6fbe6642-eabf-4d0e-a9d5-3e57ddabfc86, decision=APPROVED
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

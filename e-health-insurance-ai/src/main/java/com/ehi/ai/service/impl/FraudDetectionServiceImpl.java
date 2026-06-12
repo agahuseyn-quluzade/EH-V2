@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -67,13 +68,13 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
                 ? Math.round(ruleScore * 0.4f + aiScore * 0.6f)
                 : ruleScore;
 
-        boolean isNewCheck = fraudCheckRepository.findByClaimId(event.claimId()).isEmpty();
+        Optional<FraudCheck> existing = fraudCheckRepository.findByClaimId(event.claimId());
+        boolean isNewCheck = existing.isEmpty();
 
-        FraudCheck fraudCheck = fraudCheckRepository.findByClaimId(event.claimId())
-                .orElseGet(() -> FraudCheck.builder()
-                        .claimId(event.claimId())
-                        .userId(event.userId())
-                        .build());
+        FraudCheck fraudCheck = existing.orElseGet(() -> FraudCheck.builder()
+                .claimId(event.claimId())
+                .userId(event.userId())
+                .build());
 
         fraudCheck.setClaimType(event.claimType());
         fraudCheck.setAmount(event.amount());

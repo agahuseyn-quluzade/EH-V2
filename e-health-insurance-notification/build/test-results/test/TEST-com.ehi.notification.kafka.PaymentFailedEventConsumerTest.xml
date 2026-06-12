@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-12T17:15:53" hostname="Nijats-MacBook-Pro.local" time="0.001">
+  <properties/>
+  <testcase name="consume_sendsPaymentFailedNotification()" classname="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-12T21:15:53.941+04:00  INFO 8268 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : Received PaymentFailedEvent for paymentId=dfc57458-65f1-4ff5-8ca6-73a3e41e2e4b, userId=60ff96b6-3a9b-4447-854e-fb87d5c4b2f2
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -12,4 +12,5 @@ public class OpenAiProperties {
     private String apiKey;
     private String baseUrl;
     private String model;
+    private int timeoutSeconds = 15;
 }

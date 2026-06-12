@@ -31,3 +31,4 @@ openai:
   api-key: ${OPENROUTER_API_KEY:}
   base-url: ${OPENROUTER_BASE_URL:https://openrouter.ai/api/v1}
   model: ${OPENROUTER_MODEL:google/gemini-2.5-flash}
+  timeout-seconds: ${OPENROUTER_TIMEOUT_SECONDS:15}

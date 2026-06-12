@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ehi_ai_test
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  kafka:
+    bootstrap-servers: ${spring.embedded.kafka.brokers}
+    consumer:
+      auto-offset-reset: earliest
+
+jwt:
+  secret: test-secret-key-that-is-at-least-256-bits-long-for-hmacsha256-tests-ok
+
+openai:
+  api-key: test-key
+  base-url: http://localhost:0
+  model: test-model

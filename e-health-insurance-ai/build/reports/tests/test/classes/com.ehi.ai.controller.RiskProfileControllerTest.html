@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - RiskProfileControllerTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>RiskProfileControllerTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.ehi.ai.controller.html">com.ehi.ai.controller</a> &gt; RiskProfileControllerTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">4</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.015s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">getRiskProfile_allowedForAdmin()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getRiskProfile_allowedForAgent()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getRiskProfile_blocked_whenUnauthenticated()</td>
+<td class="success">0.002s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">getRiskProfile_forbiddenForCustomer()</td>
+<td class="success">0.007s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2026-06-12T21:04:09.263+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.ai.AiApplication for test class com.ehi.ai.controller.RiskProfileControllerTest
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.5)
+
+2026-06-12T21:04:09.278+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.e.a.c.RiskProfileControllerTest        : Starting RiskProfileControllerTest using Java 17.0.19 with PID 6510 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-ai)
+2026-06-12T21:04:09.278+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.e.a.c.RiskProfileControllerTest        : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2026-06-12T21:04:09.407+04:00  WARN 6510 --- [e-health-insurance-ai] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+
+Using generated security password: c0aeeea3-768d-41ae-841d-84490131bb3a
+
+This generated password is for development use only. Your security configuration must be updated before running your application in production.
+
+2026-06-12T21:04:09.466+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@72dc7b05, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@73e45afe, org.springframework.security.web.context.SecurityContextHolderFilter@11d823a4, org.springframework.security.web.header.HeaderWriterFilter@6ec73d87, org.springframework.web.filter.CorsFilter@1f406a62, org.springframework.security.web.authentication.logout.LogoutFilter@24c28909, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@1b4abc8e, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@4c368165, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6b89cbc0, org.springframework.security.web.session.SessionManagementFilter@611b2857, org.springframework.security.web.access.ExceptionTranslationFilter@b303504, org.springframework.security.web.access.intercept.AuthorizationFilter@4907b755]
+2026-06-12T21:04:09.513+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-12T21:04:09.513+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-12T21:04:09.514+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-12T21:04:09.521+04:00  INFO 6510 --- [e-health-insurance-ai] [    Test worker] c.e.a.c.RiskProfileControllerTest        : Started RiskProfileControllerTest in 0.257 seconds (process running for 5.696)
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 9:04:15 PM</p>
+</div>
+</div>
+</body>
+</html>
