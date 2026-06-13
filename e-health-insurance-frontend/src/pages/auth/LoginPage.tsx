@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { extractError } from "../../api/client";
-import { Field } from "../../components/ui";
+import { Field, PasswordInput } from "../../components/ui";
 import { homePathForRole, useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 
@@ -63,11 +63,9 @@ export function LoginPage() {
               />
             </Field>
             <Field label="Password" required>
-              <input
-                type="password"
+              <PasswordInput
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
                 required
                 autoComplete="current-password"
               />

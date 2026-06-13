@@ -42,10 +42,6 @@ export function AdminPoliciesPage() {
         </div>
       </div>
 
-      <div className="alert alert-info">
-        Status filtering and purchasing insurance on behalf of a member are not supported by the backend.
-      </div>
-
       {loading ? (
         <Spinner />
       ) : policies.length === 0 ? (

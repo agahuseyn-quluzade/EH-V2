@@ -7,6 +7,7 @@ mapstruct = "1.5.5.Final"
 lombokMapstructBinding = "0.2.0"
 jjwt = "0.12.5"
 postgresql = "42.7.3"
+springdoc = "2.6.0"
 infra = "0.0.1-SNAPSHOT"
 
 [libraries]
@@ -19,6 +20,7 @@ jjwt-impl = { module = "io.jsonwebtoken:jjwt-impl", version.ref = "jjwt" }
 jjwt-jackson = { module = "io.jsonwebtoken:jjwt-jackson", version.ref = "jjwt" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 infra = { module = "com.ehi:e-health-insurance-infra", version.ref = "infra" }
+springdoc-openapi-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 
 [plugins]
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }

@@ -1,7 +1,7 @@
 import { FormEvent, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { extractError } from "../../api/client";
-import { Field } from "../../components/ui";
+import { Field, PasswordInput } from "../../components/ui";
 import { homePathForRole, useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
 
@@ -101,8 +101,7 @@ export function RegisterPage() {
               />
             </Field>
             <Field label="Password" required hint="At least 8 characters">
-              <input
-                type="password"
+              <PasswordInput
                 value={form.password}
                 onChange={set("password")}
                 required
@@ -111,8 +110,7 @@ export function RegisterPage() {
               />
             </Field>
             <Field label="Confirm password" required>
-              <input
-                type="password"
+              <PasswordInput
                 value={form.passwordConfirm}
                 onChange={set("passwordConfirm")}
                 required

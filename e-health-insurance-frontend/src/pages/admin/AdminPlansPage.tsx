@@ -89,10 +89,6 @@ export function AdminPlansPage() {
         </button>
       </div>
 
-      <div className="alert alert-info">
-        Plan editing, archiving, and activation are not supported by the backend.
-      </div>
-
       {visiblePlans.length === 0 ? (
         <EmptyState title="No plans" hint="Create your first plan." />
       ) : (

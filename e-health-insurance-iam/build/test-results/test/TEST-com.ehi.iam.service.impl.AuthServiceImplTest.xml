@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.iam.service.impl.AuthServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:29:31" hostname="Mac" time="0.068">
+<testsuite name="com.ehi.iam.service.impl.AuthServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T15:30:37" hostname="Mac" time="0.069">
   <properties/>
-  <testcase name="login_throwsUnauthorized_whenUserSuspended()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.056"/>
+  <testcase name="login_throwsUnauthorized_whenUserSuspended()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.058"/>
   <testcase name="login_throwsUnauthorized_whenPasswordWrong()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
-  <testcase name="register_throwsDuplicateResourceException_whenEmailExists()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.0"/>
+  <testcase name="register_throwsDuplicateResourceException_whenEmailExists()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
   <testcase name="login_succeeds_forActiveUser()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
-  <testcase name="register_hashesPassword_andDefaultsToCustomer()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.003"/>
-  <testcase name="refresh_throwsUnauthorized_whenTokenInvalid()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.0"/>
+  <testcase name="register_hashesPassword_andDefaultsToCustomer()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.002"/>
+  <testcase name="refresh_throwsUnauthorized_whenTokenInvalid()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
   <testcase name="refresh_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
   <testcase name="register_publishesUserRegisteredEvent()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
   <testcase name="login_throwsUnauthorized_whenEmailNotFound()" classname="com.ehi.iam.service.impl.AuthServiceImplTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T18:29:31.900+04:00  WARN 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Login blocked: account suspended, userId=null
-2026-06-13T18:29:31.903+04:00  WARN 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Failed login attempt for email=test@example.com
-2026-06-13T18:29:31.907+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Registered new user userId=b8ac4a4a-bbc2-448b-8b6a-87f76bfaebfd, email=test@example.com
-2026-06-13T18:29:31.910+04:00  WARN 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Refresh rejected: invalid token
-2026-06-13T18:29:31.912+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Registered new user userId=a5b9f2a8-7523-4e05-8a3e-1ddb32778d66, email=new@example.com
-2026-06-13T18:29:31.913+04:00  WARN 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Failed login attempt for email=unknown@example.com
+  <system-out><![CDATA[2026-06-13T19:30:37.120+04:00  WARN 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Login blocked: account suspended, userId=null
+2026-06-13T19:30:37.124+04:00  WARN 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Failed login attempt for email=test@example.com
+2026-06-13T19:30:37.128+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Registered new user userId=f9a4eb09-997b-45f3-8e20-838005d5b3ba, email=test@example.com
+2026-06-13T19:30:37.130+04:00  WARN 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Refresh rejected: invalid token
+2026-06-13T19:30:37.133+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Registered new user userId=4aa94544-394e-4d0c-b96b-7d40ca200049, email=new@example.com
+2026-06-13T19:30:37.134+04:00  WARN 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.AuthServiceImpl   : Failed login attempt for email=unknown@example.com
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

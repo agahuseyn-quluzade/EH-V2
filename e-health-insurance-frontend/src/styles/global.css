@@ -397,6 +397,24 @@ input, select, textarea {
   width: 100%;
 }
 
+.password-input { position: relative; }
+.password-input input { padding-right: 42px; }
+.password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: auto;
+  padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--color-muted, #8a94a6);
+  display: flex;
+  align-items: center;
+}
+.password-toggle:hover { color: var(--color-text); }
+
 input:focus, select:focus, textarea:focus {
   outline: 2px solid rgba(14, 116, 144, 0.25);
   border-color: var(--color-primary);

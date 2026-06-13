@@ -1,0 +1,654 @@
+{
+  "info": {
+    "name": "E-Health Insurance API",
+    "description": "Complete API collection for the E-Health Insurance platform (B2C single-insurer MVP). All requests go through the API Gateway ({{baseUrl}}). Login/Register auto-capture the JWT into {{accessToken}}; subsequent requests send it as a Bearer token. Many requests auto-capture ids (planId, policyId, claimId, sessionId) so flows can be run in order.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{accessToken}}", "type": "string" }]
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "accessToken", "value": "" },
+    { "key": "refreshToken", "value": "" },
+    { "key": "userId", "value": "" },
+    { "key": "planId", "value": "" },
+    { "key": "policyId", "value": "" },
+    { "key": "claimId", "value": "" },
+    { "key": "paymentId", "value": "" },
+    { "key": "sessionId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth (public)",
+      "item": [
+        {
+          "name": "Register",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data) {",
+                  "  pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  pm.collectionVariables.set('userId', json.data.userId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"phone\": \"+994501234567\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "register"]
+            },
+            "description": "Register a new CUSTOMER. `phone` is optional. Returns tokens and publishes UserRegisteredEvent (welcome email/SMS)."
+          }
+        },
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data) {",
+                  "  pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  pm.collectionVariables.set('userId', json.data.userId);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"user@example.com\",\n  \"password\": \"Password123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Authenticate and receive a new token pair."
+          }
+        },
+        {
+          "name": "Refresh token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data) {",
+                  "  pm.collectionVariables.set('accessToken', json.data.accessToken);",
+                  "  pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get my profile",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me"] }
+          }
+        },
+        {
+          "name": "Update my profile",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me"] }
+          }
+        },
+        {
+          "name": "Change my password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"Password123!\",\n  \"newPassword\": \"NewPassword123!\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/me/password", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "me", "password"] }
+          }
+        },
+        {
+          "name": "List all users (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            },
+            "description": "Requires ADMIN role."
+          }
+        },
+        {
+          "name": "Search users (ADMIN/STAFF)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/users/search?query=john&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "users", "search"],
+              "query": [
+                { "key": "query", "value": "john" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get user by id (ADMIN/STAFF)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{userId}}"] }
+          }
+        },
+        {
+          "name": "Change user role (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"role\": \"STAFF\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{userId}}/role", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{userId}}", "role"] },
+            "description": "role: ADMIN | STAFF | CUSTOMER"
+          }
+        },
+        {
+          "name": "Change user status (ADMIN)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"active\": false\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/users/{{userId}}/status", "host": ["{{baseUrl}}"], "path": ["api", "v1", "users", "{{userId}}", "status"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Plans",
+      "item": [
+        {
+          "name": "List active plans (public)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data && json.data.length) {",
+                  "  pm.collectionVariables.set('planId', json.data[0].id);",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/plans", "host": ["{{baseUrl}}"], "path": ["api", "v1", "plans"] }
+          }
+        },
+        {
+          "name": "Get plan by id (public)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/plans/{{planId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "plans", "{{planId}}"] }
+          }
+        },
+        {
+          "name": "Create plan (ADMIN)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data) pm.collectionVariables.set('planId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Gold Plan\",\n  \"description\": \"Full yearly coverage\",\n  \"coverageAmount\": 50000,\n  \"premiumAmount\": 1200,\n  \"durationMonths\": 12\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/plans", "host": ["{{baseUrl}}"], "path": ["api", "v1", "plans"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Policies",
+      "item": [
+        {
+          "name": "Purchase policy (CUSTOMER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data) pm.collectionVariables.set('policyId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"planId\": \"{{planId}}\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/policies", "host": ["{{baseUrl}}"], "path": ["api", "v1", "policies"] },
+            "description": "Rejected if the user already has an ACTIVE or PENDING policy. Responds PENDING; payment + activation happen asynchronously (~2s)."
+          }
+        },
+        {
+          "name": "List my policies (CUSTOMER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data && json.data.length) pm.collectionVariables.set('policyId', json.data[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/policies/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "policies", "me"] }
+          }
+        },
+        {
+          "name": "Get policy by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/policies/{{policyId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "policies", "{{policyId}}"] }
+          }
+        },
+        {
+          "name": "Cancel policy",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/policies/{{policyId}}/cancel", "host": ["{{baseUrl}}"], "path": ["api", "v1", "policies", "{{policyId}}", "cancel"] }
+          }
+        },
+        {
+          "name": "List all policies (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/policies?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "policies"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Claims",
+      "item": [
+        {
+          "name": "Submit claim (CUSTOMER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data) pm.collectionVariables.set('claimId', json.data.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"policyId\": \"{{policyId}}\",\n  \"claimType\": \"CONSULTATION\",\n  \"amount\": 250.00,\n  \"description\": \"Doctor visit\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/claims", "host": ["{{baseUrl}}"], "path": ["api", "v1", "claims"] },
+            "description": "claimType: HOSPITALIZATION | MEDICATION | DENTAL | CONSULTATION. AI auto-scores: <40 APPROVED, 40-69 UNDER_REVIEW, >=70 REJECTED."
+          }
+        },
+        {
+          "name": "List my claims (CUSTOMER)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/claims/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "claims", "me"] }
+          }
+        },
+        {
+          "name": "Get claim by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/claims/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "claims", "{{claimId}}"] }
+          }
+        },
+        {
+          "name": "Upload claim evidence",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [{ "key": "file", "type": "file", "src": [] }]
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/claims/{{claimId}}/evidence", "host": ["{{baseUrl}}"], "path": ["api", "v1", "claims", "{{claimId}}", "evidence"] },
+            "description": "multipart/form-data with field 'file'. Select a file in the Body tab before sending."
+          }
+        },
+        {
+          "name": "List all claims (STAFF/ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/claims?status=UNDER_REVIEW&page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "claims"],
+              "query": [
+                { "key": "status", "value": "UNDER_REVIEW", "description": "optional: SUBMITTED|UNDER_REVIEW|APPROVED|REJECTED" },
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Review claim (STAFF/ADMIN)",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"decision\": \"APPROVED\",\n  \"approvedAmount\": 250.00,\n  \"rejectionReason\": null\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/claims/{{claimId}}/review", "host": ["{{baseUrl}}"], "path": ["api", "v1", "claims", "{{claimId}}", "review"] },
+            "description": "decision: APPROVED | REJECTED. Only works on UNDER_REVIEW claims."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Payments",
+      "item": [
+        {
+          "name": "Process payment (ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": \"{{userId}}\",\n  \"referenceId\": \"{{policyId}}\",\n  \"referenceType\": \"POLICY_PREMIUM\",\n  \"amount\": 1200\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/payments/process", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payments", "process"] },
+            "description": "referenceType: POLICY_PREMIUM | CLAIM_PAYOUT. Normally driven by Kafka events, not direct calls."
+          }
+        },
+        {
+          "name": "List my payments (CUSTOMER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data && json.data.length) pm.collectionVariables.set('paymentId', json.data[0].id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/payments/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payments", "me"] }
+          }
+        },
+        {
+          "name": "Get payment by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/payments/{{paymentId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "payments", "{{paymentId}}"] }
+          }
+        },
+        {
+          "name": "List all payments (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/payments?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "payments"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI - Chatbot",
+      "item": [
+        {
+          "name": "Send message (CUSTOMER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "var json = pm.response.json();",
+                  "if (json && json.data) pm.collectionVariables.set('sessionId', json.data.sessionId);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": null,\n  \"message\": \"What does my plan cover?\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/chatbot", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "chatbot"] },
+            "description": "Pass sessionId: null to start a new chat; reuse the captured {{sessionId}} to continue. Scoped to e-health insurance topics only."
+          }
+        },
+        {
+          "name": "Continue chat (uses sessionId)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": \"{{sessionId}}\",\n  \"message\": \"And what is the yearly premium?\"\n}",
+              "options": { "raw": { "language": "json" } }
+            },
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/chatbot", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "chatbot"] }
+          }
+        },
+        {
+          "name": "Get chat history (CUSTOMER)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/ai/chatbot/history?sessionId={{sessionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "ai", "chatbot", "history"],
+              "query": [{ "key": "sessionId", "value": "{{sessionId}}" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI - Fraud & Risk",
+      "item": [
+        {
+          "name": "Get fraud check (STAFF/ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/fraud-checks/{{claimId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "fraud-checks", "{{claimId}}"] }
+          }
+        },
+        {
+          "name": "Re-analyze claim (STAFF/ADMIN)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/claims/{{claimId}}/analyze", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "claims", "{{claimId}}", "analyze"] }
+          }
+        },
+        {
+          "name": "Get risk profile (STAFF/ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/ai/risk-profile/{{userId}}", "host": ["{{baseUrl}}"], "path": ["api", "v1", "ai", "risk-profile", "{{userId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Notifications",
+      "item": [
+        {
+          "name": "List my notifications (CUSTOMER)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/v1/notifications/me", "host": ["{{baseUrl}}"], "path": ["api", "v1", "notifications", "me"] }
+          }
+        },
+        {
+          "name": "List all notifications (ADMIN)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/notifications?page=0&size=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "notifications"],
+              "query": [
+                { "key": "page", "value": "0" },
+                { "key": "size", "value": "20" }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

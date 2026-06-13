@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.iam.controller.UserControllerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:29:31" hostname="Mac" time="0.05">
+<testsuite name="com.ehi.iam.controller.UserControllerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T15:30:37" hostname="Mac" time="0.042">
   <properties/>
-  <testcase name="changeStatus_allowedForAdmin()" classname="com.ehi.iam.controller.UserControllerTest" time="0.025"/>
-  <testcase name="changeRole_allowedForAdmin()" classname="com.ehi.iam.controller.UserControllerTest" time="0.005"/>
+  <testcase name="changeStatus_allowedForAdmin()" classname="com.ehi.iam.controller.UserControllerTest" time="0.018"/>
+  <testcase name="changeRole_allowedForAdmin()" classname="com.ehi.iam.controller.UserControllerTest" time="0.004"/>
   <testcase name="changePassword_blocked_whenUnauthenticated()" classname="com.ehi.iam.controller.UserControllerTest" time="0.002"/>
-  <testcase name="changeRole_forbiddenForCustomer()" classname="com.ehi.iam.controller.UserControllerTest" time="0.002"/>
+  <testcase name="changeRole_forbiddenForCustomer()" classname="com.ehi.iam.controller.UserControllerTest" time="0.003"/>
   <testcase name="searchUsers_allowedForAdmin()" classname="com.ehi.iam.controller.UserControllerTest" time="0.003"/>
   <testcase name="searchUsers_allowedForAgent()" classname="com.ehi.iam.controller.UserControllerTest" time="0.001"/>
-  <testcase name="searchUsers_forbiddenForCustomer()" classname="com.ehi.iam.controller.UserControllerTest" time="0.002"/>
-  <testcase name="changePassword_allowedForAnyAuthenticatedUser()" classname="com.ehi.iam.controller.UserControllerTest" time="0.004"/>
+  <testcase name="searchUsers_forbiddenForCustomer()" classname="com.ehi.iam.controller.UserControllerTest" time="0.001"/>
+  <testcase name="changePassword_allowedForAnyAuthenticatedUser()" classname="com.ehi.iam.controller.UserControllerTest" time="0.003"/>
   <testcase name="changeStatus_forbiddenForCustomer()" classname="com.ehi.iam.controller.UserControllerTest" time="0.002"/>
-  <system-out><![CDATA[2026-06-13T18:29:31.603+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.iam.IamApplication for test class com.ehi.iam.controller.UserControllerTest
+  <system-out><![CDATA[2026-06-13T19:30:36.827+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.iam.IamApplication for test class com.ehi.iam.controller.UserControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -21,19 +21,19 @@
 
  :: Spring Boot ::                (v3.3.5)
 
-2026-06-13T18:29:31.614+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Starting UserControllerTest using Java 21.0.11 with PID 32708 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-iam)
-2026-06-13T18:29:31.614+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : No active profile set, falling back to 1 default profile: "default"
-2026-06-13T18:29:31.717+04:00  WARN 32708 --- [e-health-insurance-iam] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-13T19:30:36.838+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Starting UserControllerTest using Java 21.0.11 with PID 40817 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-iam)
+2026-06-13T19:30:36.838+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : No active profile set, falling back to 1 default profile: "default"
+2026-06-13T19:30:36.949+04:00  WARN 40817 --- [e-health-insurance-iam] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: fd499f21-7b39-4640-91fa-8b80c1739197
+Using generated security password: f112cab3-2daf-4949-8fc3-d9844780c0ca
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-13T18:29:31.719+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-13T18:29:31.782+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-13T18:29:31.782+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-13T18:29:31.782+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-06-13T18:29:31.786+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Started UserControllerTest in 0.18 seconds (process running for 3.344)
+2026-06-13T19:30:36.951+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-13T19:30:37.007+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-13T19:30:37.007+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-13T19:30:37.007+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-06-13T19:30:37.011+04:00  INFO 40817 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Started UserControllerTest in 0.181 seconds (process running for 3.519)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

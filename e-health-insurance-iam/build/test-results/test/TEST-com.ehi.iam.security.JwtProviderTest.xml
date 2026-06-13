@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.iam.security.JwtProviderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:29:31" hostname="Mac" time="0.007">
+<testsuite name="com.ehi.iam.security.JwtProviderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T15:30:37" hostname="Mac" time="0.008">
   <properties/>
-  <testcase name="isTokenValid_returnsFalse_forMalformedToken()" classname="com.ehi.iam.security.JwtProviderTest" time="0.002"/>
+  <testcase name="isTokenValid_returnsFalse_forMalformedToken()" classname="com.ehi.iam.security.JwtProviderTest" time="0.001"/>
   <testcase name="accessToken_containsUserIdAndRoleClaims()" classname="com.ehi.iam.security.JwtProviderTest" time="0.003"/>
   <testcase name="isTokenValid_returnsFalse_forTokenSignedWithWrongSecret()" classname="com.ehi.iam.security.JwtProviderTest" time="0.001"/>
   <testcase name="refreshToken_containsUserIdAndRoleClaims()" classname="com.ehi.iam.security.JwtProviderTest" time="0.001"/>
