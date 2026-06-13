@@ -23,6 +23,10 @@ repositories {
 dependencies {
     implementation libs.infra
 
+    implementation platform(libs.aws.bom)
+    implementation libs.aws.sns
+    implementation libs.aws.sesv2
+
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -50,8 +54,18 @@ dependencies {
     testImplementation 'org.springframework.kafka:spring-kafka-test'
     testImplementation 'org.testcontainers:junit-jupiter'
     testImplementation 'org.testcontainers:postgresql'
+    testImplementation 'org.testcontainers:jdbc'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
+    exclude('**/*IT.class')
+}
+
+tasks.register('integrationTest', Test) {
+    useJUnitPlatform()
+    include('**/*IT.class')
+    group = 'verification'
+    description = 'Runs integration tests (requires Docker).'
+    shouldRunAfter(tasks.named('test'))
 }

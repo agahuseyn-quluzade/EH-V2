@@ -60,7 +60,7 @@ class UserControllerTest {
 
     private UserDto stubDto() {
         return new UserDto(UUID.randomUUID(), "test@example.com", "John", "Doe",
-                UserRole.CUSTOMER, Instant.now(), true);
+                "+994501234567", UserRole.CUSTOMER, Instant.now(), true);
     }
 
     @Test

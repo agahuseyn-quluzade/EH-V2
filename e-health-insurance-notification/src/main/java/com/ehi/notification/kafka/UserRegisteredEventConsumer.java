@@ -1,5 +1,7 @@
 package com.ehi.notification.kafka;
 
+import com.ehi.notification.entity.UserContact;
+import com.ehi.notification.repository.UserContactRepository;
 import com.ehi.notification.service.NotificationService;
 import com.ehi.infra.config.KafkaTopics;
 import com.ehi.infra.enums.NotificationChannel;
@@ -16,12 +18,27 @@ import org.springframework.stereotype.Component;
 public class UserRegisteredEventConsumer {
 
     private final NotificationService notificationService;
+    private final UserContactRepository userContactRepository;
 
     @KafkaListener(topics = KafkaTopics.USER_REGISTERED, groupId = "notification-service")
     public void consume(UserRegisteredEvent event) {
         log.info("Received UserRegisteredEvent for userId={}", event.userId());
 
+        userContactRepository.findByUserId(event.userId()).ifPresentOrElse(
+                existing -> {
+                    existing.setEmail(event.email());
+                    existing.setPhone(event.phone());
+                    userContactRepository.save(existing);
+                },
+                () -> userContactRepository.save(UserContact.builder()
+                        .userId(event.userId())
+                        .email(event.email())
+                        .phone(event.phone())
+                        .build())
+        );
+
         notificationService.send(
+                event.userId(),
                 event.userId(),
                 NotificationType.WELCOME,
                 NotificationChannel.EMAIL,

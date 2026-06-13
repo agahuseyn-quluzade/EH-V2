@@ -47,6 +47,8 @@ public class User {
     @Column(nullable = false)
     private UserRole role;
 
+    private String phone;
+
     @Builder.Default
     @Column
     private Boolean active = true;

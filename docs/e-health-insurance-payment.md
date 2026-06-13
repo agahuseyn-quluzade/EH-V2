@@ -1,21 +1,34 @@
 # e-health-insurance-payment
 
-## Status: DONE (tests complete)
+## Status: DONE (tests complete; Epoint gateway integrated — provider-switchable)
 ## Port: 8084
 ## Database: ehi_payment
 
 ## What's Done
-- [x] build.gradle
-- [x] Entity: Payment
-- [x] Repository: PaymentRepository
-- [x] Service: PaymentService, MockPaymentProcessor
-- [x] Controller: PaymentController
-- [x] DTO: PaymentDto
+- [x] build.gradle (+ webflux, mockwebserver for Epoint)
+- [x] Entity: Payment (+ Epoint fields), SavedCard
+- [x] Repository: PaymentRepository, SavedCardRepository
+- [x] Service: PaymentService, PaymentProcessor (MockPaymentProcessor | EpointPaymentProcessor), EpointPaymentService
+- [x] Controller: PaymentController, EpointCallbackController
+- [x] DTO: PaymentDto, CardRegistrationResponse, SavedCardDto
+- [x] Epoint client: EpointClient, EpointSignature, request/response records
 - [x] Kafka producer: payment.completed, payment.failed
 - [x] Kafka consumer: policy.created, claim.decision (APPROVED)
 - [x] GlobalExceptionHandler
-- [x] application.yml
+- [x] application.yml (+ payment.provider flag, epoint.* config)
 - [x] Dockerfile
+
+## Payment Provider (mock | epoint)
+
+`payment.provider` (env `PAYMENT_PROVIDER`, default `mock`) selects the `PaymentProcessor`
+implementation via `@ConditionalOnProperty`:
+
+- **`mock`** (default) — `MockPaymentProcessor`: 2s async delay then auto-COMPLETED. Unchanged
+  legacy behaviour; runs with no Epoint keys.
+- **`epoint`** — `EpointPaymentProcessor`: real Epoint.az gateway (see "Epoint Integration").
+
+`EpointPaymentService` (callback handling, status refresh, payout-card registration) is always
+present regardless of the flag, but its Epoint endpoints only do useful work when real keys are set.
 
 ## Entities
 
@@ -28,8 +41,26 @@
 | referenceType | PaymentReferenceType | not null — POLICY_PREMIUM, CLAIM_PAYOUT |
 | amount | BigDecimal | not null |
 | status | PaymentStatus | not null — PENDING, COMPLETED, FAILED, REFUNDED |
-| transactionId | String | nullable — set on completion ("TXN-" + UUID) |
-| failureReason | String | nullable — set if processing fails validation |
+| transactionId | String | nullable — mock: "TXN-" + UUID; Epoint: gateway transaction |
+| failureReason | String | nullable — set if processing fails validation (truncated to 255) |
+| epointTransaction | String | nullable — Epoint transaction id (key for get-status / reverse) |
+| checkoutUrl | String | nullable (length 1024) — Epoint hosted payment page for POLICY_PREMIUM |
+| bankTransaction | String | nullable — bank transaction from Epoint callback |
+| rrn | String | nullable — Retrieval Reference Number (successful Epoint tx only) |
+| cardMask | String | nullable — masked PAN from Epoint, format `123456******1234` |
+| createdAt | Instant | `@PrePersist` |
+| updatedAt | Instant | `@PrePersist`/`@PreUpdate` |
+
+### SavedCard (`saved_cards`) — Epoint payout cards
+
+| Field | Type | Notes |
+|---|---|---|
+| id | UUID | PK, generated |
+| userId | UUID | not null, plain column, no FK |
+| cardId | String | not null, **unique** — Epoint `card_id` from card-registration |
+| cardMask | String | nullable — set on activation callback |
+| cardName | String | nullable — cardholder name, set on activation callback |
+| active | boolean | not null — `false` until Epoint registration callback confirms |
 | createdAt | Instant | `@PrePersist` |
 | updatedAt | Instant | `@PrePersist`/`@PreUpdate` |
 
@@ -40,12 +71,105 @@
 | GET | /api/v1/payments/me | My payments | CUSTOMER |
 | GET | /api/v1/payments/{id} | Payment detail | authenticated (owner or ADMIN — 404 if non-owner & non-admin) |
 | GET | /api/v1/payments?page=&size= | All payments, paginated | ADMIN |
+| POST | /api/v1/payments/{id}/refresh-status | Re-query Epoint get-status & sync local payment | authenticated (owner or ADMIN — 404 pattern) |
+| POST | /api/v1/payments/cards/register | Start Epoint payout-card registration → returns `redirectUrl` | CUSTOMER |
+| GET | /api/v1/payments/cards/me | My saved payout cards | CUSTOMER |
+| POST | /api/v1/payments/epoint/callback | Epoint server-to-server result (form `data`+`signature`) | **public** (signature-verified; gateway `public-paths`) |
 
 ## Kafka
 - Produces: payment.completed, payment.failed
 - Consumes: policy.created, claim.decision (only when `decision == APPROVED`)
 
+## Epoint Integration
+
+Integrates the Epoint.az gateway (API v1.0.3, see root `API Epoint en.pdf`). Active only when
+`payment.provider=epoint`. Mock provider is the default and unaffected.
+
+### Config (`epoint.*`)
+
+| Key | Env | Default | Notes |
+|---|---|---|---|
+| base-url | EPOINT_BASE_URL | `https://epoint.az/api/1` | API root |
+| public-key | EPOINT_PUBLIC_KEY | _(empty)_ | merchant id (`public_key`) |
+| private-key | EPOINT_PRIVATE_KEY | _(empty)_ | secret signing key |
+| language | EPOINT_LANGUAGE | `az` | page language |
+| currency | _(fixed)_ | `AZN` | only supported value |
+| success-redirect-url | EPOINT_SUCCESS_REDIRECT_URL | `http://localhost:5173/payments/success` | browser redirect |
+| error-redirect-url | EPOINT_ERROR_REDIRECT_URL | `http://localhost:5173/payments/error` | browser redirect |
+| timeout-seconds | EPOINT_TIMEOUT_SECONDS | `15` | WebClient call timeout |
+
+`result_url` (server-to-server callback) is **not** a request param — it is configured once in the
+Epoint merchant cabinet and must point at `…/api/v1/payments/epoint/callback` through the gateway.
+
+### Signature
+`EpointSignature.sign(privateKey, data)` = `base64(sha1(privateKey + data + privateKey))`, where
+`data = base64(json)`. Verified against the official doc test vector in `EpointSignatureTest`.
+Callbacks are authenticated by recomputing the signature over the received `data` (`verify`).
+
+### Client (`EpointClient`, WebClient, `application/x-www-form-urlencoded`)
+
+| Method | Endpoint | Used for |
+|---|---|---|
+| createPayment | `/request` | POLICY_PREMIUM checkout → returns `redirect_url` + `transaction` |
+| getStatus | `/get-status` | refresh-status endpoint |
+| registerPayoutCard | `/card-registration` (`refund=1`) | payout card setup → returns `card_id` + `redirect_url` |
+| payout | `/refund-request` | CLAIM_PAYOUT disbursement to a saved card |
+| reverse | `/reverse` | (available; not yet wired to an endpoint) |
+
+### Flows
+
+**POLICY_PREMIUM (purchase).** `policy.created` → `processPayment` saves PENDING →
+`EpointPaymentProcessor.createCheckout` calls `/request`, stores `epointTransaction` + `checkoutUrl`,
+payment **stays PENDING**. Customer is redirected to `checkoutUrl`, pays on Epoint, and Epoint POSTs
+the result to the callback → `payment.completed` (or `payment.failed`). The HTTP purchase response is
+PENDING; the frontend polls `/me` (or calls `/refresh-status`) for the final state.
+
+**CLAIM_PAYOUT (disbursement).** Requires a registered payout card. `claim.decision(APPROVED)` →
+`processPayment` saves PENDING → `EpointPaymentProcessor.payout` looks up the user's most recent
+active card and calls `/refund-request`. Success → COMPLETED + `payment.completed` synchronously; no
+card / gateway error → FAILED + `payment.failed`.
+
+**Payout card registration.** `POST /cards/register` → `/card-registration` (`refund=1`) → a
+`SavedCard` is persisted `active=false` and `redirect_url` is returned. Customer enters card details
+on Epoint; the registration result hits the **same callback** with a `card_id` (no `order_id`) →
+card is flipped `active=true` with mask/name.
+
+**Callback dispatch.** `handleCallback` verifies the signature, base64+JSON-decodes `data`, then:
+`order_id` present → payment result (COMPLETED / FAILED / REFUNDED by `status`); else `card_id`
+present → card activation. `success` on an already-COMPLETED payment is an idempotent skip (mirrors
+the existing duplicate-delivery guard). Unknown `order_id`/`card_id` is logged and ignored.
+
 ## Decisions & Notes
+
+### Epoint integration (added later)
+
+- **Provider abstraction.** Introduced `PaymentProcessor` interface; `MockPaymentProcessor` and
+  `EpointPaymentProcessor` are selected by `@ConditionalOnProperty(payment.provider)` (`mock` default,
+  `matchIfMissing=true`). `PaymentServiceImpl` now depends on the interface, not the concrete mock —
+  its logic (idempotency guard, invalid-amount → FAILED) is unchanged.
+- **No new event types.** Epoint reuses the existing `payment.completed` / `payment.failed` events, so
+  downstream consumers (policy activation, claim payout bookkeeping) are untouched.
+- **POLICY_PREMIUM stays async via callback, not a 2s sleep.** `createCheckout` leaves the payment
+  PENDING and the Epoint server-to-server callback drives the terminal state. `refresh-status`
+  (`/get-status`) is a manual fallback if the callback is missed.
+- **Callback is the only public payment endpoint.** Added to both `SecurityConfig.permitAll` and the
+  gateway `public-paths`. It is authenticated by Epoint signature verification, not JWT (Epoint sends
+  no token). All other new endpoints keep the role-based `@PreAuthorize` pattern.
+- **One callback endpoint, two payload shapes.** Epoint posts both payment results and card-registration
+  results to `result_url`; dispatch is by presence of `order_id` (payment) vs `card_id` (card).
+- **`order_id` == our `payment.getId()`.** We send the payment UUID as Epoint's `order_id`, so the
+  callback maps straight back with no extra lookup table.
+- **Liquibase migrations added; `ddl-auto: none`.** Three changelogs: `001-create-payments` (original
+  table), `002-add-epoint-columns` (epointTransaction, checkoutUrl, bankTransaction, rrn, cardMask),
+  `003-create-saved-cards`. `ddl-auto` is `none`; schema is fully managed by Liquibase.
+- **`failureReason` truncated to 255 chars** before persist (Epoint messages can be long).
+- **`reverse`/refund path is built in the client but not wired** to an endpoint — REFUNDED status is
+  only reachable via a `returned` callback today. Left as a deliberate extension point.
+- Added `spring-boot-starter-webflux` (WebClient) and test-scope `okhttp3:mockwebserver` — same as the
+  ai service.
+
+### Original (mock) notes
+
 - Payment is MOCK for MVP — 2 second async delay then auto-complete (`MockPaymentProcessor`).
 - Endpoints corrected from the doc's original `/api/payments/...` to `/api/v1/payments/...` (same correction as ai/gw).
 - Package root: `com.ehi.payment`. Same Gradle setup as claim (Gradle 8.10.2 wrapper, `io.spring.dependency-management` 1.1.7, JDK 17 `Contents/Home` path in `gradle.properties`).
@@ -98,12 +222,31 @@
 - 🟢 `MockPaymentProcessor` swallows `InterruptedException` and returns, leaving the payment PENDING
   forever with no retry (acceptable for a mock).
 
-## Testing (DONE — 22 tests, all green)
+## Testing (DONE — 45 tests, all green)
 
 Stack: JUnit 5 + Mockito + AssertJ (unit); `@SpringBootTest` + `@EmbeddedKafka` + running Compose
-Postgres (IT).
+Postgres (IT). Original 22 mock-flow tests + 23 Epoint tests. Run in a `gradle:8.10.2-jdk17` Docker
+container (host has no JDK 17); IT needs the `ehi_payment_test` DB on Compose Postgres.
 
-### Implemented test classes (all passing, 22 tests total)
+### Epoint test classes (23 tests)
+
+- **`EpointSignatureTest`** (4 tests): `sign` reproduces the **official Epoint doc test vector**
+  (`bH9cG854p/wHLf5j6pp6LBI+wBs=`); `verify` accepts a valid signature and rejects tampered data /
+  wrong key. This pins the signing scheme against the spec.
+- **`EpointPaymentProcessorTest`** (7 tests): unknown payment id is a no-op; POLICY_PREMIUM stores
+  `checkoutUrl`/`epointTransaction` and stays PENDING (no events); POLICY_PREMIUM → FAILED +
+  `payment.failed` when Epoint returns an error status and when the client throws; CLAIM_PAYOUT →
+  FAILED when no active card (no `/refund-request` call); CLAIM_PAYOUT → COMPLETED + `payment.completed`
+  with bank/rrn/mask populated on payout success; → FAILED + event when payout is rejected.
+- **`EpointPaymentServiceImplTest`** (12 tests): callback rejects an invalid signature (no repo
+  access); `success` completes + publishes `payment.completed`; duplicate `success` on a COMPLETED
+  payment is an idempotent skip; `failed` → FAILED + `payment.failed`; unknown `order_id` ignored;
+  card-registration `success` activates the card (mask/name), `failed` leaves it inactive;
+  `refreshStatus` 404s for non-owner, errors when no Epoint transaction, and applies a `success`
+  get-status result; `startCardRegistration` saves an inactive card + returns redirect, and throws
+  when Epoint rejects.
+
+### Implemented test classes (original mock flow, 22 tests)
 
 - **`PaymentServiceImplTest`** (9 tests): `processPayment` saves PENDING and hands off to
   `MockPaymentProcessor` for positive amounts; saves FAILED + publishes `PaymentFailedEvent` for

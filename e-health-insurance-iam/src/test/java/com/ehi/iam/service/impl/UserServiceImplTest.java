@@ -50,7 +50,7 @@ class UserServiceImplTest {
 
     private UserDto sampleDto(User user) {
         return new UserDto(user.getId(), user.getEmail(), user.getFirstName(),
-                user.getLastName(), user.getRole(), Instant.now(), user.getActive());
+                user.getLastName(), user.getPhone(), user.getRole(), Instant.now(), user.getActive());
     }
 
     @Test

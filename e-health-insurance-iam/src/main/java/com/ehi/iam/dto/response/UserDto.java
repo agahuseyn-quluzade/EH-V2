@@ -12,6 +12,7 @@ public record UserDto(
         String email,
         String firstName,
         String lastName,
+        String phone,
         UserRole role,
         Instant createdAt,
         Boolean active

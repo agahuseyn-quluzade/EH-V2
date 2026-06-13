@@ -34,7 +34,7 @@ class IamAuthIT {
     void register_login_thenAccessProfile() {
         var reg = restTemplate.postForEntity(
                 "/api/v1/auth/register",
-                new RegisterRequest("it-flow@example.com", "password123", "IT", "User"),
+                new RegisterRequest("it-flow@example.com", "password123", "IT", "User", "+994501111111"),
                 Map.class);
         assertThat(reg.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -61,7 +61,7 @@ class IamAuthIT {
     void suspendedUser_cannotLogin() {
         restTemplate.postForEntity(
                 "/api/v1/auth/register",
-                new RegisterRequest("suspended-it@example.com", "password123", "Sus", "User"),
+                new RegisterRequest("suspended-it@example.com", "password123", "Sus", "User", "+994502222222"),
                 Map.class);
 
         // Suspend directly via repository (avoids needing an admin token)

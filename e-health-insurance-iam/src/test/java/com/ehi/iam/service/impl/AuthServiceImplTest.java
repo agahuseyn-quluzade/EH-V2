@@ -43,7 +43,7 @@ class AuthServiceImplTest {
 
     @Test
     void register_hashesPassword_andDefaultsToCustomer() {
-        var request = new RegisterRequest("test@example.com", "password123", "John", "Doe");
+        var request = new RegisterRequest("test@example.com", "password123", "John", "Doe", "+994501234567");
         when(userRepository.existsByEmail(request.email())).thenReturn(false);
         when(passwordEncoder.encode(request.password())).thenReturn("hashed");
 
@@ -64,7 +64,7 @@ class AuthServiceImplTest {
 
     @Test
     void register_throwsDuplicateResourceException_whenEmailExists() {
-        var request = new RegisterRequest("exists@example.com", "password123", "Jane", "Doe");
+        var request = new RegisterRequest("exists@example.com", "password123", "Jane", "Doe", "+994501234568");
         when(userRepository.existsByEmail(request.email())).thenReturn(true);
 
         assertThatThrownBy(() -> authService.register(request))
@@ -73,7 +73,7 @@ class AuthServiceImplTest {
 
     @Test
     void register_publishesUserRegisteredEvent() {
-        var request = new RegisterRequest("new@example.com", "password123", "New", "User");
+        var request = new RegisterRequest("new@example.com", "password123", "New", "User", "+994501234569");
         when(userRepository.existsByEmail(request.email())).thenReturn(false);
         when(passwordEncoder.encode(anyString())).thenReturn("hashed");
 

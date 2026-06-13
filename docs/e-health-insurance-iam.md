@@ -19,15 +19,19 @@
 - [x] Planned Additions implemented: 4 new endpoints (change password, change role, change status, search users)
 
 ## Entities
+
 ### User (`users` table)
+
 | Field | Type | Notes |
-|---|---|---|
+| --- | --- | --- |
 | id | UUID | PK, generated |
 | email | String | unique, not null |
 | password | String | hashed, not null |
 | firstName | String | not null |
 | lastName | String | not null |
+| phone | String | nullable — added via changelog 002-add-phone |
 | role | UserRole (infra enum) | not null, stored as STRING |
+| active | boolean | not null, default true |
 | createdAt | Instant | set on persist |
 | updatedAt | Instant | set on persist/update |
 
@@ -47,7 +51,8 @@
 | GET | /api/v1/users/search?query= | Search users by email/name (paginated) | ADMIN, STAFF |
 
 ## Kafka
-- Produces: user.registered (`UserRegisteredEventProducer`, `kafka/`, fires from `AuthServiceImpl.register()` after save, key = userId, value = `UserRegisteredEvent`)
+
+- Produces: user.registered (`UserRegisteredEventProducer`, `kafka/`, fires from `AuthServiceImpl.register()` after save, key = userId, value = `UserRegisteredEvent` — includes `phone` field)
 - Consumes: (none)
 
 ## Planned Additions (DONE — implemented)

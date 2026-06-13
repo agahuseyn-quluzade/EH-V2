@@ -1,15 +1,15 @@
 databaseChangeLog:
   - changeSet:
-      id: 001-create-payments
+      id: 001-create-notifications
       author: ehi
       preConditions:
         onFail: MARK_RAN
         not:
           tableExists:
-            tableName: payments
+            tableName: notifications
       changes:
         - createTable:
-            tableName: payments
+            tableName: notifications
             columns:
               - column:
                   name: id
@@ -23,18 +23,29 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: reference_id
+                  name: correlation_id
                   type: uuid
-                  constraints:
-                    nullable: false
               - column:
-                  name: reference_type
+                  name: type
                   type: varchar(255)
                   constraints:
                     nullable: false
               - column:
-                  name: amount
-                  type: numeric(38,2)
+                  name: channel
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: recipient
+                  type: varchar(255)
+              - column:
+                  name: subject
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: body
+                  type: TEXT
                   constraints:
                     nullable: false
               - column:
@@ -43,11 +54,10 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: transaction_id
-                  type: varchar(255)
-              - column:
-                  name: failure_reason
-                  type: varchar(255)
+                  name: retry_count
+                  type: int
+                  constraints:
+                    nullable: false
               - column:
                   name: created_at
                   type: TIMESTAMP(6) WITH TIME ZONE
@@ -60,45 +70,16 @@ databaseChangeLog:
                     nullable: false
 
   - changeSet:
-      id: 002-add-epoint-columns
-      author: ehi
-      preConditions:
-        onFail: MARK_RAN
-        not:
-          columnExists:
-            tableName: payments
-            columnName: epoint_transaction
-      changes:
-        - addColumn:
-            tableName: payments
-            columns:
-              - column:
-                  name: epoint_transaction
-                  type: varchar(255)
-              - column:
-                  name: checkout_url
-                  type: varchar(1024)
-              - column:
-                  name: bank_transaction
-                  type: varchar(255)
-              - column:
-                  name: rrn
-                  type: varchar(255)
-              - column:
-                  name: card_mask
-                  type: varchar(255)
-
-  - changeSet:
-      id: 003-create-saved-cards
+      id: 002-create-user-contacts
       author: ehi
       preConditions:
         onFail: MARK_RAN
         not:
           tableExists:
-            tableName: saved_cards
+            tableName: user_contacts
       changes:
         - createTable:
-            tableName: saved_cards
+            tableName: user_contacts
             columns:
               - column:
                   name: id
@@ -111,30 +92,30 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     nullable: false
-              - column:
-                  name: card_id
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
                     unique: true
               - column:
-                  name: card_mask
+                  name: email
                   type: varchar(255)
-              - column:
-                  name: card_name
-                  type: varchar(255)
-              - column:
-                  name: active
-                  type: boolean
                   constraints:
                     nullable: false
               - column:
-                  name: created_at
-                  type: TIMESTAMP(6) WITH TIME ZONE
-                  constraints:
-                    nullable: false
+                  name: phone
+                  type: varchar(50)
+
+  - changeSet:
+      id: 003-add-correlation-index
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          indexExists:
+            indexName: idx_notifications_correlation_type
+      changes:
+        - createIndex:
+            indexName: idx_notifications_correlation_type
+            tableName: notifications
+            columns:
               - column:
-                  name: updated_at
-                  type: TIMESTAMP(6) WITH TIME ZONE
-                  constraints:
-                    nullable: false
+                  name: correlation_id
+              - column:
+                  name: type

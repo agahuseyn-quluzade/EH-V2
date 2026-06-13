@@ -129,6 +129,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       <<: *jwt-secret
+      PAYMENT_PROVIDER: ${PAYMENT_PROVIDER:-mock}
+      EPOINT_PUBLIC_KEY: ${EPOINT_PUBLIC_KEY:-}
+      EPOINT_PRIVATE_KEY: ${EPOINT_PRIVATE_KEY:-}
+      EPOINT_SUCCESS_REDIRECT_URL: ${EPOINT_SUCCESS_REDIRECT_URL:-http://localhost:5173/payments/success}
+      EPOINT_ERROR_REDIRECT_URL: ${EPOINT_ERROR_REDIRECT_URL:-http://localhost:5173/payments/error}
     ports:
       - "8084:8084"
     networks:
@@ -168,6 +173,11 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       <<: *jwt-secret
+      AWS_ENABLED: ${AWS_ENABLED:-false}
+      AWS_REGION: ${AWS_REGION:-eu-central-1}
+      AWS_SES_FROM: ${AWS_SES_FROM:-no-reply@ehi.example.com}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
     ports:
       - "8086:8086"
     networks:

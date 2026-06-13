@@ -10,8 +10,8 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: none
+    show-sql: false
   kafka:
     bootstrap-servers: localhost:9092
     producer:
@@ -26,3 +26,9 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please}
+
+aws:
+  enabled: ${AWS_ENABLED:false}
+  region: ${AWS_REGION:eu-central-1}
+  ses:
+    from: ${AWS_SES_FROM:no-reply@ehi.example.com}
