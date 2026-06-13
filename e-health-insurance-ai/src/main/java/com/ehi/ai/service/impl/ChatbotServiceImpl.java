@@ -24,8 +24,14 @@ import java.util.UUID;
 public class ChatbotServiceImpl implements ChatbotService {
 
     private static final String SYSTEM_PROMPT =
-            "You are a helpful assistant for an e-health insurance company. "
-                    + "Answer questions about policies, claims, and coverage concisely and politely.";
+            "You are a customer-support assistant for an e-health insurance platform. "
+                    + "You only help with topics related to this platform: insurance plans, policies, "
+                    + "claims, coverage, payments, and how to use the service. "
+                    + "If the user asks for anything outside this scope - such as writing code, "
+                    + "general knowledge, math, or any unrelated topic - politely decline in one short "
+                    + "sentence and steer the conversation back to e-health insurance. Never fulfill "
+                    + "off-topic requests, even if the user insists or rephrases. "
+                    + "Answer on-topic questions concisely and politely.";
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatMessageMapper chatMessageMapper;

@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.024s</div>
+<div class="counter">0.017s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,22 +79,22 @@
 </thead>
 <tr>
 <td class="success">analyzeClaim_allowedForAgent()</td>
-<td class="success">0.004s</td>
+<td class="success">0.002s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">analyzeClaim_forbiddenForCustomer()</td>
-<td class="success">0.003s</td>
+<td class="success">0.002s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">getFraudCheck_allowedForAdmin()</td>
-<td class="success">0.007s</td>
+<td class="success">0.005s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">getFraudCheck_allowedForAgent()</td>
-<td class="success">0.003s</td>
+<td class="success">0.002s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -104,7 +104,7 @@
 </tr>
 <tr>
 <td class="success">getFraudCheck_forbiddenForCustomer()</td>
-<td class="success">0.004s</td>
+<td class="success">0.003s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -112,7 +112,7 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2026-06-13T11:19:03.446+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.ai.AiApplication for test class com.ehi.ai.controller.FraudControllerTest
+<pre>2026-06-13T19:03:46.708+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.ai.AiApplication for test class com.ehi.ai.controller.FraudControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -123,20 +123,19 @@
 
  :: Spring Boot ::                (v3.3.5)
 
-2026-06-13T11:19:03.462+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Starting FraudControllerTest using Java 21.0.11 with PID 92445 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-ai)
-2026-06-13T11:19:03.462+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : No active profile set, falling back to 1 default profile: &quot;default&quot;
-2026-06-13T11:19:03.590+04:00  WARN 92445 --- [e-health-insurance-ai] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-13T19:03:46.722+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Starting FraudControllerTest using Java 21.0.11 with PID 36596 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-ai)
+2026-06-13T19:03:46.722+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2026-06-13T19:03:46.858+04:00  WARN 36596 --- [e-health-insurance-ai] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 8e0c47fa-c445-4e12-af74-a728bf415ae2
+Using generated security password: 813b3e73-88ad-47c3-8310-cc3429ee533f
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-13T11:19:03.590+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-13T11:19:03.697+04:00  INFO 92445 --- [e-health-insurance-ai] [er-event-thread] kafka.controller.KafkaController         : [Controller id=0] Processing automatic preferred replica leader election
-2026-06-13T11:19:03.746+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-13T11:19:03.746+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-13T11:19:03.746+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-06-13T11:19:03.755+04:00  INFO 92445 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Started FraudControllerTest in 0.308 seconds (process running for 6.058)
+2026-06-13T19:03:46.859+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-13T19:03:46.963+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-13T19:03:46.963+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-13T19:03:46.964+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-13T19:03:46.971+04:00  INFO 36596 --- [e-health-insurance-ai] [    Test worker] c.ehi.ai.controller.FraudControllerTest  : Started FraudControllerTest in 0.261 seconds (process running for 5.325)
 </pre>
 </span>
 </div>
@@ -148,7 +147,7 @@ This generated password is for development use only. Your security configuration
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 13, 2026, 11:19:08 AM</p>
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 13, 2026, 7:03:52 PM</p>
 </div>
 </div>
 </body>

@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.ai.service.impl.AiClientServiceImplTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:04" hostname="Nijats-MacBook-Pro.local" time="3.247">
+<testsuite name="com.ehi.ai.service.impl.AiClientServiceImplTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T15:03:47" hostname="Mac" time="3.622">
   <properties/>
-  <testcase name="chatCompletion_returnsContentFromFirstChoice()" classname="com.ehi.ai.service.impl.AiClientServiceImplTest" time="0.23"/>
-  <testcase name="chatCompletion_slowResponse_timesOut()" classname="com.ehi.ai.service.impl.AiClientServiceImplTest" time="3.009"/>
-  <testcase name="chatCompletion_emptyChoices_throwsIllegalStateException()" classname="com.ehi.ai.service.impl.AiClientServiceImplTest" time="0.007"/>
-  <system-out><![CDATA[2026-06-13T11:19:05.316+04:00  WARN 92445 --- [e-health-insurance-ai] [    Test worker] c.e.ai.service.impl.AiClientServiceImpl  : OpenRouter call failed (model=test-model)
+  <testcase name="chatCompletion_returnsContentFromFirstChoice()" classname="com.ehi.ai.service.impl.AiClientServiceImplTest" time="0.605"/>
+  <testcase name="chatCompletion_slowResponse_timesOut()" classname="com.ehi.ai.service.impl.AiClientServiceImplTest" time="3.01"/>
+  <testcase name="chatCompletion_emptyChoices_throwsIllegalStateException()" classname="com.ehi.ai.service.impl.AiClientServiceImplTest" time="0.006"/>
+  <system-out><![CDATA[2026-06-13T19:03:47.700+04:00  INFO 36596 --- [e-health-insurance-ai] [er-event-thread] kafka.controller.KafkaController         : [Controller id=0] Processing automatic preferred replica leader election
+2026-06-13T19:03:48.846+04:00  WARN 36596 --- [e-health-insurance-ai] [    Test worker] c.e.ai.service.impl.AiClientServiceImpl  : OpenRouter call failed (model=test-model)
 
 reactor.core.Exceptions$ReactiveException: java.util.concurrent.TimeoutException: Did not observe any item or terminal signal within 1000ms in 'flatMap' (and no fallback has been configured)
 	at reactor.core.Exceptions.propagate(Exceptions.java:410) ~[reactor-core-3.6.11.jar:3.6.11]
