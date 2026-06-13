@@ -173,3 +173,33 @@ databaseChangeLog:
                   type: TIMESTAMP(6) WITH TIME ZONE
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 005-create-policy-coverages
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: policy_coverages
+      changes:
+        - createTable:
+            tableName: policy_coverages
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: policy_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: coverage_amount
+                  type: numeric(38,2)
+                  constraints:
+                    nullable: false

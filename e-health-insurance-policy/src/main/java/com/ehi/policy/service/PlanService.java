@@ -13,4 +13,6 @@ public interface PlanService {
     PlanDto getPlanById(UUID id);
 
     PlanDto createPlan(CreatePlanRequest request);
+
+    void deletePlan(UUID id);
 }

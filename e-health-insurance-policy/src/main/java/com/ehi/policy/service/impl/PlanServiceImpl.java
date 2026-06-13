@@ -2,11 +2,13 @@ package com.ehi.policy.service.impl;
 
 import com.ehi.infra.exception.DuplicateResourceException;
 import com.ehi.infra.exception.NotFoundException;
+import com.ehi.infra.exception.base.BadRequestException;
 import com.ehi.policy.dto.request.CreatePlanRequest;
 import com.ehi.policy.dto.response.PlanDto;
 import com.ehi.policy.entity.Plan;
 import com.ehi.policy.mapper.PlanMapper;
 import com.ehi.policy.repository.PlanRepository;
+import com.ehi.policy.repository.PolicyRepository;
 import com.ehi.policy.service.PlanService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,6 +23,7 @@ import java.util.UUID;
 public class PlanServiceImpl implements PlanService {
 
     private final PlanRepository planRepository;
+    private final PolicyRepository policyRepository;
     private final PlanMapper planMapper;
 
     @Override
@@ -55,5 +58,18 @@ public class PlanServiceImpl implements PlanService {
         PlanDto result = planMapper.toDto(planRepository.save(plan));
         log.info("Plan created: planId={}, name={}", result.id(), result.name());
         return result;
+    }
+
+    @Override
+    public void deletePlan(UUID id) {
+        Plan plan = planRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Plan", id));
+
+        if (policyRepository.existsByPlan_Id(id)) {
+            throw new BadRequestException("Cannot delete a plan that has existing policies");
+        }
+
+        planRepository.delete(plan);
+        log.info("Plan deleted: planId={}, name={}", id, plan.getName());
     }
 }

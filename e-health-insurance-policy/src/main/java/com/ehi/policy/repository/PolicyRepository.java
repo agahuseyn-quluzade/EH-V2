@@ -13,4 +13,6 @@ public interface PolicyRepository extends JpaRepository<Policy, UUID> {
     List<Policy> findByUserId(UUID userId);
 
     boolean existsByUserIdAndStatusIn(UUID userId, Collection<PolicyStatus> statuses);
+
+    boolean existsByPlan_Id(UUID planId);
 }

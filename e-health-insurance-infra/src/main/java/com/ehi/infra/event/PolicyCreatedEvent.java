@@ -11,6 +11,7 @@ public record PolicyCreatedEvent(
         UUID userId,
         UUID planId,
         String policyNumber,
-        BigDecimal premiumAmount
+        BigDecimal premiumAmount,
+        BigDecimal coverageAmount
 ) {
 }

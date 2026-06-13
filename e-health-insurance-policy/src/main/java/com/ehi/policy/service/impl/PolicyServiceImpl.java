@@ -68,6 +68,7 @@ public class PolicyServiceImpl implements PolicyService {
                 .planId(plan.getId())
                 .policyNumber(policy.getPolicyNumber())
                 .premiumAmount(policy.getPremiumAmount())
+                .coverageAmount(plan.getCoverageAmount())
                 .build());
 
         return policyMapper.toDto(policy);

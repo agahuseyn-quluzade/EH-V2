@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.ai.service.impl.RiskProfileServiceImplTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-06-13T15:03:51" hostname="Mac" time="0.057">
+<testsuite name="com.ehi.ai.service.impl.RiskProfileServiceImplTest" tests="8" skipped="0" failures="0" errors="0" timestamp="2026-06-13T20:21:18" hostname="Mac" time="0.044">
   <properties/>
-  <testcase name="recordFraudCheck_doesNotIncrementHighRiskCount_whenNotHighRisk()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.049"/>
+  <testcase name="recordFraudCheck_doesNotIncrementHighRiskCount_whenNotHighRisk()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.038"/>
   <testcase name="recordFraudCheck_createsNewProfile_whenNoneExists()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.001"/>
-  <testcase name="isHighRiskUser_falseWhenNoProfile()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.004"/>
+  <testcase name="isHighRiskUser_falseWhenNoProfile()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.001"/>
   <testcase name="isHighRiskUser_falseBelowThreshold()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.0"/>
-  <testcase name="getRiskProfile_throwsNotFound_whenMissing()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.0"/>
-  <testcase name="recordFraudCheck_updatesRunningAverage_andHighRiskCount_whenProfileExists()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.001"/>
-  <testcase name="isHighRiskUser_trueWhenHighRiskCountAtThreshold()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.0"/>
+  <testcase name="getRiskProfile_throwsNotFound_whenMissing()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.001"/>
+  <testcase name="recordFraudCheck_updatesRunningAverage_andHighRiskCount_whenProfileExists()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.0"/>
+  <testcase name="isHighRiskUser_trueWhenHighRiskCountAtThreshold()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.001"/>
   <testcase name="getRiskProfile_returnsDto_whenFound()" classname="com.ehi.ai.service.impl.RiskProfileServiceImplTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

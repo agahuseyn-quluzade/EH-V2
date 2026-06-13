@@ -12,6 +12,8 @@ export const policyApi = {
 
   createPlan: (body: PlanRequest) => api.post<Plan>(PLANS, body).then((r) => r.data),
 
+  deletePlan: (id: string) => api.delete(`${PLANS}/${id}`).then((r) => r.data),
+
   purchase: (body: PurchaseRequest) =>
     api.post<Policy>(POLICIES, body).then((r) => r.data),
 

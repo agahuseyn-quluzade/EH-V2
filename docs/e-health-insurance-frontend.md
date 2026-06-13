@@ -1,336 +1,84 @@
 # e-health-insurance-frontend
 
-## Status: Networked into Docker Compose (pre-existing app, adapted from EH-V2 → V3)
-## Port: 5173
-## Database: (none)
+> The web client — a React single-page app branded **SaglamOl**. Talks to the backend exclusively
+> through the API Gateway, with role-based areas for customers, staff, and admins.
 
-## What's Done
-- [x] Dockerfile (Vite dev server, `npm run dev -- --host 0.0.0.0`, port 5173)
-- [x] `.dockerignore` (`node_modules/`, `dist/`)
-- [x] Wired into `e-health-insurance-infra/docker-compose.yml` as the `frontend` service
-- [x] Full reconciliation of all API calls, types, and pages against V3 backend (see Reconciliation Progress)
-- [x] TypeScript build passing: `tsc -b --noEmit` returns zero errors
+| | |
+|---|---|
+| Stack | React 18 + TypeScript + Vite, React Router, Axios |
+| Dev server | http://localhost:5174 (Vite, `/api` proxied to the gateway) |
+| Backend | API Gateway at `VITE_GATEWAY_URL` (default `http://localhost:8080`) |
+| State | React context (auth, toasts) + local component state; no Redux |
 
-## Stack
-- Vite + React + TypeScript, axios-based API client (`src/api/client.ts`), JWT stored in `localStorage`.
-- `src/api/` has one module per backend service: `iam.ts`, `policy.ts`, `claim.ts`, `ai.ts`, `notification.ts`.
-- Pages split by role under `src/pages/{public,member,staff,admin}`.
+## Responsibilities
+- Public marketing/landing page and auth (login/register).
+- Customer area: browse plans, buy/cancel a policy, submit/track claims, chat with the AI assistant,
+  view notifications and profile.
+- Staff area: claim review queue and member search.
+- Admin area: plan management, user management, and oversight of policies.
 
-## Docker / Networking
-- `docker-compose.yml` (in `e-health-insurance-infra`) adds a `frontend` service: build context `../e-health-insurance-frontend`, port `5173:5173`, `depends_on: gw`, network `ehi-network`.
-- `vite.config.ts` proxies all `/api/**` requests server-side to `VITE_GATEWAY_URL` (default `http://localhost:8080`). In Compose this is overridden to `VITE_GATEWAY_URL: http://gw:8080` — the Vite dev server resolves `gw` via Docker DNS, so the browser never talks to the backend directly and there are no CORS concerns.
+## Project structure
+```
+src/
+  api/            axios client + per-service modules (iam, policy, claim, ai, notification)
+  components/     Layout, ProtectedRoute, shared UI (Badge, Field, PasswordInput, Modal, …)
+  context/        AuthContext (JWT + role), ToastContext
+  pages/
+    public/       LandingPage
+    auth/         LoginPage, RegisterPage
+    member/       Dashboard, Plans, Policy, Claims, NewClaim, ClaimDetail, Chat, Notifications, Profile
+    staff/        StaffDashboard, StaffQueue, StaffClaimReview, StaffMembers
+    admin/        AdminDashboard, AdminPlans, AdminPolicies, AdminUsers
+  styles/         global.css
+  types.ts        shared TypeScript types
+public/           logo.png (brand logo, also favicon)
+```
 
-## Decisions & Notes
-- `.env` ships with `VITE_USE_MOCKS=false` and `VITE_GATEWAY_URL=http://localhost:8080` — fine for `npm run dev` on the host, but Docker Compose overrides `VITE_GATEWAY_URL` to `http://gw:8080` via the `environment:` block.
-- **Role enum**: backend uses `CUSTOMER | STAFF | ADMIN`. The EH-V2 frontend used `MEMBER | STAFF | ADMIN`; `STAFF` is unchanged. `MEMBER` → `CUSTOMER` was the only role rename.
-- **ApiResponse wrapper**: every backend response is wrapped in `{ success: boolean, data: T }`. A response interceptor in `client.ts` unwraps this so callers always get `T` directly.
-- **JWT claim**: backend `JwtProvider` sets `userId` (camelCase) not `user_id`. Fixed in `decodeJwt()`.
-- **`GET /api/v1/policies/me`**: returns `List<PolicyDto>` (array), not a single object. All call sites pick the first ACTIVE policy or the first item.
-- **`logout`** is client-side only (no backend logout endpoint). `AuthContext.logout()` is synchronous — clears localStorage tokens and resets state.
+## Routing & access control
+Routes are guarded by `<ProtectedRoute roles={…}>`; unauthenticated users are redirected to login,
+and a wrong-role user is sent to their home page.
 
-## Reconciliation Progress (frontend ↔ V3 backend)
+| Area | Routes | Roles |
+|---|---|---|
+| Public | `/`, `/login`, `/register` | anyone |
+| Member | `/dashboard`, `/plans`, `/policy`, `/claims`, `/claims/new`, `/claims/:id`, `/chat`, `/notifications`, `/profile` | CUSTOMER |
+| Staff | `/staff`, `/staff/queue`, `/staff/claims/:id`, `/staff/members` | STAFF (some ADMIN) |
+| Admin | `/admin`, `/admin/plans`, `/admin/policies`, `/admin/users` | ADMIN |
 
-- [x] Step 1 — `src/api/client.ts`: unwrap `ApiResponse<T>`, fix token refresh path (`/api/v1/auth/refresh`), fix JWT decode claim name (`userId`), fix `extractError` for wrapped error format.
-- [x] Step 2 — `src/types.ts`: complete rewrite to match backend DTOs. Role is `CUSTOMER|STAFF|ADMIN`. Plan has `active: boolean` (not `status`). Policy has `policyNumber, premiumAmount`. Claim is flat (no nested decision object): `claimNumber, claimType, amount, description, riskScore, fraudFlags, aiExplanation, approvedAmount, rejectionReason, reviewedBy`. `RegisterRequest` has no `phone`. `UpdateUserRequest` has only `firstName/lastName`. Removed non-existent types: `PolicyStatistics`, `CoverageCheck`, `PlanStatus`.
-- [x] Step 3 — `src/api/iam.ts`: ROOT changed from `/api/iam` to `/api/v1`. Removed `logout()` (no endpoint), `changeRole()` (no endpoint). Remaining: `register, login, me, updateMe, getUser`.
-- [x] Step 4 — `src/api/policy.ts`: ROOT changed to `/api/v1`. `myPolicy()` → `myPolicies()` returns `Policy[]`. `cancelPolicy` uses PUT (no body). Added `getAllPolicies(page, size)`. Removed: `comparePlans, updatePlan, retirePlan, activatePlan, myPolicyHistory, renewPolicy, checkCoverage, adminSearchPolicies, adminMemberPolicies, adminPurchaseForMember, adminStatistics`.
-- [x] Step 5 — `src/api/claim.ts`: ROOT changed to `/api/v1/claims`. `review()` uses PUT. `uploadEvidence` sends only `file` (no `fileType`). Added `getAllClaims(status?, page, size)` returning `SpringPage<Claim>`. Removed: `queue()` (no endpoint), `listEvidence()` (no endpoint), `downloadEvidence()` (no endpoint).
-- [x] Step 6 — `src/api/ai.ts`: complete rewrite. Endpoints: `chat({message, sessionId?})` → `POST /api/v1/ai/chatbot` (returns `{sessionId, reply, timestamp}`), `getChatHistory(sessionId)` → `GET /api/v1/ai/chatbot/history`, `getFraudCheck(claimId)` → `GET /api/v1/ai/fraud-checks/{claimId}`, `analyzeClaim(claimId)` → `POST /api/v1/ai/claims/{claimId}/analyze`, `getRiskProfile(userId)` → `GET /api/v1/ai/risk-profile/{userId}`.
-- [x] Step 7 — `src/api/notification.ts`: ROOT changed from `/api/notification/notifications` to `/api/v1/notifications`.
-- [x] Step 8 — `src/context/AuthContext.tsx`: role fallback `"MEMBER"` → `"CUSTOMER"`, homePathForRole `"CUSTOMER"→"/dashboard"` / `"STAFF"→"/staff"`. `logout()` is now sync (no backend call).
-- [x] Step 9 — `src/utils/format.ts`: label maps updated for `CUSTOMER/STAFF/ADMIN`, `PENDING/ACTIVE/CANCELLED`, `SUBMITTED/UNDER_REVIEW/APPROVED/REJECTED`, `HOSPITALIZATION/MEDICATION/DENTAL/CONSULTATION`. Removed: `planStatusLabels, coverageDecisionLabels, recommendedActionLabels, evidenceTypeLabels, percent()`.
-- [x] Step 10 — `src/App.tsx`: role guards updated (`"MEMBER"→"CUSTOMER"`; `STAFF` unchanged).
-- [x] Step 11 — Member pages updated:
-  - `PlansPage`: filter `p.active === true`, show `premiumAmount/coverageAmount`, removed AI recommend modal and plan compare feature, purchase sends no `startDate`.
-  - `PolicyPage`: uses `myPolicies()` array, shows `policyNumber/premiumAmount`, removed history/coverage-check/renew/cancel-reason.
-  - `NewClaimPage`: form has `claimType` dropdown + `amount` + `description`; removed `procedureCode/diagnosisCode/providerName/serviceDate`.
-  - `ClaimsPage`: filter values are backend `ClaimStatus` values; columns show `claimNumber/claimType/amount/approvedAmount/status/createdAt`.
-  - `ClaimDetailPage`: flat `Claim` fields; AI button calls `analyzeClaim()` returning `FraudAiResponse`; evidence list removed (no list endpoint).
-  - `ChatPage`: session-based chat (UUID `sessionId`), `res.reply` field, no conversation sidebar.
-  - `NotificationsPage`: uses `n.recipient` (not `n.recipientEmail`), `n.type` (not `n.template`).
-  - `ProfilePage`: removed `phone` field and `user.status/lastLoginAt`.
-  - `DashboardPage`: uses `myPolicies()`, shows `policyNumber/premiumAmount`, claim filters use `SUBMITTED||UNDER_REVIEW`.
-- [x] Step 12 — Staff pages updated:
-  - `StaffQueuePage`: replaced `claimApi.queue()` with `getAllClaims("UNDER_REVIEW", 0, 50)`.
-  - `StaffDashboardPage`: replaced `claimApi.queue()` with `getAllClaims("UNDER_REVIEW", 0, 20)`, fixed `submittedAt→createdAt`, `providerName→claimType`.
-  - `StaffClaimReviewPage`: uses `aiApi.analyzeClaim()` → `FraudAiResponse`, review uses `rejectionReason` (not `reason`), shows flat fraud fields.
-  - `StaffMembersPage`: removed `adminMemberPolicies()` call, removed `phone/status/lastLoginAt` display.
-- [x] Step 13 — Admin pages updated:
-  - `AdminUsersPage`: removed role-change UI entirely; lookup by UUID only.
-  - `AdminPlansPage`: form has 5 fields matching `CreatePlanRequest`; removed edit/retire/activate (no endpoints).
-  - `AdminPoliciesPage`: uses `getAllPolicies(page, size)`; removed status/member filter and "purchase for member" modal.
-  - `AdminDashboardPage`: removed `adminStatistics()` and `PolicyStatistics` type (no endpoint); uses `getAllClaims("UNDER_REVIEW")` for queue count.
-- [x] Step 14 — `src/components/Layout.tsx`: role guard uses `"STAFF"` (unchanged from V2), logout changed from async to sync.
-- [x] Step 15 — `src/pages/public/LandingPage.tsx`: fixed plan filter `p.active === true`, fixed plan fields (`premiumAmount/coverageAmount/durationMonths`), removed `percent()` import.
-- [x] Step 16 — TypeScript build: `tsc -b --noEmit` passes with zero errors.
+## API layer (`src/api`)
+- **`client.ts`** — a single Axios instance:
+  - Request interceptor attaches `Authorization: Bearer <accessToken>`.
+  - Response interceptor **unwraps** `ApiResponse<T>` → `T`.
+  - On `401`, transparently refreshes the token (once) and retries; on failure, logs out.
+- **`iam.ts`, `policy.ts`, `claim.ts`, `ai.ts`, `notification.ts`** — typed wrappers per service.
 
-## Known Gaps / Deferred Features (frontend calls with NO matching V3 backend endpoint)
-Per project decision: these are **not implemented**. The corresponding frontend UI is hidden or shows an info banner. Revisit only if/when the backend gains these endpoints.
+## Auth flow
+- `AuthContext` stores the JWT (localStorage) and decodes the role.
+- Login/Register call IAM, store the token pair, and route to the role's home page.
+- `PasswordInput` (shared component) renders password fields with a show/hide **eye toggle**.
 
-### IAM (`src/api/iam.ts`)
-- **`logout()`** — no `POST /api/v1/auth/logout` endpoint. Logout is client-side only (clears localStorage).
-- **`changeRole(userId, role)`** — no admin endpoint to change user roles. `AdminUsersPage` shows an info banner instead.
-- **List all users** — no `GET /api/v1/users` (admin paginated list). Admin and staff must look up by UUID.
+## Key behaviours
+- **Policy view** shows the user's `ACTIVE` (else `PENDING`) policy; cancelled/expired policies are
+  not shown as "current".
+- **Plans** purchase surfaces backend errors (e.g. "already have an active policy") as toasts.
+- **Claims** submit then poll for the AI auto-decision; uncertain claims show as under review.
+- **Chat** keeps the session id to preserve conversation context; the assistant's `**`/`*` markdown
+  markers are stripped for clean display.
+- After purchase, the policy/dashboard re-query a few seconds later to reflect async activation.
 
-### Policy (`src/api/policy.ts`)
-- **`updatePlan(id, ...)`** — no `PUT/PATCH /api/v1/plans/{id}`. `AdminPlansPage` has no edit button; shows info banner.
-- **`retirePlan` / `activatePlan`** — no endpoint to toggle `Plan.active` after creation. `AdminPlansPage` shows info banner.
-- **`comparePlans`** — no compare endpoint.
-- **`myPolicyHistory`** — no policy-history endpoint.
-- **`renewPolicy`** — no renewal endpoint.
-- **`checkCoverage`** — no `/coverage-check` endpoint. Coverage check UI removed from `ClaimDetailPage`.
-- **`adminMemberPolicies(userId)`** — no per-member policy list endpoint for admin/staff. Removed from `StaffMembersPage`.
-- **`adminPurchaseForMember`** — no admin endpoint to purchase a policy on behalf of a member.
-- **`adminStatistics()`** — no `GET /api/v1/policies/statistics` or equivalent. `AdminDashboardPage` shows only plan count and queue count.
-- **Policy status filter** — `GET /api/v1/policies` does not accept a `status` query param. `AdminPoliciesPage` has no status filter.
+## Configuration
+| Env var | Purpose |
+|---|---|
+| `VITE_GATEWAY_URL` | Gateway base URL the dev proxy / build targets (default `http://localhost:8080`) |
 
-### Claim (`src/api/claim.ts`)
-- **`listEvidence(claimId)`** — no `GET /api/v1/claims/{id}/evidence` endpoint (only `POST` to upload exists). Evidence list is hidden in `ClaimDetailPage`; upload still works.
-- **`downloadEvidence(claimId, evidenceId)`** — no download endpoint.
+`.env` is git-ignored; `.env.example` documents the variable.
 
-### AI (`src/api/ai.ts`)
-- **`recommend(...)` (plan recommendation quiz)** — no `/api/v1/ai/recommend` endpoint. `PlansPage` recommendation UI removed.
-- **`extractDocument(...)`** — no document-extraction endpoint.
+## Running
+- **Dev (recommended for frontend work):** `npm install && npm run dev` → http://localhost:5174 with
+  hot reload; `/api/*` is proxied to the gateway.
+- **Docker:** a containerized build is possible but the current compose setup runs the frontend via
+  the dev server / direct port; use the dev server for day-to-day work.
 
-### Notification (`src/api/notification.ts`)
-- **`sendEmail(...)`** — no manual send-email endpoint (notifications are Kafka-event-driven only).
-
-### Auth
-- **Refresh token rotation** — `POST /api/v1/auth/refresh` exists and is called, but the IAM service may not implement token revocation; logout is client-side only.
-
-## Planned: phone on registration (Option A — for notification SMS)
-
-> Supports the notification SMS/email feature (`docs/e-health-insurance-notification.md` →
-> "IMPLEMENTATION PLAN"). Prerequisite: the IAM `RegisterRequest` already accepts an optional
-> `phone` (`docs/e-health-insurance-iam.md` → "Planned: capture & publish phone"). This **reverses**
-> the earlier reconciliation note "`RegisterRequest` has no `phone`" (Step 2) for the register form
-> only. `phone` is **optional** — registration must still submit with the field left blank.
-
-- **`src/types.ts`** — add an optional `phone?: string` to `RegisterRequest`.
-- **Register page/form** (the component calling `iamApi.register`) — add an optional phone input
-  (label "Phone (optional)", `type="tel"`). Send `phone` only when non-empty (omit or send
-  `undefined`/`null` when blank so the backend `@Pattern` doesn't reject an empty string).
-- No change to `login`, `me`, or `updateMe`. Editing phone in the profile is **out of scope** unless
-  separately requested (the notification contact is captured at registration via the
-  `user.registered` event).
-- Verify with `tsc -b --noEmit` from the frontend dir.
-
-## Planned Additions (incremental — wire after IAM backend is built)
-
-> Depends on the four new IAM endpoints in `docs/e-health-insurance-iam.md` →
-> "Planned Additions". Build the backend first, then wire the frontend below.
-> Verify with `tsc -b --noEmit` (run from the frontend dir; the binary lives at
-> `node_modules/.bin/tsc`). These REPLACE the corresponding gaps noted above
-> (the "no role change endpoint" and AdminUsersPage limitations).
-
-### Types (`src/types.ts`)
-- Add `active?: boolean` to `UserProfile` (backend `UserDto` will include it; treat
-  missing/undefined as active).
-- Add request types:
-  ```ts
-  export interface ChangePasswordRequest { currentPassword: string; newPassword: string; }
-  export interface ChangeRoleRequest { role: Role; }
-  export interface ChangeStatusRequest { active: boolean; }
-  ```
-
-### API client (`src/api/iam.ts`)
-- Add to `iamApi` (ROOT is already `/api/v1`):
-  ```ts
-  changePassword: (body: ChangePasswordRequest) =>
-    api.post<void>(`${ROOT}/users/me/password`, body).then((r) => r.data),
-
-  changeRole: (id: string, body: ChangeRoleRequest) =>
-    api.patch<UserProfile>(`${ROOT}/users/${id}/role`, body).then((r) => r.data),
-
-  changeStatus: (id: string, body: ChangeStatusRequest) =>
-    api.patch<UserProfile>(`${ROOT}/users/${id}/status`, body).then((r) => r.data),
-
-  searchUsers: (query: string, page = 0, size = 20) =>
-    api.get<SpringPage<UserProfile>>(
-      `${ROOT}/users/search?query=${encodeURIComponent(query)}&page=${page}&size=${size}`
-    ).then((r) => r.data),
-  ```
-  (`SpringPage<T>` is already defined in `types.ts` and used by claim/policy modules.)
-
-### ProfilePage (`src/pages/member/ProfilePage.tsx`)
-- Add a "Şifrəni dəyiş" (change password) card/form: `currentPassword`, `newPassword`,
-  `newPasswordConfirm` fields. Validate `newPassword.length >= 8` and the confirm match
-  client-side, then call `iamApi.changePassword({ currentPassword, newPassword })`.
-  Toast success "Şifrə yeniləndi"; on error use `extractError`.
-
-### AdminUsersPage (`src/pages/admin/AdminUsersPage.tsx`)
-- **Remove** the info banner that says role change / user list aren't supported.
-- Add a **search box** using `iamApi.searchUsers(query)` → render a paginated table
-  (reuse the pagination pattern from `AdminPoliciesPage`). Keep the existing
-  lookup-by-UUID as a fallback if desired.
-- Per row / on the detail card, add:
-  - a **role dropdown** (`CUSTOMER` / `STAFF` / `ADMIN` from `roleLabels`) that calls
-    `iamApi.changeRole(id, { role })` and refreshes;
-  - a **suspend/activate toggle** that calls `iamApi.changeStatus(id, { active: !active })`;
-    show an active/suspended badge driven by `user.active` (undefined ⇒ active).
-- Do not surface role/status actions for the currently logged-in admin (the backend has
-  no self-guard; avoid letting an admin lock themselves out from the UI).
-
-### StaffMembersPage (`src/pages/staff/StaffMembersPage.tsx`)
-- Optionally upgrade the UUID-only lookup to use `iamApi.searchUsers(query)` (STAFF is
-  allowed on `/users/search`). Read-only — no role/status controls for agents.
-
-## UI Cleanup & English Localization (✅ Completed — frontend only, no backend changes)
-
-> Scope: presentation only. No backend field, DTO, endpoint, or API call was added, removed,
-> or renamed; all existing data fetches were kept — only what is rendered and the language
-> changed. Type gate: `node_modules/.bin/tsc -b --noEmit` (run from the frontend dir) passes
-> with zero errors.
-
-### 0. ✅ Global — translate the whole UI to English
-Every Azerbaijani string in `src/**` becomes English: page headers, buttons, table headers,
-form labels/placeholders, toasts, alerts, empty/error states, and the comments that label
-sections. Touch all pages under `pages/{auth,public,member,staff,admin}`, plus
-`components/Layout.tsx`, `components/ui.tsx`, `context/*`.
-- `src/utils/format.ts`:
-  - Switch locales `"az-Latn-AZ"` → `"en-US"` in `money`, `formatDate`, `formatDateTime`
-    (keep `currency: "AZN"` — amounts are still AZN).
-  - `roleLabels`: Customer / Agent / Administrator.
-  - `policyStatusLabels`: Pending / Active / Cancelled.
-  - `claimStatusLabels`: Submitted / Under review / Approved / Rejected.
-  - `notificationStatusLabels`: Pending / Sent / Failed.
-  - `claimTypeLabels`: Hospitalization / Medication / Dental / Consultation.
-- `Layout.tsx`: brand "E-Sağlamlıq" → "E-Health", "Sığorta Platforması" → "Insurance Platform",
-  all `*Nav` labels, "Çıxış" → "Log out", "İstifadəçi" → "User".
-
-Done: every page under `pages/{auth,public,member,staff,admin}`, `components/Layout.tsx`,
-`components/ui.tsx`, `context/AuthContext.tsx`, `context/ToastContext.tsx`, and
-`src/api/client.ts` are now fully English (locale `en-US`, currency `AZN` unchanged). No
-Azerbaijani strings remain under `src/**`.
-
-### 1. ✅ Member · ProfilePage (`pages/member/ProfilePage.tsx`)
-In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>` at lines ~143-163):
-- **Remove the "Rol" row** (the `<dt>Rol</dt>` block with the role `<Badge>`).
-- **Remove the "İstifadəçi ID" row** (the `<dt>İstifadəçi ID</dt>` block showing `user.id`).
-- Drop the now-unused `roleLabels` / `Badge` imports if nothing else uses them.
-- Keep E-mail and Registration date rows.
-
-Done: both rows removed; only "Email" and "Registered on" remain in "Account information".
-`Badge` and `roleLabels` imports dropped.
-
-### 2. ✅ Member · NotificationsPage (`pages/member/NotificationsPage.tsx`)
-- **Remove the status `<Badge>`** (the "Göndərilib"/Sent badge) from each notification row
-  (lines ~67-71). Keep the timestamp. Drop the `notificationStatusLabels` import (and `Badge`
-  if unused).
-
-Done: status badge removed from each row; `Badge` and `notificationStatusLabels` imports dropped.
-
-### 3. ✅ Member · ChatPage (`pages/member/ChatPage.tsx`)
-- **Delete the header subtitle** `<p>Sığorta ilə bağlı suallarınızı verin</p>` (line ~64).
-  Keep the title (→ "AI Assistant"). (The big empty-state example text in the chat body is
-  separate — leave it, just translate it.)
-
-Done: subtitle removed, only `<h1>AI Assistant</h1>` remains; empty-state examples translated.
-
-### 4. ✅ Member · ClaimsPage (`pages/member/ClaimsPage.tsx`)
-- **Remove the `SUBMITTED` filter button** — delete the `{ value: "SUBMITTED", label: ... }`
-  entry from the `FILTERS` array (line ~11). Rationale: AI auto-decides on submit, so claims
-  effectively never sit in `SUBMITTED`; the filter is dead. Leave the `Badge`/label mapping in
-  place (still referenced by `claimStatusLabels`).
-
-Done: `FILTERS` now `ALL / UNDER_REVIEW / APPROVED / REJECTED`; `claimStatusLabels` untouched.
-
-### 5. ✅ Member · PlansPage (`pages/member/PlansPage.tsx`) — plan-details popup
-- Keep the short `plan.description` on the card.
-- Make each plan card **clickable** (or add a small "Details" link/button) that opens a small
-  `Modal` (already imported in this file) showing that plan's full details — using **only the
-  existing fields**: `name`, `description`, `premiumAmount`, `coverageAmount`, `durationMonths`.
-  No new backend fields, no new API call. Keep the existing "Sığorta al" (Buy) flow working;
-  make sure the details-modal click and the buy-button click don't collide.
-- **"Remove smoke test in the plans":** there is *no* smoke-test code in the frontend. This is a
-  leftover seeded plan in the policy DB named exactly **"Smoke Test Plan"** (`active: false`).
-  It's already excluded from the member `activePlans` filter (`plans.filter(p => p.active)`), so
-  the member-facing PlansPage is unaffected. It **does** show up on
-  `pages/admin/AdminPlansPage.tsx` (which calls `listPlans()` with no active filter). Frontend-only
-  fix: filter it out there too, e.g. `plans.filter(p => p.name !== "Smoke Test Plan")` before
-  rendering the table. Backend/DB row is untouched.
-
-Done: plan card is clickable and opens a details `Modal` (name, description, premiumAmount,
-coverageAmount, durationMonths) with "Close" and "Buy insurance" actions; the existing Buy
-button calls `e.stopPropagation()` so the two don't collide. "Smoke Test Plan" exclusion is
-covered under item 8.
-
-### 6. ✅ Admin · AdminDashboardPage (`pages/admin/AdminDashboardPage.tsx`)
-- **Remove statistics entirely** ("statistika endpoint"): delete the info alert at lines ~38-41
-  ("Statistika endpoint-i ... dəstəklənmir") **and** the three `StatCard`s grid (lines ~43-60).
-  Remove the now-dead state/fetch they depended on (`plans`, `queue`, the `Promise.allSettled`)
-  unless still needed by item below.
-- **Remove the claim-approval access** ("claim təsdiq et" function): delete the
-  "🗂️ Baxış növbəsi" quick-link (lines ~74-76). After this the page is just the title +
-  "Quick links" (Plan management, Policies, Users). If nothing else needs `claimApi`, remove its
-  import and the queue fetch.
-
-Done: page rewritten to header + "Quick links" card (Plan Management, Policies, Users only);
-all dead state/fetches and unused imports (`useEffect`, `useState`, `claimApi`, `policyApi`,
-`Spinner`, `StatCard`, `Claim`, `Plan`, `money`) removed.
-
-### 7. ✅ Admin · remove claim-review access elsewhere (duplicates of item 6)
-The admin's ability to approve claims is also wired here — remove for consistency:
-- `components/Layout.tsx` → `adminNav`: delete the `{ to: "/staff/queue", label: "Baxış növbəsi" }`
-  entry (line ~35).
-- `App.tsx`: drop `"ADMIN"` from the role guards on `/staff/queue` and `/staff/claims/:id`
-  (lines ~63-64). ⚠️ Decide whether ADMIN should keep *any* staff access (`/staff`, `/staff/members`)
-  — see Open Questions. (`homePathForRole` already sends ADMIN to `/admin`, so this is safe.)
-
-Done: `adminNav` "Baxış növbəsi" entry removed from `Layout.tsx`; `/staff/queue` and
-`/staff/claims/:id` route guards in `App.tsx` are now `["AGENT"]` only. `/staff` and
-`/staff/members` left unchanged (`["AGENT", "ADMIN"]`) per the resolved decision below.
-
-### 8. ✅ Admin · AdminPlansPage — filter out "Smoke Test Plan" (`pages/admin/AdminPlansPage.tsx`)
-
-Done: added `visiblePlans = plans.filter((p) => p.name !== "Smoke Test Plan")`, used for the
-empty-state check and table rendering; `listPlans()`/`createPlan()` calls unchanged.
-
-### 9. ✅ Admin · AdminUsersPage (`pages/admin/AdminUsersPage.tsx`)
-- In the "Search by ID" card, change the field label **`İstifadəçi ID (UUID)` → `User ID`**
-  (drop the "(UUID)" parenthetical only — line ~225). No other change; the lookup still works.
-
-Done: `<Field label="İstifadəçi ID (UUID)">` → `<Field label="User ID">`; lookup behavior unchanged.
-
-### Duplicate-logic audit (where the same removed concept appears elsewhere — for awareness)
-- **Role shown elsewhere:** the sidebar user chip (`Layout.tsx` line ~85) and the AdminUsers
-  management table also render the role. The user only asked to remove it from the **member
-  profile** card — leave the sidebar chip and the admin management table (the table is the role
-  *management* control). Translate them, don't remove.
-- **"User ID" shown elsewhere:** `StaffClaimReviewPage` shows the claimant's `userId` (line ~110)
-  and `StaffClaimReviewPage`/admin show policy/claim IDs — these are operational identifiers for
-  agents, a different context from the member's own-profile ID. Out of scope; leave them.
-- **`SUBMITTED` ("Təqdim edilib") elsewhere:** `StaffDashboardPage` has a column **header**
-  literally "Təqdim edilib" (line ~74) that means *submitted date* (renders `createdAt`), not the
-  status — translate it to "Submitted" (date), don't delete the column. `DashboardPage` counts
-  `SUBMITTED || UNDER_REVIEW` as "pending" — keep the logic, just translate the label.
-- **Notification status badge:** only the member `NotificationsPage` renders it; no staff/admin
-  notifications page exists.
-
-### Resolved decisions
-1. Smoke-test plan name confirmed as "Smoke Test Plan" (see item 5) — no longer open.
-2. ADMIN loses only the claim-review queue/page access (item 7: `/staff/queue` and
-   `/staff/claims/:id` role guards + the `adminNav` "Baxış növbəsi" link). The `/staff` dashboard
-   and `/staff/members` routes already aren't linked from `adminNav`, so leave their role guards
-   as-is — no extra admin-facing change either way.
-
-## Review Findings (see root `check.md` for full detail)
-
-- 🟢 The gateway returns a bare `401` with an empty body (see gw doc), so `extractError` should keep
-  a sensible fallback message for empty-body error responses.
-- 🟢 `ApiResponse` unwrap and pagination handling are consistent; no functional issues found.
-
-## Testing (required — not yet implemented)
-
-Stack: **Vitest + React Testing Library + MSW** (mock the gateway at the network layer).
-- **API modules** (`src/api/*.ts`): `client.ts` unwraps `ApiResponse<T>` to `T`, decodes the
-  `userId` JWT claim, and routes 401s to `onAuthFailure`; `iam.ts`/`policy.ts`/`claim.ts` hit the
-  correct `/api/v1/...` paths with the right verbs (e.g. `changeRole` → PATCH `/users/{id}/role`).
-- **Auth/role flows**: `AuthContext` login stores tokens and resolves the role;
-  `homePathForRole` maps CUSTOMER→/dashboard, STAFF→/staff, ADMIN→/admin; route guards block the
-  wrong role.
-- **Key pages** (with MSW): `ProfilePage` change-password client validation (min 8, confirm match);
-  `AdminUsersPage` search → role dropdown → suspend toggle, and the **self-guard** (no
-  role/status controls on the current admin's own row); claim submit and review happy paths.
-- `extractError` falls back to a sensible message on an empty-body 401 (the gateway case).
-- Keep the existing `tsc -b --noEmit` as the type gate in addition to the test suite.
+## Notes & limitations
+- Branding is **SaglamOl** (logo at `public/logo.png`, used in the sidebar, landing page, and favicon).
+- Automated tests (Vitest + React Testing Library + MSW) are planned but not yet implemented.

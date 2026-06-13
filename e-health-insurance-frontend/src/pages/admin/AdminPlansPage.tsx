@@ -40,6 +40,8 @@ export function AdminPlansPage() {
   const [showCreate, setShowCreate] = useState(false);
   const [form, setForm] = useState<PlanFormState>(emptyForm());
   const [saving, setSaving] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Plan | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   const load = () => {
     setLoading(true);
@@ -73,6 +75,21 @@ export function AdminPlansPage() {
     }
   };
 
+  const onDelete = async () => {
+    if (!deleteTarget) return;
+    setDeleting(true);
+    try {
+      await policyApi.deletePlan(deleteTarget.id);
+      toast.success("Plan deleted");
+      setDeleteTarget(null);
+      load();
+    } catch (err) {
+      toast.error(extractError(err));
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   if (loading) return <Spinner />;
 
   const visiblePlans = plans.filter((p) => p.name !== "Smoke Test Plan");
@@ -101,6 +118,7 @@ export function AdminPlansPage() {
                 <th>Coverage amount</th>
                 <th>Duration</th>
                 <th>Status</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -122,6 +140,14 @@ export function AdminPlansPage() {
                       status={p.active ? "ACTIVE" : "CANCELLED"}
                       label={p.active ? "Active" : "Inactive"}
                     />
+                  </td>
+                  <td style={{ textAlign: "right" }}>
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => setDeleteTarget(p)}
+                    >
+                      Delete
+                    </button>
                   </td>
                 </tr>
               ))}
@@ -188,6 +214,29 @@ export function AdminPlansPage() {
               </button>
             </div>
           </form>
+        </Modal>
+      )}
+
+      {deleteTarget && (
+        <Modal title="Delete plan" onClose={() => setDeleteTarget(null)}>
+          <div className="alert alert-warning">
+            A plan that already has policies cannot be deleted.
+          </div>
+          <p>
+            Are you sure you want to delete <strong>{deleteTarget.name}</strong>?
+          </p>
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setDeleteTarget(null)}
+            >
+              Cancel
+            </button>
+            <button className="btn btn-danger" disabled={deleting} onClick={onDelete}>
+              {deleting ? "Deleting..." : "Delete"}
+            </button>
+          </div>
         </Modal>
       )}
     </>

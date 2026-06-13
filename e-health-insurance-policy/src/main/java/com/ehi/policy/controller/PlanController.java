@@ -8,6 +8,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,5 +40,12 @@ public class PlanController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<PlanDto>> createPlan(@Valid @RequestBody CreatePlanRequest request) {
         return ResponseEntity.ok(ApiResponse.ok(planService.createPlan(request)));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Void>> deletePlan(@PathVariable UUID id) {
+        planService.deletePlan(id);
+        return ResponseEntity.ok(ApiResponse.ok(null));
     }
 }

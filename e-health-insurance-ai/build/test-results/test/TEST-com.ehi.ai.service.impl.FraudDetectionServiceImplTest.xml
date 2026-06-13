@@ -1,19 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-13T15:03:50" hostname="Mac" time="0.084">
+<testsuite name="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T20:21:18" hostname="Mac" time="0.094">
   <properties/>
-  <testcase name="evaluateClaim_farAboveThresholdAndHighRiskUser_parsesFencedAiResponse_andFlagsHighRisk()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.075"/>
+  <testcase name="evaluateClaim_farAboveThresholdAndHighRiskUser_parsesFencedAiResponse_andFlagsHighRisk()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.083"/>
+  <testcase name="evaluateClaim_planBasedThreshold_doesNotFlagSmallClaimAgainstLargeCoverage()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
   <testcase name="evaluateClaim_belowThreshold_zeroRuleScore_noAiCall()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
-  <testcase name="evaluateClaim_amountAboveThreshold_triggersAi_andCombinesScores()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.002"/>
+  <testcase name="evaluateClaim_amountAboveThreshold_triggersAi_andCombinesScores()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
   <testcase name="reanalyzeClaim_rebuildsEventFromExistingFraudCheck()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
   <testcase name="getFraudCheck_throwsNotFound_whenMissing()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
   <testcase name="evaluateClaim_existingFraudCheck_doesNotRecordRiskProfileAgain()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
-  <testcase name="evaluateClaim_aiThrows_fallsBackToRuleOnlyScore()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.002"/>
-  <system-out><![CDATA[2026-06-13T19:03:51.047+04:00  WARN 36596 --- [e-health-insurance-ai] [    Test worker] c.e.a.s.impl.FraudDetectionServiceImpl   : OpenAI fraud assessment failed for claim 2e85c5ee-dad0-4ee3-90b7-5372533af793, falling back to rule-only score
+  <testcase name="evaluateClaim_aiThrows_fallsBackToRuleOnlyScore()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.003"/>
+  <testcase name="evaluateClaim_planBasedThreshold_flagsClaimAboveCoverageRatio()" classname="com.ehi.ai.service.impl.FraudDetectionServiceImplTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-14T00:21:18.553+04:00  WARN 78880 --- [e-health-insurance-ai] [    Test worker] c.e.a.s.impl.FraudDetectionServiceImpl   : OpenAI fraud assessment failed for claim dc75960a-5c1b-4aa1-825b-7f1661a2064d, falling back to rule-only score
 
 java.lang.RuntimeException: OpenRouter down
-	at com.ehi.ai.service.impl.FraudDetectionServiceImpl.callAiAssessment(FraudDetectionServiceImpl.java:165) ~[main/:na]
-	at com.ehi.ai.service.impl.FraudDetectionServiceImpl.evaluateClaim(FraudDetectionServiceImpl.java:56) ~[main/:na]
-	at com.ehi.ai.service.impl.FraudDetectionServiceImplTest.evaluateClaim_aiThrows_fallsBackToRuleOnlyScore(FraudDetectionServiceImplTest.java:139) ~[test/:na]
+	at com.ehi.ai.service.impl.FraudDetectionServiceImpl.callAiAssessment(FraudDetectionServiceImpl.java:183) ~[main/:na]
+	at com.ehi.ai.service.impl.FraudDetectionServiceImpl.evaluateClaim(FraudDetectionServiceImpl.java:61) ~[main/:na]
+	at com.ehi.ai.service.impl.FraudDetectionServiceImplTest.evaluateClaim_aiThrows_fallsBackToRuleOnlyScore(FraudDetectionServiceImplTest.java:191) ~[test/:na]
 	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103) ~[na:na]
 	at java.base/java.lang.reflect.Method.invoke(Method.java:580) ~[na:na]
 	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:728) ~[junit-platform-commons-1.10.5.jar:1.10.5]

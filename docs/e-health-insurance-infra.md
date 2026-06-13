@@ -1,126 +1,76 @@
 # e-health-insurance-infra
 
-## Status: DONE
-## Type: Shared Library (no Spring Boot plugin, plain jar)
+> Shared library used by every backend service. Holds the cross-service contract: enums, Kafka
+> topic names, event DTOs, the common API response envelope, and base exceptions.
 
-## What's Done
-- [x] build.gradle
-- [x] Enums (8 files)
-- [x] KafkaTopics constants
-- [x] Event DTOs (8 files)
-- [x] Response DTOs (ApiResponse, PagedResponse, ErrorResponse)
-- [x] Exceptions (BaseErrorService, BaseErrorEnum, BaseException + 4 subclasses, ServiceException)
-- [x] Build & publishToMavenLocal verified
-- [x] DateUtil
+| | |
+|---|---|
+| Type | Plain Java library (no Spring Boot plugin) — built as a jar |
+| Distribution | Published to **mavenLocal** (`com.ehi:e-health-insurance-infra:0.0.1-SNAPSHOT`) |
+| Consumed by | iam, policy, claim, payment, ai, notification (not the gateway) |
 
-## Enums
+## Why it exists
+Every service speaks the same language: the same enum values, the same Kafka topic strings, the same
+event shapes, and the same response wrapper. Centralizing them here guarantees a producer and a
+consumer agree on the contract, and avoids duplicated/clashing definitions across repos.
+
+> After any change here, run `./gradlew publishToMavenLocal`, then rebuild the dependent services.
+
+## Enums (`com.ehi.infra.enums`)
 | Enum | Values |
 |---|---|
-| UserRole | ADMIN, STAFF, CUSTOMER | <!-- was AGENT in v3-3; renamed back to STAFF -->
-| PolicyStatus | PENDING, ACTIVE, EXPIRED, CANCELLED |
-| ClaimStatus | SUBMITTED, UNDER_REVIEW, APPROVED, REJECTED |
-| ClaimType | HOSPITALIZATION, MEDICATION, DENTAL, CONSULTATION |
-| PaymentStatus | PENDING, COMPLETED, FAILED, REFUNDED |
-| PaymentReferenceType | POLICY_PREMIUM, CLAIM_PAYOUT |
-| NotificationType | WELCOME, POLICY_ACTIVATED, POLICY_PENDING, CLAIM_SUBMITTED, CLAIM_APPROVED, CLAIM_REJECTED, PAYMENT_SUCCESS, PAYMENT_FAILED, FRAUD_ALERT |
-| NotificationChannel | EMAIL, SMS |
+| `UserRole` | `ADMIN`, `STAFF`, `CUSTOMER` |
+| `PolicyStatus` | `PENDING`, `ACTIVE`, `EXPIRED`, `CANCELLED` |
+| `ClaimStatus` | `SUBMITTED`, `UNDER_REVIEW`, `APPROVED`, `REJECTED` |
+| `ClaimType` | `HOSPITALIZATION`, `MEDICATION`, `DENTAL`, `CONSULTATION` |
+| `PaymentStatus` | `PENDING`, `COMPLETED`, `FAILED`, `REFUNDED` |
+| `PaymentReferenceType` | `POLICY_PREMIUM`, `CLAIM_PAYOUT` |
+| `NotificationType` | `WELCOME`, `POLICY_ACTIVATED`, `POLICY_PENDING`, `CLAIM_SUBMITTED`, `CLAIM_APPROVED`, `CLAIM_REJECTED`, `PAYMENT_SUCCESS`, `PAYMENT_FAILED`, `FRAUD_ALERT` |
+| `NotificationChannel` | `EMAIL`, `SMS` |
 
-## Kafka Topics
-| Constant | Value |
+## Kafka topics (`com.ehi.infra.config.KafkaTopics`)
+Constants — services never hardcode topic strings.
+
+| Constant | Topic |
 |---|---|
-| USER_REGISTERED | user.registered |
-| POLICY_CREATED | policy.created |
-| PAYMENT_COMPLETED | payment.completed |
-| PAYMENT_FAILED | payment.failed |
-| CLAIM_SUBMITTED | claim.submitted |
-| CLAIM_DECISION | claim.decision |
-| FRAUD_DETECTED | fraud.detected |
-| NOTIFICATION_SEND | notification.send |
+| `USER_REGISTERED` | `user.registered` |
+| `POLICY_CREATED` | `policy.created` |
+| `PAYMENT_COMPLETED` | `payment.completed` |
+| `PAYMENT_FAILED` | `payment.failed` |
+| `CLAIM_SUBMITTED` | `claim.submitted` |
+| `CLAIM_DECISION` | `claim.decision` |
+| `FRAUD_DETECTED` | `fraud.detected` |
 
-## Event DTOs
-| Class | Key Fields | Used By Topic |
-|---|---|---|
-| UserRegisteredEvent | userId, email, firstName, lastName | user.registered |
-| PolicyCreatedEvent | policyId, userId, planId, policyNumber, premiumAmount | policy.created |
-| PaymentCompletedEvent | paymentId, userId, referenceId, referenceType, amount, transactionId | payment.completed |
-| PaymentFailedEvent | paymentId, userId, referenceId, referenceType, amount, reason | payment.failed |
-| ClaimSubmittedEvent | claimId, userId, policyId, claimNumber, claimType, amount | claim.submitted |
-| ClaimDecisionEvent | claimId, userId, policyId, decision, approvedAmount, rejectionReason, reviewedBy | claim.decision |
-| FraudDetectedEvent | claimId, userId, riskScore, flags, aiExplanation | fraud.detected |
-| NotificationEvent | userId, channel, type, recipient, subject, body | notification.send |
-
-## Planned: phone on UserRegisteredEvent (for notification SMS — Option A)
-
-> Required by the notification SMS/email feature (`docs/e-health-insurance-notification.md` →
-> "IMPLEMENTATION PLAN"). Do this **first** and `./gradlew publishToMavenLocal`, because IAM and
-> notification will not compile against the old 4-field record.
-
-Add a nullable `phone` field to `UserRegisteredEvent`, making it the **5th** field:
-
-```java
-public record UserRegisteredEvent(
-        UUID userId,
-        String email,
-        String firstName,
-        String lastName,
-        String phone        // nullable — null when the user gave no phone
-) {
-}
-```
-
-- Per CLAUDE.md ("records with 5+ fields get Lombok `@Builder`"), add `@Builder` to the record now
-  that it has 5 fields, and update construction sites to use the builder (or keep positional — the
-  builder is preferred to avoid positional-arg mistakes). Construction sites that must be updated to
-  pass `phone` (or switch to the builder):
-  - `e-health-insurance-iam` → `service/impl/AuthServiceImpl.java` (the `register` publish call).
-  - `e-health-insurance-notification` (`_V1`) tests → `NotificationFlowIT` and
-    `UserRegisteredEventConsumerTest`.
-- `phone` is optional everywhere; consumers must treat `null` as "no phone → use email channel".
-- After editing, run `./gradlew publishToMavenLocal` so IAM and notification resolve the new jar from
-  `mavenLocal()`.
-
-## Response DTOs
-| Class | Purpose |
+## Event DTOs (`com.ehi.infra.event`) — Java records
+| Event | Key fields |
 |---|---|
-| ApiResponse\<T\> | Generic wrapper: success, data, error, timestamp. Static: `ok(data)`, `error(msg)` |
-| PagedResponse\<T\> | Paginated list: content, page, size, totalElements, totalPages, last |
-| ErrorResponse | Error details: status, message, details (Map), timestamp |
+| `UserRegisteredEvent` | userId, email, firstName, lastName, **phone** (nullable) |
+| `PolicyCreatedEvent` | policyId, userId, planId, policyNumber, premiumAmount |
+| `PaymentCompletedEvent` | paymentId, userId, referenceId, referenceType, amount, transactionId |
+| `PaymentFailedEvent` | paymentId, userId, referenceId, referenceType, amount, reason |
+| `ClaimSubmittedEvent` | claimId, userId, policyId, claimNumber, claimType, amount |
+| `ClaimDecisionEvent` | claimId, userId, policyId, decision, approvedAmount, rejectionReason, reviewedBy |
+| `FraudDetectedEvent` | claimId, userId, riskScore, flags, aiExplanation |
 
-## Exceptions
+All events serialize/deserialize as JSON (`JsonSerializer`/`JsonDeserializer`); consumers trust the
+`com.ehi.infra.event` package.
 
-Package layout: `com.ehi.infra.exception.base` holds the base types; `com.ehi.infra.exception` holds the ready-made subclasses.
+## Response DTOs (`com.ehi.infra.dto`)
+- **`ApiResponse<T>`** — `{ success, data, error, timestamp }`. Every endpoint wraps its result here
+  via `ApiResponse.ok(data)` / `ApiResponse.error(message)`.
+- **`PagedResponse<T>`** — `{ content, page, size, totalElements, totalPages, last }` for paginated lists.
+- **`ErrorResponse`** — `{ status, message, details, timestamp }`; `details.errorCode` carries the
+  domain error code.
 
-| Class | Package | Error Code | Status Code | Constructor |
-|---|---|---|---|---|
-| BaseErrorService | `exception.base` | (interface) | — | getErrorCode(), getMessage(), getHttpStatus() |
-| BaseErrorEnum | `exception.base` | (enum) | — | NOT_FOUND, UNAUTHORIZED, BAD_REQUEST, DUPLICATE_RESOURCE, VALIDATION_ERROR, INTERNAL_ERROR |
-| BaseException | `exception.base` | (abstract) | from errorService | (errorService, message) / (errorService) |
-| BadRequestException | `exception.base` | BASE-BAD-REQUEST-0003 | 400 | (message) |
-| NotFoundException | `exception` | BASE-NOT-FOUND-0001 | 404 | (entity, id) |
-| UnauthorizedException | `exception` | BASE-UNAUTHORIZED-0002 | 401 | (message) |
-| DuplicateResourceException | `exception` | BASE-DUPLICATE-RESOURCE-0004 | 409 | (message) |
-| ServiceException | `exception` | from errorService | from errorService | (errorService) / (errorService, message) — for service-defined `XxxErrorEnum implements BaseErrorService` |
+## Exceptions (`com.ehi.infra.exception`)
+- `BaseErrorService` (interface: errorCode, message, httpStatus), `BaseErrorEnum` (generic codes:
+  NOT_FOUND, UNAUTHORIZED, BAD_REQUEST, DUPLICATE_RESOURCE, VALIDATION_ERROR, INTERNAL_ERROR).
+- `BaseException` (abstract) + ready-made subclasses: `NotFoundException`, `UnauthorizedException`,
+  `BadRequestException`, `DuplicateResourceException`.
+- `ServiceException` — throw with a domain `XxxErrorEnum implements BaseErrorService` for
+  service-specific errors (instead of writing per-domain exception subclasses).
 
-Services import `BaseErrorEnum`/`BaseException`/`BaseErrorService`/`BadRequestException` from `com.ehi.infra.exception.base.*`; `NotFoundException`, `UnauthorizedException`, `DuplicateResourceException`, `ServiceException` from `com.ehi.infra.exception.*`.
-
-## Utilities
-| Class | Method | Purpose |
-|---|---|---|
-| DateUtil | `now()` | Current `Instant` |
-| DateUtil | `isExpired(Instant)` | True if given instant is in the past |
-| DateUtil | `plusDays(Instant, long)` | Add days to an `Instant` |
-| DateUtil | `plusYears(Instant, long)` | Add years to an `Instant` (via UTC zone conversion) |
-
-## Decisions & Notes
-- No Spring dependency in infra — keeps it lightweight.
-- Jackson annotations for JSON serialization, jakarta.validation for annotations.
-- All timestamps use `Instant`, never `LocalDateTime`.
-- All IDs are `UUID`.
-- Standalone repo: own `settings.gradle`, `build.gradle`, `gradle/libs.versions.toml` (no monorepo root).
-- `java-library` + `maven-publish` plugins. Coordinates: `com.ehi:e-health-insurance-infra:0.0.1-SNAPSHOT`.
-- Published via `./gradlew publishToMavenLocal`; consumed by services from `mavenLocal()`.
-- Event DTOs and response DTOs are Java records (immutable) — Jackson 2.15.4 supports records natively.
-- Records with 5+ fields (or several same-typed fields, e.g. multiple UUIDs) get Lombok `@Builder`: PolicyCreatedEvent, PaymentCompletedEvent, PaymentFailedEvent, ClaimSubmittedEvent, ClaimDecisionEvent, FraudDetectedEvent, NotificationEvent. UserRegisteredEvent (4 fields) has none.
-- Error-code-driven exception model (adapted from teacher-provided example): `BaseErrorService` interface + `BaseErrorEnum` (generic codes) replace the old `(message, statusCode)` constructor on `BaseException`. Per-service errors implement `BaseErrorEnum`'s sibling interface as `XxxErrorEnum implements BaseErrorService` in the service's own `exception` package and are thrown via `ServiceException` — no per-domain exception subclasses, no `ProblemDetail`. `ApiResponse`/`ErrorResponse`/`PagedResponse` from Step 6 remain the response envelope.
-- Build requires a Java 21 toolchain. On macOS with only a newer JDK installed, install via `brew install openjdk@21` and point Gradle at it with `org.gradle.java.installations.paths=/opt/homebrew/opt/openjdk@21` in `~/.gradle/gradle.properties` (machine-level, not part of any repo).
-- `./gradlew build` and `./gradlew publishToMavenLocal` both verified successful; jar published to `~/.m2/repository/com/ehi/e-health-insurance-infra/0.0.1-SNAPSHOT/`.
+## Notes
+- No Spring beans — this is a plain jar; services import the classes and wire their own beans.
+- Adding a field to an event (e.g. `phone` on `UserRegisteredEvent`) is the one place the contract
+  changes ripple from: publish to mavenLocal, then rebuild producers and consumers.

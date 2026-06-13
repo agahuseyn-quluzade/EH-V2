@@ -1,9 +1,11 @@
 package com.ehi.ai.service.impl;
 
 import com.ehi.ai.entity.FraudCheck;
+import com.ehi.ai.entity.PolicyCoverage;
 import com.ehi.ai.kafka.FraudDetectedEventProducer;
 import com.ehi.ai.mapper.FraudCheckMapper;
 import com.ehi.ai.repository.FraudCheckRepository;
+import com.ehi.ai.repository.PolicyCoverageRepository;
 import com.ehi.ai.service.AiClientService;
 import com.ehi.ai.service.RiskProfileService;
 import com.ehi.infra.enums.ClaimType;
@@ -42,6 +44,7 @@ class FraudDetectionServiceImplTest {
     @Mock AiClientService aiClientService;
     @Mock RiskProfileService riskProfileService;
     @Mock FraudDetectedEventProducer fraudDetectedEventProducer;
+    @Mock PolicyCoverageRepository policyCoverageRepository;
 
     FraudDetectionServiceImpl service;
 
@@ -49,7 +52,7 @@ class FraudDetectionServiceImplTest {
     void setUp() {
         service = new FraudDetectionServiceImpl(
                 fraudCheckRepository, fraudCheckMapper, aiClientService, riskProfileService,
-                fraudDetectedEventProducer, new ObjectMapper());
+                fraudDetectedEventProducer, new ObjectMapper(), policyCoverageRepository);
 
         when(fraudCheckRepository.save(any(FraudCheck.class))).thenAnswer(invocation -> invocation.getArgument(0));
     }
@@ -126,6 +129,55 @@ class FraudDetectionServiceImplTest {
         assertThat(saved.getFinalScore()).isEqualTo(86);
 
         verify(riskProfileService).recordFraudCheck(userId, 86, true);
+    }
+
+    @Test
+    void evaluateClaim_planBasedThreshold_doesNotFlagSmallClaimAgainstLargeCoverage() {
+        UUID claimId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID policyId = UUID.randomUUID();
+        when(fraudCheckRepository.findByClaimId(claimId)).thenReturn(Optional.empty());
+        when(riskProfileService.isHighRiskUser(userId)).thenReturn(false);
+        when(policyCoverageRepository.findByPolicyId(policyId)).thenReturn(Optional.of(
+                PolicyCoverage.builder().policyId(policyId).coverageAmount(BigDecimal.valueOf(10000)).build()));
+
+        // 600 exceeds the CONSULTATION per-type threshold (500) but is far below 50% of the 10000 coverage
+        ClaimSubmittedEvent ev = ClaimSubmittedEvent.builder()
+                .claimId(claimId).userId(userId).policyId(policyId)
+                .claimNumber("CLM-1").claimType(ClaimType.CONSULTATION).amount(BigDecimal.valueOf(600)).build();
+        service.evaluateClaim(ev);
+
+        ArgumentCaptor<FraudCheck> captor = ArgumentCaptor.forClass(FraudCheck.class);
+        verify(fraudCheckRepository).save(captor.capture());
+        FraudCheck saved = captor.getValue();
+        assertThat(saved.getRuleScore()).isEqualTo(0);
+        assertThat(saved.getFlags()).doesNotContain("AMOUNT_ABOVE_TYPE_THRESHOLD", "AMOUNT_ABOVE_COVERAGE");
+        verify(aiClientService, never()).chatCompletion(any());
+    }
+
+    @Test
+    void evaluateClaim_planBasedThreshold_flagsClaimAboveCoverageRatio() {
+        UUID claimId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        UUID policyId = UUID.randomUUID();
+        when(fraudCheckRepository.findByClaimId(claimId)).thenReturn(Optional.empty());
+        when(riskProfileService.isHighRiskUser(userId)).thenReturn(false);
+        when(policyCoverageRepository.findByPolicyId(policyId)).thenReturn(Optional.of(
+                PolicyCoverage.builder().policyId(policyId).coverageAmount(BigDecimal.valueOf(1000)).build()));
+        when(aiClientService.chatCompletion(any())).thenReturn("{\"score\": 50, \"explanation\": \"ok\", \"flags\": []}");
+
+        // 600 > 50% of 1000 (=500) but < 1000 → above-coverage flag only
+        ClaimSubmittedEvent ev = ClaimSubmittedEvent.builder()
+                .claimId(claimId).userId(userId).policyId(policyId)
+                .claimNumber("CLM-1").claimType(ClaimType.CONSULTATION).amount(BigDecimal.valueOf(600)).build();
+        service.evaluateClaim(ev);
+
+        ArgumentCaptor<FraudCheck> captor = ArgumentCaptor.forClass(FraudCheck.class);
+        verify(fraudCheckRepository).save(captor.capture());
+        FraudCheck saved = captor.getValue();
+        assertThat(saved.getRuleScore()).isEqualTo(40);
+        assertThat(saved.getFlags()).contains("AMOUNT_ABOVE_COVERAGE");
+        assertThat(saved.getFlags()).doesNotContain("AMOUNT_FAR_ABOVE_COVERAGE", "AMOUNT_ABOVE_TYPE_THRESHOLD");
     }
 
     @Test

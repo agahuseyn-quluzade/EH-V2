@@ -3,9 +3,11 @@ package com.ehi.ai.service.impl;
 import com.ehi.ai.client.OpenAiMessage;
 import com.ehi.ai.dto.response.FraudAiResponse;
 import com.ehi.ai.entity.FraudCheck;
+import com.ehi.ai.entity.PolicyCoverage;
 import com.ehi.ai.kafka.FraudDetectedEventProducer;
 import com.ehi.ai.mapper.FraudCheckMapper;
 import com.ehi.ai.repository.FraudCheckRepository;
+import com.ehi.ai.repository.PolicyCoverageRepository;
 import com.ehi.ai.service.AiClientService;
 import com.ehi.ai.service.FraudDetectionService;
 import com.ehi.ai.service.RiskProfileService;
@@ -35,6 +37,8 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
     private static final int REPEAT_HIGH_RISK_USER_SCORE = 20;
     private static final int AMOUNT_ABOVE_THRESHOLD_SCORE = 40;
     private static final int AMOUNT_FAR_ABOVE_THRESHOLD_SCORE = 20;
+    // Plan-based threshold: a claim above this fraction of the policy coverage is flagged.
+    private static final BigDecimal COVERAGE_THRESHOLD_RATIO = BigDecimal.valueOf(0.5);
 
     private final FraudCheckRepository fraudCheckRepository;
     private final FraudCheckMapper fraudCheckMapper;
@@ -42,6 +46,7 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
     private final RiskProfileService riskProfileService;
     private final FraudDetectedEventProducer fraudDetectedEventProducer;
     private final ObjectMapper objectMapper;
+    private final PolicyCoverageRepository policyCoverageRepository;
 
     @Override
     public FraudAiResponse evaluateClaim(ClaimSubmittedEvent event) {
@@ -122,16 +127,29 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
 
     private int computeRuleScore(ClaimSubmittedEvent event, List<String> flags) {
         int score = 0;
-        BigDecimal threshold = thresholdFor(event.claimType());
+
+        Optional<PolicyCoverage> coverage = policyCoverageRepository.findByPolicyId(event.policyId());
+        BigDecimal threshold;
+        String aboveFlag;
+        String farAboveFlag;
+        if (coverage.isPresent()) {
+            threshold = coverage.get().getCoverageAmount().multiply(COVERAGE_THRESHOLD_RATIO);
+            aboveFlag = "AMOUNT_ABOVE_COVERAGE";
+            farAboveFlag = "AMOUNT_FAR_ABOVE_COVERAGE";
+        } else {
+            threshold = thresholdFor(event.claimType());
+            aboveFlag = "AMOUNT_ABOVE_TYPE_THRESHOLD";
+            farAboveFlag = "AMOUNT_FAR_ABOVE_TYPE_THRESHOLD";
+        }
 
         if (event.amount().compareTo(threshold) > 0) {
             score += AMOUNT_ABOVE_THRESHOLD_SCORE;
-            flags.add("AMOUNT_ABOVE_TYPE_THRESHOLD");
+            flags.add(aboveFlag);
         }
 
         if (event.amount().compareTo(threshold.multiply(BigDecimal.valueOf(2))) > 0) {
             score += AMOUNT_FAR_ABOVE_THRESHOLD_SCORE;
-            flags.add("AMOUNT_FAR_ABOVE_TYPE_THRESHOLD");
+            flags.add(farAboveFlag);
         }
 
         if (riskProfileService.isHighRiskUser(event.userId())) {
