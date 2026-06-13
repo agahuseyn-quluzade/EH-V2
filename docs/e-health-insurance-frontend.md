@@ -211,10 +211,12 @@ In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>
   No new backend fields, no new API call. Keep the existing "Sığorta al" (Buy) flow working;
   make sure the details-modal click and the buy-button click don't collide.
 - **"Remove smoke test in the plans":** there is *no* smoke-test code in the frontend. This is a
-  leftover seeded/test plan (a `Plan` literally named e.g. "Smoke Test"/"Test") coming from the
-  DB. Backend is off-limits, so the frontend-only fix is to **filter it out of `activePlans`**
-  (e.g. drop plans whose `name` matches `/smoke|test/i`). ⚠️ Confirm the exact plan name with
-  the user before hardcoding a filter — see Open Questions.
+  leftover seeded plan in the policy DB named exactly **"Smoke Test Plan"** (`active: false`).
+  It's already excluded from the member `activePlans` filter (`plans.filter(p => p.active)`), so
+  the member-facing PlansPage is unaffected. It **does** show up on
+  `pages/admin/AdminPlansPage.tsx` (which calls `listPlans()` with no active filter). Frontend-only
+  fix: filter it out there too, e.g. `plans.filter(p => p.name !== "Smoke Test Plan")` before
+  rendering the table. Backend/DB row is untouched.
 
 ### 6. Admin · AdminDashboardPage (`pages/admin/AdminDashboardPage.tsx`)
 - **Remove statistics entirely** ("statistika endpoint"): delete the info alert at lines ~38-41
@@ -253,9 +255,12 @@ The admin's ability to approve claims is also wired here — remove for consiste
 - **Notification status badge:** only the member `NotificationsPage` renders it; no staff/admin
   notifications page exists.
 
-### Open Questions (confirm before implementing the ⚠️ items)
-1. Exact name of the "smoke test" plan to filter out of the plans list (item 5).
-2. Should ADMIN lose **all** staff-area access, or only the claim-review queue? (item 7).
+### Resolved decisions
+1. Smoke-test plan name confirmed as "Smoke Test Plan" (see item 5) — no longer open.
+2. ADMIN loses only the claim-review queue/page access (item 7: `/staff/queue` and
+   `/staff/claims/:id` role guards + the `adminNav` "Baxış növbəsi" link). The `/staff` dashboard
+   and `/staff/members` routes already aren't linked from `adminNav`, so leave their role guards
+   as-is — no extra admin-facing change either way.
 
 ## Review Findings (see root `check.md` for full detail)
 
