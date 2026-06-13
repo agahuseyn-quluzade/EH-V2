@@ -144,7 +144,7 @@ export function homePathForRole(role: Role | null): string {
   switch (role) {
     case "ADMIN":
       return "/admin";
-    case "AGENT":
+    case "STAFF":
       return "/staff";
     case "CUSTOMER":
       return "/dashboard";

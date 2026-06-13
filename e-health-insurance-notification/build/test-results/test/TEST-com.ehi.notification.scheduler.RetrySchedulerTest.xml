@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.scheduler.RetrySchedulerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.073">
+<testsuite name="com.ehi.notification.scheduler.RetrySchedulerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.071">
   <properties/>
-  <testcase name="retryFailedNotifications_marksFailed_andIncrementsRetryCount_whenSenderFails()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.071"/>
+  <testcase name="retryFailedNotifications_marksFailed_andIncrementsRetryCount_whenSenderFails()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.069"/>
   <testcase name="retryFailedNotifications_onlyQueriesFailedWithRetryCountBelowMax()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.001"/>
   <testcase name="retryFailedNotifications_marksSent_andIncrementsRetryCount_whenSenderSucceeds()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T11:19:25.099+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification 552ff456-6c6a-44bc-8fda-3043bc1a7cc7 (attempt 1), result: FAILED
-2026-06-13T11:19:25.103+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification 234c937b-e3b5-4825-abbb-c0f4b32833de (attempt 2), result: SENT
+  <system-out><![CDATA[2026-06-13T11:32:10.006+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification 50f9933e-0dce-4a1c-b2e4-8ed8742ac956 (attempt 1), result: FAILED
+2026-06-13T11:32:10.010+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification cc947450-3907-4511-9276-8bedf3969930 (attempt 2), result: SENT
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

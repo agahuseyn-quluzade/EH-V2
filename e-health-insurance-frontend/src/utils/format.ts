@@ -44,10 +44,10 @@ export function fileSize(bytes: number | null | undefined): string {
 
 // ─── Status labels (English) ──────────────────────────────────
 
-// Backend UserRole: CUSTOMER, AGENT, ADMIN
+// Backend UserRole: CUSTOMER, STAFF, ADMIN
 export const roleLabels: Record<Role, string> = {
   CUSTOMER: "Customer",
-  AGENT: "Agent",
+  STAFF: "Staff",
   ADMIN: "Administrator",
 };
 

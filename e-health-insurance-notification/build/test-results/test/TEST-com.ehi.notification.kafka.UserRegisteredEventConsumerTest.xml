@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.UserRegisteredEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.0">
+<testsuite name="com.ehi.notification.kafka.UserRegisteredEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.0">
   <properties/>
   <testcase name="consume_sendsWelcomeNotification_toUserEmail()" classname="com.ehi.notification.kafka.UserRegisteredEventConsumerTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-13T11:19:25.029+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.UserRegisteredEventConsumer  : Received UserRegisteredEvent for userId=1f405cfb-7568-4d1a-a122-a19222c48465
+  <system-out><![CDATA[2026-06-13T11:32:09.938+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.UserRegisteredEventConsumer  : Received UserRegisteredEvent for userId=1a307456-4288-47c1-a546-2b8a37d89cea
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

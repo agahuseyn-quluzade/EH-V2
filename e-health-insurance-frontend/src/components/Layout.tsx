@@ -40,7 +40,7 @@ export function Layout({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const nav = role === "ADMIN" ? adminNav : role === "AGENT" ? staffNav : memberNav;
+  const nav = role === "ADMIN" ? adminNav : role === "STAFF" ? staffNav : memberNav;
 
   const handleLogout = () => {
     logout();

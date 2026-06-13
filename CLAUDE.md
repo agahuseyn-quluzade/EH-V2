@@ -118,7 +118,7 @@ Update `docs/<service-name>.md`:
 
 ### Database
 - Each service has its own PostgreSQL database (`ehi_iam`, `ehi_policy`, etc.).
-- `spring.jpa.hibernate.ddl-auto=update` for MVP.
+- Schema is managed by Liquibase (changelog at `db/changelog/db.changelog-master.yaml`); `spring.jpa.hibernate.ddl-auto=validate` in every persistence service. Integration tests use `create-drop`.
 - UUIDs for all primary keys (`@GeneratedValue(strategy = GenerationType.UUID)`).
 - `Instant` for all timestamps, never `LocalDateTime`.
 
@@ -207,6 +207,6 @@ gateway (no infra dependency, only routing + JWT filter)
   (`submitClaim`, `reviewClaim`, `applyFraudResult`, `evaluateClaim`, `processPayment`) lack
   `@Transactional` and an outbox — a publish failure after commit diverges state from events.
   Cheap fix: `@Transactional` on the consumer-facing methods. Correct fix: transactional outbox.
-- 🟡 **`ddl-auto: validate` + `show-sql: false`** is now set in iam, claim, ai, payment, and policy. Only notification still uses `ddl-auto: update`/`show-sql: true`. Pre-prod task: switch notification + add Flyway/Liquibase migrations (Liquibase already on the classpath for iam, claim, ai). The IAM `active` column may still need a backfill: `UPDATE users SET active = true WHERE active IS NULL;`.
+- 🟡 **`ddl-auto: validate` + `show-sql: false`** is now set in all six persistence services (iam, policy, claim, payment, ai, notification), each with a Liquibase changelog at `db/changelog/db.changelog-master.yaml`. The IAM `active` column may still need a backfill: `UPDATE users SET active = true WHERE active IS NULL;`. Remaining pre-prod task: split the single `001-*` baseline changesets into ordered, forward-only migrations as the schema evolves.
 - 🟢 **No pagination caps.** Paginated endpoints bind `Pageable` straight from the request, so
   `?size=100000` is allowed. Add `@PageableDefault` + a max page size project-wide.

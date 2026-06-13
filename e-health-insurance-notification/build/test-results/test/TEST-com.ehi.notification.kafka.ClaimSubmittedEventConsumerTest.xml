@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.0">
+<testsuite name="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.001">
   <properties/>
-  <testcase name="consume_sendsClaimSubmittedNotification()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-13T11:19:25.021+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=6b9c004b-b8bb-45b3-9667-d79eacd7dd4b, userId=8c7e8cff-6c14-47d3-b2b4-246be078dd17
+  <testcase name="consume_sendsClaimSubmittedNotification()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-13T11:32:09.930+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=092e4275-5ac3-4ee4-b105-0eb143e63d45, userId=30feea89-2a24-485c-923f-a08f96145c09
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

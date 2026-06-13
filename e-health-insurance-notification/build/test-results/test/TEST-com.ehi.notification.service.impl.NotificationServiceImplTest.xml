@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.service.impl.NotificationServiceImplTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.031">
+<testsuite name="com.ehi.notification.service.impl.NotificationServiceImplTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:10" hostname="Nijats-MacBook-Pro.local" time="0.032">
   <properties/>
   <testcase name="send_savesFailed_whenSenderFails()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.026"/>
-  <testcase name="getAllNotifications_returnsPagedResponse()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.003"/>
+  <testcase name="getAllNotifications_returnsPagedResponse()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.002"/>
   <testcase name="getMyNotifications_returnsNotifications_scopedByUserId()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.001"/>
-  <testcase name="send_savesPendingThenSent_whenSenderSucceeds()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T11:19:25.125+04:00  WARN 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.NotificationServiceImpl     : Notification FAILED: type=CLAIM_SUBMITTED, userId=a7c760e5-bfe3-4602-914e-b3aae736bb07, recipient=user@example.com
+  <testcase name="send_savesPendingThenSent_whenSenderSucceeds()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.002"/>
+  <system-out><![CDATA[2026-06-13T11:32:10.033+04:00  WARN 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.NotificationServiceImpl     : Notification FAILED: type=CLAIM_SUBMITTED, userId=9a39a2e7-1890-434e-a668-826ad21ed0c5, recipient=user@example.com
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

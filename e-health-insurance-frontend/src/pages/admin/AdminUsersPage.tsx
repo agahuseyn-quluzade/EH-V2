@@ -112,7 +112,7 @@ export function AdminUsersPage() {
             style={{ fontSize: "0.85rem" }}
           >
             <option value="CUSTOMER">{roleLabels["CUSTOMER"]}</option>
-            <option value="AGENT">{roleLabels["AGENT"]}</option>
+            <option value="STAFF">{roleLabels["STAFF"]}</option>
             <option value="ADMIN">{roleLabels["ADMIN"]}</option>
           </select>
         )}

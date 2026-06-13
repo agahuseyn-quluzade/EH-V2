@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.0">
+<testsuite name="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.0">
   <properties/>
   <testcase name="consume_sendsPolicyPendingNotification()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-13T11:19:25.028+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=29b29304-b8e9-46b2-a4a8-a848bc983ae7, userId=8c8d9396-4f1d-43d6-90e9-9e0eab6ac9ac
+  <system-out><![CDATA[2026-06-13T11:32:09.937+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=ccdaf9a8-48d4-4a51-8acd-ab2956a9ec01, userId=f3db9ab5-1929-4652-88d8-409ff0754d70
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

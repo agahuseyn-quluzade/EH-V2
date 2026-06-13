@@ -60,6 +60,7 @@
 - `./gradlew build` passes (BUILD SUCCESSFUL).
 - Dockerfile (multi-stage, same pattern as claim/payment/ai): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:21-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_notification` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
+- Schema managed by Liquibase (`runtimeOnly 'org.liquibase:liquibase-core'`), aligned with the other persistence services: `db/changelog/db.changelog-master.yaml` holds a single `001-create-notifications` changeset for the `notifications` table, and `application.yml` uses `ddl-auto: validate` + `show-sql: false` (hardened from the original `update`/`true`). The changeset carries a `not tableExists` precondition with `onFail: MARK_RAN`, so it creates the table on a fresh DB and cleanly skips (records as ran) on a DB where Hibernate had already auto-created it. The IT profile (`application-it.yml`) keeps `ddl-auto: create-drop`, same as the other services.
 
 ## Logging (SLF4J) — DONE
 

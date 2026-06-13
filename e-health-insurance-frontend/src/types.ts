@@ -1,5 +1,5 @@
 
-export type Role = "CUSTOMER" | "AGENT" | "ADMIN";
+export type Role = "CUSTOMER" | "STAFF" | "ADMIN";
 
 export interface TokenResponse {
   userId: string;

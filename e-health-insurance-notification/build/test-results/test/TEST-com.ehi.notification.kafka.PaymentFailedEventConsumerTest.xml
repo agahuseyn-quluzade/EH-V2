@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.0">
+<testsuite name="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.0">
   <properties/>
   <testcase name="consume_sendsPaymentFailedNotification()" classname="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-13T11:19:25.027+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : Received PaymentFailedEvent for paymentId=c53b3607-2cde-4bcf-89fc-61c0630ed034, userId=204417d8-bc63-45cb-bcbe-96c6afea5e84
+  <system-out><![CDATA[2026-06-13T11:32:09.936+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : Received PaymentFailedEvent for paymentId=d5761a23-530c-4b99-9435-fcfb3519be01, userId=a27bb875-41f4-444b-9b3b-0b7c68a0b8f8
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

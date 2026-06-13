@@ -112,11 +112,15 @@ only on `activatePolicy` (for a lazy-init fix), so the pattern is inconsistent.
   least `@Transactional` on the consumer-facing methods so the DB write rolls back if publish fails
   (still not atomic with Kafka, but avoids committed-state-without-event).
 
-### 🟡 10. `ddl-auto: update` and `show-sql: true` everywhere
-Known MVP choice (documented), but list it as a pre-prod task: switch to Flyway/Liquibase
-migrations and turn off `show-sql`. The new IAM `active` column is the first case where this bites
-— it needs the manual backfill `UPDATE users SET active = true WHERE active IS NULL;` precisely
-because `ddl-auto=update` can't add a non-null column to a populated table.
+### 🟢 10. `ddl-auto: validate` + Liquibase across all persistence services — RESOLVED
+All six persistence services (iam, policy, claim, payment, ai, notification) now run on Liquibase
+(`db/changelog/db.changelog-master.yaml`) with `ddl-auto: validate` and `show-sql: false`;
+integration tests use `create-drop`. Each baseline changeset uses a `not tableExists` /
+`onFail: MARK_RAN` precondition so it creates the table on a fresh DB and skips on a
+Hibernate-pre-created one. The IAM `active` column still needs the one-time backfill
+`UPDATE users SET active = true WHERE active IS NULL;` on any DB populated before that column
+existed. Remaining pre-prod task: split the single `001-*` baselines into ordered, forward-only
+migrations as the schema evolves.
 
 ---
 
@@ -220,7 +224,7 @@ because `ddl-auto=update` can't add a non-null column to a populated table.
 | 6/7 | 🟠 | Decide gateway-trust model; stop exposing service ports | S–M |
 | 9 | 🟡 | `@Transactional` on consumer-facing service methods | S |
 | — | 🟡 | Pageable size caps; evidence MIME allow-list; IAM self-guard | S |
-| 10 | 🟡 | Flyway migrations; disable `show-sql` (pre-prod) | M |
+| 10 | 🟢 | Liquibase + `ddl-auto: validate` on all 6 services — RESOLVED | — |
 
 XS ≈ minutes · S ≈ <1h · M ≈ a few hours.
 

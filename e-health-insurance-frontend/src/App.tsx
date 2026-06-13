@@ -27,7 +27,7 @@ function Protected({
   roles,
   children,
 }: {
-  roles?: Array<"CUSTOMER" | "AGENT" | "ADMIN">;
+  roles?: Array<"CUSTOMER" | "STAFF" | "ADMIN">;
   children: JSX.Element;
 }) {
   return (
@@ -59,10 +59,10 @@ export default function App() {
       <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
 
       {}
-      <Route path="/staff" element={<Protected roles={["AGENT", "ADMIN"]}><StaffDashboardPage /></Protected>} />
-      <Route path="/staff/queue" element={<Protected roles={["AGENT"]}><StaffQueuePage /></Protected>} />
-      <Route path="/staff/claims/:id" element={<Protected roles={["AGENT"]}><StaffClaimReviewPage /></Protected>} />
-      <Route path="/staff/members" element={<Protected roles={["AGENT", "ADMIN"]}><StaffMembersPage /></Protected>} />
+      <Route path="/staff" element={<Protected roles={["STAFF", "ADMIN"]}><StaffDashboardPage /></Protected>} />
+      <Route path="/staff/queue" element={<Protected roles={["STAFF"]}><StaffQueuePage /></Protected>} />
+      <Route path="/staff/claims/:id" element={<Protected roles={["STAFF"]}><StaffClaimReviewPage /></Protected>} />
+      <Route path="/staff/members" element={<Protected roles={["STAFF", "ADMIN"]}><StaffMembersPage /></Protected>} />
 
       {}
       <Route path="/admin" element={<Protected roles={["ADMIN"]}><AdminDashboardPage /></Protected>} />
