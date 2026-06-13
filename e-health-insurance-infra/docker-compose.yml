@@ -210,3 +210,24 @@ services:
       - "8080:8080"
     networks:
       - ehi-network
+
+  seed:
+    image: postgres:16
+    depends_on:
+      - iam
+      - policy
+    environment:
+      PGPASSWORD: postgres
+    volumes:
+      - ./docker/seed.sql:/seed.sql
+    entrypoint: >
+      bash -c "
+        echo 'Waiting for services to initialize...' &&
+        sleep 60 &&
+        echo 'Seeding database...' &&
+        psql -h postgres -U postgres -f /seed.sql &&
+        echo 'Seeding complete!'
+      "
+    networks:
+      - ehi-network
+    restart: "no"
