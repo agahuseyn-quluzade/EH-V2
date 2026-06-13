@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -54,6 +55,7 @@ public class ClaimServiceImpl implements ClaimService {
     private String uploadDir;
 
     @Override
+    @Transactional
     public ClaimDto submitClaim(UUID userId, SubmitClaimRequest request) {
         Claim claim = Claim.builder()
                 .claimNumber(generateClaimNumber())
@@ -136,6 +138,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
+    @Transactional
     public ClaimDto reviewClaim(UUID claimId, UUID reviewerId, ReviewClaimRequest request) {
         Claim claim = claimRepository.findById(claimId)
                 .orElseThrow(() -> new NotFoundException("Claim", claimId));
@@ -185,6 +188,7 @@ public class ClaimServiceImpl implements ClaimService {
     }
 
     @Override
+    @Transactional
     public void applyFraudResult(FraudDetectedEvent event) {
         Claim claim = claimRepository.findById(event.claimId())
                 .orElseThrow(() -> new NotFoundException("Claim", event.claimId()));

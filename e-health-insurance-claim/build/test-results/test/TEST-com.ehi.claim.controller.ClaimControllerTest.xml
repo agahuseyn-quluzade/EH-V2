@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.claim.controller.ClaimControllerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:18:19" hostname="Nijats-MacBook-Pro.local" time="0.124">
+<testsuite name="com.ehi.claim.controller.ClaimControllerTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:14:17" hostname="Mac" time="0.117">
   <properties/>
-  <testcase name="getClaimById_allowedForAnyAuthenticatedUser()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.051"/>
-  <testcase name="getAllClaims_allowedForAgent()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.019"/>
-  <testcase name="submitClaim_forbiddenForAgent()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.027"/>
-  <testcase name="reviewClaim_forbiddenForCustomer()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.006"/>
+  <testcase name="getClaimById_allowedForAnyAuthenticatedUser()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.049"/>
+  <testcase name="getAllClaims_allowedForAgent()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.016"/>
+  <testcase name="submitClaim_forbiddenForAgent()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.026"/>
+  <testcase name="reviewClaim_forbiddenForCustomer()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.007"/>
   <testcase name="reviewClaim_allowedForAgent()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.003"/>
-  <testcase name="getAllClaims_forbiddenForCustomer()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.002"/>
+  <testcase name="getAllClaims_forbiddenForCustomer()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.003"/>
   <testcase name="getClaimById_blocked_whenUnauthenticated()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.002"/>
   <testcase name="getMyClaims_allowedForCustomer()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.003"/>
   <testcase name="submitClaim_allowedForCustomer()" classname="com.ehi.claim.controller.ClaimControllerTest" time="0.003"/>
-  <system-out><![CDATA[2026-06-13T11:18:19.445+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.claim.ClaimApplication for test class com.ehi.claim.controller.ClaimControllerTest
+  <system-out><![CDATA[2026-06-13T18:14:17.297+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.claim.ClaimApplication for test class com.ehi.claim.controller.ClaimControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -21,20 +21,20 @@
 
  :: Spring Boot ::                (v3.3.5)
 
-2026-06-13T11:18:19.460+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Starting ClaimControllerTest using Java 21.0.11 with PID 92284 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-claim)
-2026-06-13T11:18:19.460+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : No active profile set, falling back to 1 default profile: "default"
-2026-06-13T11:18:19.702+04:00  WARN 92284 --- [e-health-insurance-claim] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-13T18:14:17.313+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Starting ClaimControllerTest using Java 21.0.11 with PID 30953 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-claim)
+2026-06-13T18:14:17.313+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : No active profile set, falling back to 1 default profile: "default"
+2026-06-13T18:14:17.562+04:00  WARN 30953 --- [e-health-insurance-claim] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 747216ef-f803-4621-bc51-1d1755465bd8
+Using generated security password: 2757996d-e106-4077-a0b0-f8f454ed57d1
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-13T11:18:19.703+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-13T11:18:19.906+04:00  INFO 92284 --- [e-health-insurance-claim] [er-event-thread] kafka.controller.KafkaController         : [Controller id=0] Processing automatic preferred replica leader election
-2026-06-13T11:18:19.928+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-13T11:18:19.929+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-13T11:18:19.929+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-06-13T11:18:19.941+04:00  INFO 92284 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Started ClaimControllerTest in 0.492 seconds (process running for 5.952)
+2026-06-13T18:14:17.564+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-13T18:14:17.745+04:00  INFO 30953 --- [e-health-insurance-claim] [er-event-thread] kafka.controller.KafkaController         : [Controller id=0] Processing automatic preferred replica leader election
+2026-06-13T18:14:17.828+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-13T18:14:17.828+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-13T18:14:17.829+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-13T18:14:17.842+04:00  INFO 30953 --- [e-health-insurance-claim] [    Test worker] c.e.c.controller.ClaimControllerTest     : Started ClaimControllerTest in 0.541 seconds (process running for 6.1)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

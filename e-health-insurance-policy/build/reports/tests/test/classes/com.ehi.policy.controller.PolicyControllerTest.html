@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.115s</div>
+<div class="counter">0.132s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,7 +79,7 @@
 </thead>
 <tr>
 <td class="success">createPlan_allowedForAdmin()</td>
-<td class="success">0.005s</td>
+<td class="success">0.004s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -94,17 +94,17 @@
 </tr>
 <tr>
 <td class="success">getAllPolicies_allowedForAdmin()</td>
-<td class="success">0.005s</td>
+<td class="success">0.006s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">getAllPolicies_forbiddenForCustomer()</td>
-<td class="success">0.003s</td>
+<td class="success">0.002s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">purchasePolicy_allowedForCustomer()</td>
-<td class="success">0.081s</td>
+<td class="success">0.099s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
@@ -117,7 +117,7 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2026-06-13T11:18:03.863+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.policy.PolicyApplication for test class com.ehi.policy.controller.PolicyControllerTest
+<pre>2026-06-13T18:14:49.326+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.policy.PolicyApplication for test class com.ehi.policy.controller.PolicyControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -128,19 +128,19 @@
 
  :: Spring Boot ::                (v3.3.5)
 
-2026-06-13T11:18:03.879+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Starting PolicyControllerTest using Java 21.0.11 with PID 92206 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-policy)
-2026-06-13T11:18:03.879+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : No active profile set, falling back to 1 default profile: &quot;default&quot;
-2026-06-13T11:18:04.137+04:00  WARN 92206 --- [e-health-insurance-policy] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-13T18:14:49.343+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Starting PolicyControllerTest using Java 21.0.11 with PID 31116 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-policy)
+2026-06-13T18:14:49.343+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2026-06-13T18:14:49.599+04:00  WARN 31116 --- [e-health-insurance-policy] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 9ecb24ae-917f-44c7-a747-3c71afe1375e
+Using generated security password: 40490653-d606-466d-8b03-8572e8f7f216
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-13T11:18:04.139+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-13T11:18:04.351+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-13T11:18:04.352+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-13T11:18:04.352+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-06-13T11:18:04.363+04:00  INFO 92206 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Started PolicyControllerTest in 0.496 seconds (process running for 5.505)
+2026-06-13T18:14:49.600+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-13T18:14:49.809+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-13T18:14:49.810+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-13T18:14:49.810+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
+2026-06-13T18:14:49.820+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Started PolicyControllerTest in 0.489 seconds (process running for 5.786)
 </pre>
 </span>
 </div>
@@ -152,7 +152,7 @@ This generated password is for development use only. Your security configuration
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 13, 2026, 11:18:05 AM</p>
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 13, 2026, 6:14:50 PM</p>
 </div>
 </div>
 </body>

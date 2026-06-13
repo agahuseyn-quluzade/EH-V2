@@ -38,6 +38,7 @@ public class PolicyServiceImpl implements PolicyService {
     private final PolicyCreatedEventProducer policyCreatedEventProducer;
 
     @Override
+    @Transactional
     public PolicyDto purchasePolicy(UUID userId, PurchasePolicyRequest request) {
         Plan plan = planRepository.findById(request.planId())
                 .orElseThrow(() -> new NotFoundException("Plan", request.planId()));
