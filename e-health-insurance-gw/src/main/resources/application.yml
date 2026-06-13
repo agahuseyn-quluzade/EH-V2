@@ -41,7 +41,7 @@ spring:
             - Path=/api/v1/notifications/**
 
 jwt:
-  secret: ${JWT_SECRET:change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please}
+  secret: ${JWT_SECRET:85071bbb13fe61a58f2e02f1980865290972d955f35d469f0a52160f922527c7925057cff3cd4af96b9d6fbc84d9b84d82d766d1e59e998482763209574bb4d6}
 
 gateway:
   security:

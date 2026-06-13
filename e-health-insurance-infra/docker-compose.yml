@@ -1,7 +1,7 @@
 name: e-health-insurance
 
 x-jwt-secret: &jwt-secret
-  JWT_SECRET: change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please
+  JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set in .env}
 
 networks:
   ehi-network:
