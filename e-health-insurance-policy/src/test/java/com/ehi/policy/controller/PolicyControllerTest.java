@@ -39,7 +39,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest({PlanController.class, PolicyController.class})
 class PolicyControllerTest {
 
-    // Minimal security config: stateless, all authenticated, method security enabled
     @TestConfiguration
     @EnableMethodSecurity
     static class TestSecurityConfig {
@@ -59,7 +58,6 @@ class PolicyControllerTest {
 
     @MockBean PlanService planService;
     @MockBean PolicyService policyService;
-    // JwtAuthenticationFilter is auto-scanned as a Filter; mock JwtProvider so it can be created
     @MockBean JwtProvider jwtProvider;
 
     private PlanDto stubPlanDto() {

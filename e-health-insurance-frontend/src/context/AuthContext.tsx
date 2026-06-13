@@ -66,7 +66,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         userInfoStore.set(profile.id, profile.role);
       })
       .catch(() => {
-        // refresh interceptor-u uğursuz olarsa onAuthFailure işə düşəcək
       })
       .finally(() => setInitializing(false));
   }, []);
@@ -107,7 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applyTokens]
   );
 
-  // No backend logout endpoint — just clear the local session
   const logout = useCallback(() => {
     clearSession();
   }, [clearSession]);
@@ -138,7 +136,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth(): AuthContextValue {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("useAuth yalnız AuthProvider daxilində istifadə oluna bilər");
+  if (!ctx) throw new Error("useAuth must be used within an AuthProvider");
   return ctx;
 }
 

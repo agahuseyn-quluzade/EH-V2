@@ -36,7 +36,6 @@ export const userInfoStore = {
   },
 };
 
-/** JWT payload-dan userId və role oxuyur (yalnız UI üçün, təhlükəsizlik backend-dədir). */
 export function decodeJwt(token: string): { userId?: string; role?: string; sub?: string } {
   try {
     const payload = JSON.parse(
@@ -47,7 +46,6 @@ export function decodeJwt(token: string): { userId?: string; role?: string; sub?
           .join("")
       )
     );
-    // Backend JwtProvider sets claim names "userId" and "role"
     return { userId: payload.userId, role: payload.role, sub: payload.sub };
   } catch {
     return {};
@@ -153,7 +151,7 @@ api.interceptors.response.use(
   }
 );
 
-/** Spring xəta cavabından istifadəçiyə göstəriləcək mesajı çıxarır. */
+/** Extracts a user-facing message from a Spring error response. */
 export function extractError(err: unknown): string {
   if (axios.isAxiosError(err)) {
     // Error body is ApiResponse<ErrorResponse>: { success: false, data: { message, ... } }
@@ -166,8 +164,8 @@ export function extractError(err: unknown): string {
       (inner?.error as string) ||
       (body?.error as string);
     if (message) return message;
-    if (err.response?.status === 403) return "Bu əməliyyat üçün icazəniz yoxdur";
-    return err.message || "Sorğu uğursuz oldu";
+    if (err.response?.status === 403) return "You do not have permission for this action";
+    return err.message || "Request failed";
   }
-  return (err as Error)?.message || "Gözlənilməz xəta baş verdi";
+  return (err as Error)?.message || "An unexpected error occurred";
 }

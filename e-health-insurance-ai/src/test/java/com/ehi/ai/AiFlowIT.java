@@ -102,7 +102,6 @@ class AiFlowIT {
         UUID claimId = UUID.randomUUID();
         UUID userId = UUID.randomUUID();
 
-        // CONSULTATION threshold = 500; 600 > 500 -> ruleScore 40 (>= AI_TRIGGER_THRESHOLD), AI base-url is unreachable
         kafkaTemplate.send(KafkaTopics.CLAIM_SUBMITTED, claimId.toString(),
                 ClaimSubmittedEvent.builder()
                         .claimId(claimId).userId(userId).policyId(UUID.randomUUID())

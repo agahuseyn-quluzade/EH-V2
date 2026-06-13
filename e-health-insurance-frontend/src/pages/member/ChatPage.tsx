@@ -48,7 +48,7 @@ export function ChatPage() {
         ...prev,
         {
           role: "assistant",
-          content: "Bağışlayın, cavab almaq mümkün olmadı. Yenidən cəhd edin.",
+          content: "Sorry, the response could not be retrieved. Please try again.",
         },
       ]);
     } finally {
@@ -60,12 +60,11 @@ export function ChatPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>AI Köməkçi</h1>
-          <p>Sığorta ilə bağlı suallarınızı verin</p>
+          <h1>AI Assistant</h1>
         </div>
         {sessionId && (
           <button className="btn btn-secondary btn-sm" onClick={startNew}>
-            + Yeni söhbət
+            + New chat
           </button>
         )}
       </div>
@@ -76,10 +75,10 @@ export function ChatPage() {
             {messages.length === 0 && (
               <div className="empty-state">
                 <div className="empty-icon">💬</div>
-                <h3>Sual verin</h3>
+                <h3>Ask a question</h3>
                 <p>
-                  Məsələn: «Sığortam hansı xərclər üçün keçərlidir?» və ya «İddiam
-                  niyə rədd edildi?»
+                  For example: "What expenses does my policy cover?" or "Why was
+                  my claim rejected?"
                 </p>
               </div>
             )}
@@ -97,7 +96,7 @@ export function ChatPage() {
               </div>
             ))}
             {sending && (
-              <div className="chat-bubble chat-assistant muted">Yazır...</div>
+              <div className="chat-bubble chat-assistant muted">Typing...</div>
             )}
             <div ref={bottomRef} />
           </div>
@@ -105,11 +104,11 @@ export function ChatPage() {
             <input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Mesajınızı yazın..."
+              placeholder="Type your message..."
               disabled={sending}
             />
             <button className="btn btn-primary" disabled={sending || !input.trim()}>
-              Göndər
+              Send
             </button>
           </form>
         </div>

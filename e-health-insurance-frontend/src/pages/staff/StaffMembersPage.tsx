@@ -38,19 +38,19 @@ export function StaffMembersPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Üzv axtarışı</h1>
-          <p>Ad, soyad və ya e-poçt ilə üzv tapın</p>
+          <h1>Member Search</h1>
+          <p>Find a member by first name, last name, or email</p>
         </div>
       </div>
 
       <div className="card">
         <form onSubmit={onSearch} style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
           <div style={{ flex: 1 }}>
-            <Field label="Axtarış sorğusu">
+            <Field label="Search query">
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ad, soyad və ya e-poçt"
+                placeholder="First name, last name, or email"
               />
             </Field>
           </div>
@@ -59,7 +59,7 @@ export function StaffMembersPage() {
             disabled={searching || !query.trim()}
             style={{ marginBottom: 14 }}
           >
-            {searching ? "Axtarılır..." : "Axtar"}
+            {searching ? "Searching..." : "Search"}
           </button>
         </form>
       </div>
@@ -68,18 +68,18 @@ export function StaffMembersPage() {
 
       {results && !searching && (
         results.content.length === 0 ? (
-          <EmptyState title="Üzv tapılmadı" hint="Başqa sorğu ilə cəhd edin." />
+          <EmptyState title="No members found" hint="Try a different search query." />
         ) : (
           <>
             <div className="table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>Ad Soyad</th>
-                    <th>E-poçt</th>
-                    <th>Rol</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
                     <th>Status</th>
-                    <th>Qeydiyyat</th>
+                    <th>Registered</th>
                     <th>ID</th>
                   </tr>
                 </thead>
@@ -96,7 +96,7 @@ export function StaffMembersPage() {
                       <td>
                         <Badge
                           status={u.active === false ? "CANCELLED" : "ACTIVE"}
-                          label={u.active === false ? "Blok" : "Aktiv"}
+                          label={u.active === false ? "Suspended" : "Active"}
                         />
                       </td>
                       <td>{formatDateTime(u.createdAt)}</td>
@@ -114,17 +114,17 @@ export function StaffMembersPage() {
                   disabled={page === 0}
                   onClick={() => doSearch(page - 1)}
                 >
-                  ← Əvvəlki
+                  ← Previous
                 </button>
                 <span className="muted">
-                  Səhifə {page + 1} / {results.totalPages}
+                  Page {page + 1} / {results.totalPages}
                 </span>
                 <button
                   className="btn btn-secondary btn-sm"
                   disabled={page + 1 >= (results.totalPages ?? 0)}
                   onClick={() => doSearch(page + 1)}
                 >
-                  Növbəti →
+                  Next →
                 </button>
               </div>
             )}

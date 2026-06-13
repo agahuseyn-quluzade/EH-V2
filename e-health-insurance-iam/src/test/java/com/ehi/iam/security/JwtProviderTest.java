@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class JwtProviderTest {
 
     private JwtProvider jwtProvider;
-    // Must be ≥ 32 bytes for HMAC-SHA256
     private static final String SECRET = "test-secret-key-that-is-at-least-256-bits-long-for-hmacsha256-tests";
 
     @BeforeEach

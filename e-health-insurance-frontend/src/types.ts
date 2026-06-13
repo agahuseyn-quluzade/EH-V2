@@ -1,10 +1,6 @@
-// Domen tipləri — backend DTO-ları ilə birəbir uyğundur.
 
-// Backend UserRole enum: CUSTOMER, AGENT, ADMIN
 export type Role = "CUSTOMER" | "AGENT" | "ADMIN";
 
-// ─── IAM ─────────────────────────────────────────────────────────────────────
-// Backend AuthResponse: userId, email, role, accessToken, refreshToken
 export interface TokenResponse {
   userId: string;
   email: string;
@@ -25,13 +21,11 @@ export interface LoginRequest {
   password: string;
 }
 
-// Backend UpdateUserRequest has only firstName and lastName
 export interface UpdateUserRequest {
   firstName: string;
   lastName: string;
 }
 
-// Backend UserDto: id, email, firstName, lastName, role, createdAt, active
 export interface UserProfile {
   id: string;
   email: string;
@@ -56,11 +50,8 @@ export interface ChangeStatusRequest {
   active: boolean;
 }
 
-// ─── Policy ──────────────────────────────────────────────────────────────────
-// Backend PolicyStatus infra enum: PENDING, ACTIVE, CANCELLED
 export type PolicyStatus = "PENDING" | "ACTIVE" | "CANCELLED";
 
-// Backend PlanDto: id, name, description, coverageAmount, premiumAmount, durationMonths, active, createdAt, updatedAt
 export interface Plan {
   id: string;
   name: string;
@@ -73,7 +64,6 @@ export interface Plan {
   updatedAt?: string;
 }
 
-// Backend CreatePlanRequest: name, description, coverageAmount, premiumAmount, durationMonths
 export interface PlanRequest {
   name: string;
   description: string;
@@ -82,7 +72,6 @@ export interface PlanRequest {
   durationMonths: number;
 }
 
-// Backend PolicyDto: id, policyNumber, userId, planId, planName, status, premiumAmount, startDate, endDate, createdAt, updatedAt
 export interface Policy {
   id: string;
   policyNumber: string;
@@ -97,19 +86,14 @@ export interface Policy {
   updatedAt?: string;
 }
 
-// Backend PurchasePolicyRequest: planId only
 export interface PurchaseRequest {
   planId: string;
 }
 
-// ─── Claim ───────────────────────────────────────────────────────────────────
-// Backend ClaimType infra enum
 export type ClaimType = "HOSPITALIZATION" | "MEDICATION" | "DENTAL" | "CONSULTATION";
 
-// Backend ClaimStatus infra enum
 export type ClaimStatus = "SUBMITTED" | "UNDER_REVIEW" | "APPROVED" | "REJECTED";
 
-// Backend SubmitClaimRequest: policyId, claimType, amount, description
 export interface ClaimSubmitRequest {
   policyId: string;
   claimType: ClaimType;
@@ -117,14 +101,12 @@ export interface ClaimSubmitRequest {
   description: string;
 }
 
-// Backend ReviewClaimRequest: decision (ClaimStatus), approvedAmount, rejectionReason
 export interface ClaimReviewRequest {
   decision: "APPROVED" | "REJECTED";
   approvedAmount?: number | null;
   rejectionReason?: string | null;
 }
 
-// Backend ClaimDto (15 fields)
 export interface Claim {
   id: string;
   claimNumber: string;
@@ -143,7 +125,6 @@ export interface Claim {
   createdAt: string;
 }
 
-// Backend ClaimEvidenceDto: id, claimId, fileName, filePath, contentType, uploadedAt
 export interface Evidence {
   id: string;
   claimId: string;
@@ -153,21 +134,17 @@ export interface Evidence {
   uploadedAt: string;
 }
 
-// ─── AI ──────────────────────────────────────────────────────────────────────
-// Backend ChatRequest: sessionId (nullable UUID), message
 export interface ChatRequest {
   sessionId?: string | null;
   message: string;
 }
 
-// Backend ChatResponse: sessionId, reply, timestamp
 export interface ChatResponse {
   sessionId: string;
   reply: string;
   timestamp: string;
 }
 
-// Backend ChatMessageDto: id, sessionId, role, content, createdAt
 export interface ChatMessageDto {
   id: string;
   sessionId: string;
@@ -176,7 +153,6 @@ export interface ChatMessageDto {
   createdAt: string;
 }
 
-// Backend FraudAiResponse: claimId, userId, ruleScore, aiScore, finalScore, flags, aiExplanation, createdAt
 export interface FraudAiResponse {
   claimId: string;
   userId: string;
@@ -188,7 +164,6 @@ export interface FraudAiResponse {
   createdAt: string;
 }
 
-// Backend RiskAiResponse: userId, totalClaims, averageRiskScore, highRiskCount, lastClaimAt
 export interface RiskAiResponse {
   userId: string;
   totalClaims: number;
@@ -197,7 +172,6 @@ export interface RiskAiResponse {
   lastClaimAt: string | null;
 }
 
-// ─── Notification ────────────────────────────────────────────────────────────
 export type NotificationType =
   | "WELCOME"
   | "POLICY_ACTIVATED"
@@ -212,7 +186,6 @@ export type NotificationType =
 export type NotificationStatus = "PENDING" | "SENT" | "FAILED";
 export type ChannelType = "EMAIL" | "SMS";
 
-// Backend Notification entity fields
 export interface Notification {
   id: string;
   userId: string;
@@ -227,7 +200,6 @@ export interface Notification {
   updatedAt?: string;
 }
 
-// ─── Ümumi ───────────────────────────────────────────────────────────────────
 export interface SpringPage<T> {
   content: T[];
   totalElements?: number;

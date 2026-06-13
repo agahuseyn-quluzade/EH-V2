@@ -22,7 +22,7 @@ export function LoginPage() {
     setLoading(true);
     try {
       const role = await login({ email, password });
-      toast.success("Xoş gəlmisiniz!");
+      toast.success("Welcome!");
       navigate(location.state?.from || homePathForRole(role), { replace: true });
     } catch (err) {
       setError(extractError(err));
@@ -34,35 +34,35 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-hero">
-        <h1>🏥 E-Sağlamlıq Sığortası</h1>
+        <h1>🏥 E-Health Insurance</h1>
         <p>
-          Sağlamlığınız üçün etibarlı rəqəmsal sığorta platforması. Planları
-          müqayisə edin, sığorta alın, iddialarınızı onlayn izləyin.
+          A reliable digital insurance platform for your health. Compare
+          plans, purchase insurance, and track your claims online.
         </p>
         <ul>
-          <li>✅ Onlayn sığorta planı seçimi və müqayisəsi</li>
-          <li>✅ İddiaların avtomatik qiymətləndirilməsi</li>
-          <li>✅ Süni intellekt əsaslı köməkçi və tövsiyələr</li>
-          <li>✅ Sənədlərin təhlükəsiz yüklənməsi</li>
+          <li>✅ Online insurance plan selection and comparison</li>
+          <li>✅ Automatic claim evaluation</li>
+          <li>✅ AI-powered assistant and recommendations</li>
+          <li>✅ Secure document uploads</li>
         </ul>
       </div>
       <div className="auth-form-side">
         <div className="auth-card">
-          <h2>Daxil ol</h2>
-          <p className="auth-sub">Hesabınıza daxil olun</p>
+          <h2>Log in</h2>
+          <p className="auth-sub">Sign in to your account</p>
           {error && <div className="alert alert-danger">{error}</div>}
           <form onSubmit={onSubmit}>
-            <Field label="E-poçt" required>
+            <Field label="Email" required>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ad@nümunə.az"
+                placeholder="name@example.com"
                 required
                 autoComplete="email"
               />
             </Field>
-            <Field label="Şifrə" required>
+            <Field label="Password" required>
               <input
                 type="password"
                 value={password}
@@ -73,11 +73,11 @@ export function LoginPage() {
               />
             </Field>
             <button className="btn btn-primary btn-block" disabled={loading}>
-              {loading ? "Daxil olunur..." : "Daxil ol"}
+              {loading ? "Logging in..." : "Log in"}
             </button>
           </form>
           <div className="auth-switch">
-            Hesabınız yoxdur? <Link to="/register">Qeydiyyatdan keçin</Link>
+            Don't have an account? <Link to="/register">Sign up</Link>
           </div>
         </div>
       </div>

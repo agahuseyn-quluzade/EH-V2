@@ -93,7 +93,6 @@ class FraudDetectionServiceImplTest {
         when(riskProfileService.isHighRiskUser(userId)).thenReturn(false);
         when(aiClientService.chatCompletion(any())).thenReturn("{\"score\": 50, \"explanation\": \"ok\", \"flags\": [\"AI_FLAG\"]}");
 
-        // CONSULTATION threshold = 500; 600 > 500 -> +40 = ruleScore 40 (>= AI_TRIGGER_THRESHOLD)
         service.evaluateClaim(event(ClaimType.CONSULTATION, BigDecimal.valueOf(600), claimId, userId));
 
         ArgumentCaptor<FraudCheck> captor = ArgumentCaptor.forClass(FraudCheck.class);
@@ -103,7 +102,6 @@ class FraudDetectionServiceImplTest {
         assertThat(saved.getFlags()).contains("AMOUNT_ABOVE_TYPE_THRESHOLD", "AI_FLAG");
         assertThat(saved.getAiScore()).isEqualTo(50);
         assertThat(saved.getAiExplanation()).isEqualTo("ok");
-        // round(40*0.4 + 50*0.6) = round(16 + 30) = 46
         assertThat(saved.getFinalScore()).isEqualTo(46);
 
         verify(riskProfileService).recordFraudCheck(userId, 46, false);
@@ -117,7 +115,6 @@ class FraudDetectionServiceImplTest {
         when(riskProfileService.isHighRiskUser(userId)).thenReturn(true);
         when(aiClientService.chatCompletion(any())).thenReturn("```json\n{\"score\": 90, \"explanation\": \"high\", \"flags\": []}\n```");
 
-        // CONSULTATION threshold = 500; 1200 > 500 (+40) and > 1000 (+20); high risk user (+20) => ruleScore 80
         service.evaluateClaim(event(ClaimType.CONSULTATION, BigDecimal.valueOf(1200), claimId, userId));
 
         ArgumentCaptor<FraudCheck> captor = ArgumentCaptor.forClass(FraudCheck.class);
@@ -126,7 +123,6 @@ class FraudDetectionServiceImplTest {
         assertThat(saved.getRuleScore()).isEqualTo(80);
         assertThat(saved.getFlags()).contains("AMOUNT_ABOVE_TYPE_THRESHOLD", "AMOUNT_FAR_ABOVE_TYPE_THRESHOLD", "REPEAT_HIGH_RISK_USER");
         assertThat(saved.getAiScore()).isEqualTo(90);
-        // round(80*0.4 + 90*0.6) = round(32 + 54) = 86
         assertThat(saved.getFinalScore()).isEqualTo(86);
 
         verify(riskProfileService).recordFraudCheck(userId, 86, true);
@@ -196,7 +192,6 @@ class FraudDetectionServiceImplTest {
         ArgumentCaptor<FraudCheck> captor = ArgumentCaptor.forClass(FraudCheck.class);
         verify(fraudCheckRepository).save(captor.capture());
         FraudCheck saved = captor.getValue();
-        // HOSPITALIZATION threshold = 10000; 20000 > 10000 (+40) and > 20000? no (not far above) -> ruleScore 40
         assertThat(saved.getRuleScore()).isEqualTo(40);
         assertThat(saved.getAiScore()).isEqualTo(60);
         verify(riskProfileService, never()).recordFraudCheck(any(), anyInt(), anyBoolean());

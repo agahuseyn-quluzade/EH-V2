@@ -51,7 +51,6 @@ class NotificationServiceImplTest {
                 .build();
     }
 
-    // ---- send ----
 
     @Test
     void send_savesPendingThenSent_whenSenderSucceeds() {
@@ -105,7 +104,6 @@ class NotificationServiceImplTest {
         assertThat(result.status()).isEqualTo(NotificationStatus.FAILED);
     }
 
-    // ---- getMyNotifications ----
 
     @Test
     void getMyNotifications_returnsNotifications_scopedByUserId() {
@@ -124,7 +122,6 @@ class NotificationServiceImplTest {
         assertThat(result.get(0).userId()).isEqualTo(userId);
     }
 
-    // ---- getAllNotifications ----
 
     @Test
     void getAllNotifications_returnsPagedResponse() {

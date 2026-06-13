@@ -7,11 +7,10 @@ import { Claim, ClaimStatus } from "../../types";
 import { claimStatusLabels, claimTypeLabels, formatDateTime, money } from "../../utils/format";
 
 const FILTERS: Array<{ value: ClaimStatus | "ALL"; label: string }> = [
-  { value: "ALL", label: "Hamısı" },
-  { value: "SUBMITTED", label: "Təqdim edilib" },
-  { value: "UNDER_REVIEW", label: "Baxış altında" },
-  { value: "APPROVED", label: "Təsdiqlənib" },
-  { value: "REJECTED", label: "Rədd edilib" },
+  { value: "ALL", label: "All" },
+  { value: "UNDER_REVIEW", label: "Under review" },
+  { value: "APPROVED", label: "Approved" },
+  { value: "REJECTED", label: "Rejected" },
 ];
 
 export function ClaimsPage() {
@@ -43,11 +42,11 @@ export function ClaimsPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>İddialarım</h1>
-          <p>Təqdim etdiyiniz sığorta iddiaları</p>
+          <h1>My Claims</h1>
+          <p>Insurance claims you have submitted</p>
         </div>
         <Link to="/claims/new" className="btn btn-primary">
-          + Yeni iddia
+          + New claim
         </Link>
       </div>
 
@@ -65,11 +64,11 @@ export function ClaimsPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          title="İddia tapılmadı"
+          title="No claims found"
           hint={
             filter === "ALL"
-              ? "Hələ iddia təqdim etməmisiniz."
-              : "Bu statusda iddia yoxdur."
+              ? "You haven't submitted any claims yet."
+              : "There are no claims with this status."
           }
         />
       ) : (
@@ -77,12 +76,12 @@ export function ClaimsPage() {
           <table>
             <thead>
               <tr>
-                <th>№</th>
-                <th>Növ</th>
-                <th>Məbləğ</th>
-                <th>Təsdiqlənən</th>
+                <th>No.</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Approved</th>
                 <th>Status</th>
-                <th>Tarix</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>

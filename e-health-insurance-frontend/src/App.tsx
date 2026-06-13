@@ -42,12 +42,12 @@ export default function App() {
 
   return (
     <Routes>
-      {/* Açıq səhifələr */}
+      {}
       <Route path="/" element={<LandingPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
 
-      {/* Müştəri səhifələri */}
+      {}
       <Route path="/dashboard" element={<Protected roles={["CUSTOMER"]}><DashboardPage /></Protected>} />
       <Route path="/plans" element={<Protected roles={["CUSTOMER"]}><PlansPage /></Protected>} />
       <Route path="/policy" element={<Protected roles={["CUSTOMER"]}><PolicyPage /></Protected>} />
@@ -58,13 +58,13 @@ export default function App() {
       <Route path="/notifications" element={<Protected><NotificationsPage /></Protected>} />
       <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
 
-      {/* Əməkdaş səhifələri */}
+      {}
       <Route path="/staff" element={<Protected roles={["AGENT", "ADMIN"]}><StaffDashboardPage /></Protected>} />
-      <Route path="/staff/queue" element={<Protected roles={["AGENT", "ADMIN"]}><StaffQueuePage /></Protected>} />
-      <Route path="/staff/claims/:id" element={<Protected roles={["AGENT", "ADMIN"]}><StaffClaimReviewPage /></Protected>} />
+      <Route path="/staff/queue" element={<Protected roles={["AGENT"]}><StaffQueuePage /></Protected>} />
+      <Route path="/staff/claims/:id" element={<Protected roles={["AGENT"]}><StaffClaimReviewPage /></Protected>} />
       <Route path="/staff/members" element={<Protected roles={["AGENT", "ADMIN"]}><StaffMembersPage /></Protected>} />
 
-      {/* Admin səhifələri */}
+      {}
       <Route path="/admin" element={<Protected roles={["ADMIN"]}><AdminDashboardPage /></Protected>} />
       <Route path="/admin/plans" element={<Protected roles={["ADMIN"]}><AdminPlansPage /></Protected>} />
       <Route path="/admin/policies" element={<Protected roles={["ADMIN"]}><AdminPoliciesPage /></Protected>} />

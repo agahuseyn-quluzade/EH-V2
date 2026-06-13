@@ -82,7 +82,6 @@ class RiskProfileServiceImplTest {
         verify(riskProfileRepository).save(captor.capture());
         RiskProfile saved = captor.getValue();
         assertThat(saved.getTotalClaims()).isEqualTo(3);
-        // (30*2 + 90) / 3 = 50
         assertThat(saved.getAverageRiskScore()).isEqualTo(50.0);
         assertThat(saved.getHighRiskCount()).isEqualTo(2);
     }

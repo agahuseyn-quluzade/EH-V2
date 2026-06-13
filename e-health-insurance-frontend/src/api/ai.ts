@@ -4,7 +4,6 @@ import { ChatMessageDto, ChatResponse, FraudAiResponse, RiskAiResponse } from ".
 const ROOT = "/api/v1/ai";
 
 export const aiApi = {
-  // POST /api/v1/ai/chatbot — send a message, optionally continuing a session
   chat: (body: { message: string; sessionId?: string | null }) =>
     api.post<ChatResponse>(`${ROOT}/chatbot`, body).then((r) => r.data),
 

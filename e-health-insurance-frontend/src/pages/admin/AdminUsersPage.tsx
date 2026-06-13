@@ -65,7 +65,7 @@ export function AdminUsersPage() {
     try {
       const updated = await iamApi.changeRole(id, { role });
       syncUser(updated);
-      toast.success("Rol yeniləndi");
+      toast.success("Role updated");
     } catch (err) {
       toast.error(extractError(err));
     } finally {
@@ -78,7 +78,7 @@ export function AdminUsersPage() {
     try {
       const updated = await iamApi.changeStatus(u.id, { active: u.active === false });
       syncUser(updated);
-      toast.success(updated.active === false ? "İstifadəçi bloklandı" : "İstifadəçi aktivləşdirildi");
+      toast.success(updated.active === false ? "User suspended" : "User activated");
     } catch (err) {
       toast.error(extractError(err));
     } finally {
@@ -120,7 +120,7 @@ export function AdminUsersPage() {
       <td>
         <Badge
           status={u.active === false ? "CANCELLED" : "ACTIVE"}
-          label={u.active === false ? "Blok" : "Aktiv"}
+          label={u.active === false ? "Suspended" : "Active"}
         />
       </td>
       <td>
@@ -130,7 +130,7 @@ export function AdminUsersPage() {
             disabled={updating === u.id}
             onClick={() => handleStatusToggle(u)}
           >
-            {updating === u.id ? "..." : u.active === false ? "Aktiv et" : "Blokla"}
+            {updating === u.id ? "..." : u.active === false ? "Activate" : "Suspend"}
           </button>
         )}
       </td>
@@ -142,11 +142,11 @@ export function AdminUsersPage() {
       <table>
         <thead>
           <tr>
-            <th>Ad Soyad</th>
-            <th>E-poçt</th>
-            <th>Rol</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Role</th>
             <th>Status</th>
-            <th>Əməliyyat</th>
+            <th>Action</th>
           </tr>
         </thead>
         <tbody>{rows.map(renderRow)}</tbody>
@@ -158,20 +158,20 @@ export function AdminUsersPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>İstifadəçi idarəetməsi</h1>
-          <p>Axtarış, rol və status idarəetməsi</p>
+          <h1>User Management</h1>
+          <p>Search, role, and status management</p>
         </div>
       </div>
 
       <div className="card">
-        <h2>Ad / E-poçt ilə axtarış</h2>
+        <h2>Search by name / email</h2>
         <form onSubmit={onSearch} style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
           <div style={{ flex: 1 }}>
-            <Field label="Axtarış sorğusu">
+            <Field label="Search query">
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ad, soyad və ya e-poçt"
+                placeholder="First name, last name, or email"
               />
             </Field>
           </div>
@@ -180,7 +180,7 @@ export function AdminUsersPage() {
             disabled={searching || !query.trim()}
             style={{ marginBottom: 14 }}
           >
-            {searching ? "Axtarılır..." : "Axtar"}
+            {searching ? "Searching..." : "Search"}
           </button>
         </form>
       </div>
@@ -189,7 +189,7 @@ export function AdminUsersPage() {
 
       {results && !searching && (
         results.content.length === 0 ? (
-          <EmptyState title="İstifadəçi tapılmadı" hint="Başqa sorğu ilə cəhd edin." />
+          <EmptyState title="No users found" hint="Try a different search query." />
         ) : (
           <>
             {renderTable(results.content)}
@@ -200,17 +200,17 @@ export function AdminUsersPage() {
                   disabled={page === 0}
                   onClick={() => doSearch(page - 1)}
                 >
-                  ← Əvvəlki
+                  ← Previous
                 </button>
                 <span className="muted">
-                  Səhifə {page + 1} / {results.totalPages}
+                  Page {page + 1} / {results.totalPages}
                 </span>
                 <button
                   className="btn btn-secondary btn-sm"
                   disabled={page + 1 >= (results.totalPages ?? 0)}
                   onClick={() => doSearch(page + 1)}
                 >
-                  Növbəti →
+                  Next →
                 </button>
               </div>
             )}
@@ -219,14 +219,14 @@ export function AdminUsersPage() {
       )}
 
       <div className="card" style={{ marginTop: "1.5rem" }}>
-        <h2>ID ilə axtarış</h2>
+        <h2>Search by ID</h2>
         <form onSubmit={onLookup} style={{ display: "flex", gap: 10, alignItems: "flex-end" }}>
           <div style={{ flex: 1 }}>
-            <Field label="İstifadəçi ID (UUID)">
+            <Field label="User ID">
               <input
                 value={userId}
                 onChange={(e) => setUserId(e.target.value)}
-                placeholder="məs: 4f8a2c3e-...-..."
+                placeholder="e.g. 4f8a2c3e-...-..."
                 className="mono"
               />
             </Field>
@@ -236,13 +236,13 @@ export function AdminUsersPage() {
             disabled={lookupLoading || !userId.trim()}
             style={{ marginBottom: 14 }}
           >
-            {lookupLoading ? "Axtarılır..." : "Tap"}
+            {lookupLoading ? "Searching..." : "Find"}
           </button>
         </form>
         {lookedUp && renderTable([lookedUp])}
         {lookupSearched && !lookedUp && !lookupLoading && (
           <div className="alert alert-warning" style={{ marginTop: "1rem" }}>
-            Bu ID ilə istifadəçi tapılmadı.
+            No user found with this ID.
           </div>
         )}
       </div>

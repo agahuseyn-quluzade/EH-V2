@@ -50,41 +50,41 @@ export function DashboardPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Xoş gəlmisiniz, {user?.firstName}!</h1>
-          <p>Sığortanızın ümumi vəziyyəti</p>
+          <h1>Welcome, {user?.firstName}!</h1>
+          <p>Overview of your insurance</p>
         </div>
         <Link to="/claims/new" className="btn btn-primary">
-          + Yeni iddia
+          + New claim
         </Link>
       </div>
 
       <div className="grid grid-4">
         <StatCard
-          label="Sığorta statusu"
+          label="Insurance status"
           value={
             policy ? (
               <Badge status={policy.status} label={policyStatusLabels[policy.status]} />
             ) : (
-              "Yoxdur"
+              "None"
             )
           }
-          hint={policy ? policy.planName : "Hələ sığorta almamısınız"}
+          hint={policy ? policy.planName : "You haven't purchased insurance yet"}
           tone={policy?.status === "ACTIVE" ? "success" : "warning"}
         />
         <StatCard
-          label="Aylıq haqq"
+          label="Yearly premium"
           value={policy ? money(policy.premiumAmount) : "—"}
           hint={policy ? `Plan: ${policy.planName}` : undefined}
           tone="info"
         />
         <StatCard
-          label="Gözləyən iddialar"
+          label="Pending claims"
           value={pendingClaims}
-          hint={`Cəmi ${claims.length} iddia`}
+          hint={`${claims.length} claims total`}
           tone={pendingClaims > 0 ? "warning" : "neutral"}
         />
         <StatCard
-          label="Təsdiqlənmiş iddialar"
+          label="Approved claims"
           value={approvedClaims}
           tone="success"
         />
@@ -93,9 +93,9 @@ export function DashboardPage() {
       {policy && (
         <div className="card" style={{ marginTop: 16 }}>
           <div className="card-title">
-            <h2>Aktiv sığortam</h2>
+            <h2>My active policy</h2>
             <Link to="/policy" className="btn btn-secondary btn-sm">
-              Ətraflı
+              Details
             </Link>
           </div>
           <dl className="detail-list">
@@ -104,15 +104,15 @@ export function DashboardPage() {
               <dd>{policy.planName}</dd>
             </div>
             <div>
-              <dt>Müqavilə №</dt>
+              <dt>Policy No.</dt>
               <dd className="mono">{policy.policyNumber}</dd>
             </div>
             <div>
-              <dt>Aylıq haqq</dt>
+              <dt>Yearly premium</dt>
               <dd>{money(policy.premiumAmount)}</dd>
             </div>
             <div>
-              <dt>Müddət</dt>
+              <dt>Duration</dt>
               <dd>
                 {formatDate(policy.startDate)} — {formatDate(policy.endDate)}
               </dd>
@@ -123,12 +123,12 @@ export function DashboardPage() {
 
       {!policy && (
         <div className="card" style={{ marginTop: 16 }}>
-          <h2>Sığortanız yoxdur</h2>
+          <h2>You don't have an active policy</h2>
           <p className="muted">
-            Sağlamlıq sığortası planlarını nəzərdən keçirin və sizə uyğun olanı seçin.
+            Browse our health insurance plans and choose the one that suits you.
           </p>
           <Link to="/plans" className="btn btn-primary">
-            Planlara bax
+            View plans
           </Link>
         </div>
       )}
@@ -136,20 +136,20 @@ export function DashboardPage() {
       <div className="grid grid-2" style={{ marginTop: 16 }}>
         <div className="card">
           <div className="card-title">
-            <h2>Son iddialar</h2>
+            <h2>Recent claims</h2>
             <Link to="/claims" className="btn btn-secondary btn-sm">
-              Hamısı
+              View all
             </Link>
           </div>
           {claims.length === 0 ? (
-            <p className="muted">Hələ iddia təqdim etməmisiniz.</p>
+            <p className="muted">You haven't submitted any claims yet.</p>
           ) : (
             <div className="table-wrap">
               <table>
                 <thead>
                   <tr>
-                    <th>Növ</th>
-                    <th>Məbləğ</th>
+                    <th>Type</th>
+                    <th>Amount</th>
                     <th>Status</th>
                   </tr>
                 </thead>
@@ -175,13 +175,13 @@ export function DashboardPage() {
 
         <div className="card">
           <div className="card-title">
-            <h2>Son bildirişlər</h2>
+            <h2>Recent notifications</h2>
             <Link to="/notifications" className="btn btn-secondary btn-sm">
-              Hamısı
+              View all
             </Link>
           </div>
           {notifications.length === 0 ? (
-            <p className="muted">Bildiriş yoxdur.</p>
+            <p className="muted">No notifications.</p>
           ) : (
             <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
               {notifications.slice(0, 5).map((n) => (

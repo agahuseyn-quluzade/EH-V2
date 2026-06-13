@@ -42,11 +42,11 @@ export function NewClaimPage() {
   const onFileChange = (f: File | null) => {
     if (!f) return setFile(null);
     if (!ALLOWED_TYPES.includes(f.type)) {
-      toast.error("Yalnız PDF, JPEG, PNG və WebP faylları qəbul edilir");
+      toast.error("Only PDF, JPEG, PNG, and WebP files are accepted");
       return;
     }
     if (f.size > MAX_SIZE) {
-      toast.error("Fayl 10 MB-dan böyük ola bilməz");
+      toast.error("File cannot be larger than 10 MB");
       return;
     }
     setFile(f);
@@ -68,13 +68,13 @@ export function NewClaimPage() {
         try {
           await claimApi.uploadEvidence(claim.id, file);
         } catch (err) {
-          toast.error(`İddia yaradıldı, lakin sənəd yüklənmədi: ${extractError(err)}`);
+          toast.error(`Claim created, but the document failed to upload: ${extractError(err)}`);
           navigate(`/claims/${claim.id}`);
           return;
         }
       }
 
-      toast.success("İddia uğurla təqdim edildi!");
+      toast.success("Claim submitted successfully!");
       navigate(`/claims/${claim.id}`);
     } catch (err) {
       toast.error(extractError(err));
@@ -88,11 +88,11 @@ export function NewClaimPage() {
   if (!policy) {
     return (
       <EmptyState
-        title="Aktiv sığortanız yoxdur"
-        hint="İddia təqdim etmək üçün əvvəlcə sığorta almalısınız."
+        title="You don't have an active policy"
+        hint="You need to purchase insurance before you can submit a claim."
         action={
           <Link to="/plans" className="btn btn-primary">
-            Planlara bax
+            View plans
           </Link>
         }
       />
@@ -103,16 +103,16 @@ export function NewClaimPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Yeni iddia</h1>
-          <p>Tibbi xərclərinizin ödənilməsi üçün iddia təqdim edin</p>
+          <h1>New Claim</h1>
+          <p>Submit a claim to get reimbursed for your medical expenses</p>
         </div>
       </div>
 
       <div className="grid grid-2" style={{ alignItems: "start" }}>
         <div className="card">
-          <h2>İddia məlumatları</h2>
+          <h2>Claim information</h2>
           <form onSubmit={onSubmit}>
-            <Field label="İddia növü" required>
+            <Field label="Claim type" required>
               <select
                 value={form.claimType}
                 onChange={(e) =>
@@ -126,7 +126,7 @@ export function NewClaimPage() {
                 ))}
               </select>
             </Field>
-            <Field label="Məbləğ (AZN)" required>
+            <Field label="Amount (USD)" required>
               <input
                 type="number"
                 min="0.01"
@@ -136,22 +136,22 @@ export function NewClaimPage() {
                 required
               />
             </Field>
-            <Field label="Təsvir" required hint="Müalicənin qısa təsviri">
+            <Field label="Description" required hint="A short description of the treatment">
               <textarea
                 value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 required
                 maxLength={1000}
-                placeholder="Məs: Stomatoloji müayinə və diş dolgusu..."
+                placeholder="e.g. Dental check-up and filling..."
               />
             </Field>
 
             <hr className="divider" />
-            <h3>Sübut sənədi (opsional)</h3>
+            <h3>Evidence document (optional)</h3>
             <p className="muted" style={{ fontSize: "0.82rem" }}>
-              PDF, JPEG, PNG və ya WebP — maksimum 10 MB.
+              PDF, JPEG, PNG, or WebP — max 10 MB.
             </p>
-            <Field label="Fayl">
+            <Field label="File">
               <input
                 type="file"
                 accept=".pdf,.jpg,.jpeg,.png,.webp"
@@ -161,35 +161,35 @@ export function NewClaimPage() {
 
             <div className="form-actions">
               <Link to="/claims" className="btn btn-secondary">
-                İmtina
+                Cancel
               </Link>
               <button className="btn btn-primary" disabled={submitting}>
-                {submitting ? "Təqdim edilir..." : "İddianı təqdim et"}
+                {submitting ? "Submitting..." : "Submit claim"}
               </button>
             </div>
           </form>
         </div>
 
         <div className="card">
-          <h2>Sığortanız</h2>
+          <h2>Your Policy</h2>
           <dl className="detail-list" style={{ gridTemplateColumns: "1fr" }}>
             <div>
               <dt>Plan</dt>
               <dd>{policy.planName}</dd>
             </div>
             <div>
-              <dt>Aylıq haqq</dt>
+              <dt>Monthly premium</dt>
               <dd>{money(policy.premiumAmount)}</dd>
             </div>
             <div>
-              <dt>Müqavilə №</dt>
+              <dt>Policy No.</dt>
               <dd className="mono">{policy.policyNumber}</dd>
             </div>
           </dl>
           <div className="alert alert-info" style={{ marginTop: 14 }}>
-            İddianız avtomatik qiymətləndirilir: fırıldaqçılıq analizi aparılır.
-            Nəticə bir neçə saniyəyə hazır olur, bəzi hallarda əməkdaş baxışı
-            tələb oluna bilər.
+            Your claim is evaluated automatically: a fraud analysis is run.
+            The result is ready within a few seconds; in some cases staff
+            review may be required.
           </div>
         </div>
       </div>

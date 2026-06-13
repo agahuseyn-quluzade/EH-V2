@@ -26,44 +26,42 @@ export function AdminPoliciesPage() {
         .catch((e) => toast.error(extractError(e)))
         .finally(() => setLoading(false));
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [page]
   );
 
   useEffect(() => {
     load(page);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   return (
     <>
       <div className="page-header">
         <div>
-          <h1>Sığorta müqavilələri</h1>
-          <p>Bütün müqavilələrin siyahısı</p>
+          <h1>Policies</h1>
+          <p>List of all policies</p>
         </div>
       </div>
 
       <div className="alert alert-info">
-        Status filtrəsi və üzv üçün sığorta alma backend tərəfindən dəstəklənmir.
+        Status filtering and purchasing insurance on behalf of a member are not supported by the backend.
       </div>
 
       {loading ? (
         <Spinner />
       ) : policies.length === 0 ? (
-        <EmptyState title="Müqavilə tapılmadı" hint="Hələ heç bir sığorta müqaviləsi yoxdur." />
+        <EmptyState title="No policies found" hint="There are no insurance policies yet." />
       ) : (
         <>
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Müqavilə №</th>
-                  <th>İstifadəçi ID</th>
+                  <th>Policy No.</th>
+                  <th>User ID</th>
                   <th>Plan</th>
-                  <th>Müddət</th>
+                  <th>Duration</th>
                   <th>Status</th>
-                  <th>Aylıq haqq</th>
+                  <th>Yearly premium</th>
                 </tr>
               </thead>
               <tbody>
@@ -100,17 +98,17 @@ export function AdminPoliciesPage() {
                 disabled={page === 0}
                 onClick={() => setPage((p) => p - 1)}
               >
-                ← Əvvəlki
+                ← Previous
               </button>
               <span className="muted">
-                Səhifə {page + 1} / {totalPages}
+                Page {page + 1} / {totalPages}
               </span>
               <button
                 className="btn btn-secondary btn-sm"
                 disabled={page + 1 >= totalPages}
                 onClick={() => setPage((p) => p + 1)}
               >
-                Növbəti →
+                Next →
               </button>
             </div>
           )}

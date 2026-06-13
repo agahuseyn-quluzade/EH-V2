@@ -167,7 +167,6 @@ public class FraudDetectionServiceImpl implements FraudDetectionService {
                 new OpenAiMessage("user", prompt)
         ));
 
-        // Strip markdown code fences (e.g. ```json ... ```) that some models add
         content = content.trim().replaceAll("(?s)^```[a-z]*\\s*", "").replaceAll("```\\s*$", "").trim();
 
         return objectMapper.readValue(content, AiAssessment.class);

@@ -1,10 +1,10 @@
 import { FormEvent, useEffect, useState } from "react";
 import { extractError } from "../../api/client";
 import { iamApi } from "../../api/iam";
-import { Badge, Field, Spinner } from "../../components/ui";
+import { Field, Spinner } from "../../components/ui";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../../context/ToastContext";
-import { formatDateTime, roleLabels } from "../../utils/format";
+import { formatDateTime } from "../../utils/format";
 
 export function ProfilePage() {
   const { user, refreshProfile } = useAuth();
@@ -33,7 +33,7 @@ export function ProfilePage() {
         lastName: form.lastName.trim(),
       });
       await refreshProfile();
-      toast.success("Profil yeniləndi");
+      toast.success("Profile updated");
     } catch (err) {
       toast.error(extractError(err));
     } finally {
@@ -44,11 +44,11 @@ export function ProfilePage() {
   const onChangePassword = async (e: FormEvent) => {
     e.preventDefault();
     if (pwForm.newPassword.length < 8) {
-      toast.error("Yeni şifrə ən az 8 simvol olmalıdır");
+      toast.error("New password must be at least 8 characters");
       return;
     }
     if (pwForm.newPassword !== pwForm.confirmPassword) {
-      toast.error("Yeni şifrələr uyğun gəlmir");
+      toast.error("New passwords do not match");
       return;
     }
     setPwSaving(true);
@@ -57,7 +57,7 @@ export function ProfilePage() {
         currentPassword: pwForm.currentPassword,
         newPassword: pwForm.newPassword,
       });
-      toast.success("Şifrə yeniləndi");
+      toast.success("Password updated");
       setPwForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
     } catch (err) {
       toast.error(extractError(err));
@@ -70,18 +70,18 @@ export function ProfilePage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Profil</h1>
-          <p>Şəxsi məlumatlarınız</p>
+          <h1>Profile</h1>
+          <p>Your personal information</p>
         </div>
       </div>
 
       <div className="grid grid-2" style={{ alignItems: "start" }}>
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           <div className="card">
-            <h2>Məlumatları redaktə et</h2>
+            <h2>Edit information</h2>
             <form onSubmit={onSave}>
               <div className="form-row">
-                <Field label="Ad" required>
+                <Field label="First name" required>
                   <input
                     value={form.firstName}
                     onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
@@ -89,7 +89,7 @@ export function ProfilePage() {
                     maxLength={100}
                   />
                 </Field>
-                <Field label="Soyad" required>
+                <Field label="Last name" required>
                   <input
                     value={form.lastName}
                     onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
@@ -99,15 +99,15 @@ export function ProfilePage() {
                 </Field>
               </div>
               <button className="btn btn-primary" disabled={saving}>
-                {saving ? "Yadda saxlanılır..." : "Yadda saxla"}
+                {saving ? "Saving..." : "Save"}
               </button>
             </form>
           </div>
 
           <div className="card">
-            <h2>Şifrəni dəyiş</h2>
+            <h2>Change password</h2>
             <form onSubmit={onChangePassword}>
-              <Field label="Cari şifrə" required>
+              <Field label="Current password" required>
                 <input
                   type="password"
                   value={pwForm.currentPassword}
@@ -115,7 +115,7 @@ export function ProfilePage() {
                   required
                 />
               </Field>
-              <Field label="Yeni şifrə" required>
+              <Field label="New password" required>
                 <input
                   type="password"
                   value={pwForm.newPassword}
@@ -124,7 +124,7 @@ export function ProfilePage() {
                   minLength={8}
                 />
               </Field>
-              <Field label="Yeni şifrəni təsdiqlə" required>
+              <Field label="Confirm new password" required>
                 <input
                   type="password"
                   value={pwForm.confirmPassword}
@@ -133,32 +133,22 @@ export function ProfilePage() {
                 />
               </Field>
               <button className="btn btn-primary" disabled={pwSaving}>
-                {pwSaving ? "Yenilənir..." : "Şifrəni yenilə"}
+                {pwSaving ? "Updating..." : "Update password"}
               </button>
             </form>
           </div>
         </div>
 
         <div className="card">
-          <h2>Hesab məlumatları</h2>
+          <h2>Account information</h2>
           <dl className="detail-list" style={{ gridTemplateColumns: "1fr" }}>
             <div>
-              <dt>E-poçt</dt>
+              <dt>Email</dt>
               <dd>{user.email}</dd>
             </div>
             <div>
-              <dt>Rol</dt>
-              <dd>
-                <Badge status="ACTIVE" label={roleLabels[user.role]} />
-              </dd>
-            </div>
-            <div>
-              <dt>Qeydiyyat tarixi</dt>
+              <dt>Registered on</dt>
               <dd>{formatDateTime(user.createdAt)}</dd>
-            </div>
-            <div>
-              <dt>İstifadəçi ID</dt>
-              <dd className="mono">{user.id}</dd>
             </div>
           </dl>
         </div>

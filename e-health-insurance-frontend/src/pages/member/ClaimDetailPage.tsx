@@ -44,7 +44,7 @@ export function ClaimDetailPage() {
     setUploading(true);
     try {
       await claimApi.uploadEvidence(id, file);
-      toast.success("Sənəd yükləndi");
+      toast.success("Document uploaded");
       setFile(null);
     } catch (err) {
       toast.error(extractError(err));
@@ -55,45 +55,45 @@ export function ClaimDetailPage() {
 
   if (loading) return <Spinner />;
   if (error || !claim)
-    return <ErrorState message={error ?? "İddia tapılmadı"} onRetry={load} />;
+    return <ErrorState message={error ?? "Claim not found"} onRetry={load} />;
 
   return (
     <>
       <div className="page-header">
         <div>
-          <h1>İddia detalları</h1>
+          <h1>Claim Details</h1>
           <p className="mono">{claim.claimNumber}</p>
         </div>
         <Link to="/claims" className="btn btn-secondary">
-          ← Geri
+          ← Back
         </Link>
       </div>
 
       <div className="card">
         <div className="card-title">
-          <h2>Ümumi məlumat</h2>
+          <h2>General information</h2>
           <Badge status={claim.status} label={claimStatusLabels[claim.status]} />
         </div>
         <dl className="detail-list">
           <div>
-            <dt>İddia növü</dt>
+            <dt>Claim type</dt>
             <dd>{claimTypeLabels[claim.claimType] ?? claim.claimType}</dd>
           </div>
           <div>
-            <dt>Məbləğ</dt>
+            <dt>Amount</dt>
             <dd>{money(claim.amount)}</dd>
           </div>
           <div>
-            <dt>Təsvir</dt>
+            <dt>Description</dt>
             <dd>{claim.description}</dd>
           </div>
           <div>
-            <dt>Təqdim edilib</dt>
+            <dt>Submitted</dt>
             <dd>{formatDateTime(claim.createdAt)}</dd>
           </div>
           {claim.riskScore != null && (
             <div>
-              <dt>Risk balı</dt>
+              <dt>Risk score</dt>
               <dd>{claim.riskScore}/100</dd>
             </div>
           )}
@@ -102,23 +102,23 @@ export function ClaimDetailPage() {
 
       {(claim.approvedAmount != null || claim.rejectionReason) && (
         <div className="card">
-          <h2>Qərar</h2>
+          <h2>Decision</h2>
           <dl className="detail-list">
             {claim.approvedAmount != null && (
               <div>
-                <dt>Təsdiqlənən məbləğ</dt>
+                <dt>Approved amount</dt>
                 <dd>{money(claim.approvedAmount)}</dd>
               </div>
             )}
             {claim.rejectionReason && (
               <div>
-                <dt>Rədd səbəbi</dt>
+                <dt>Rejection reason</dt>
                 <dd>{claim.rejectionReason}</dd>
               </div>
             )}
             {claim.reviewedBy && (
               <div>
-                <dt>Baxan əməkdaş</dt>
+                <dt>Reviewed by</dt>
                 <dd className="mono">{claim.reviewedBy}</dd>
               </div>
             )}
@@ -128,11 +128,11 @@ export function ClaimDetailPage() {
 
       {claim.fraudFlags && claim.fraudFlags.length > 0 && (
         <div className="card">
-          <h2>Fırıldaqçılıq analizi</h2>
+          <h2>Fraud analysis</h2>
           <dl className="detail-list">
             {claim.riskScore != null && (
               <div>
-                <dt>Risk balı</dt>
+                <dt>Risk score</dt>
                 <dd>{claim.riskScore}/100</dd>
               </div>
             )}
@@ -153,9 +153,9 @@ export function ClaimDetailPage() {
       )}
 
       <div className="card">
-        <h2>Sübut sənədi yüklə</h2>
+        <h2>Upload evidence</h2>
         <form onSubmit={onUpload}>
-          <Field label="Fayl" hint="PDF, JPEG, PNG, WebP — maks 10 MB">
+          <Field label="File" hint="PDF, JPEG, PNG, WebP — max 10 MB">
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png,.webp"
@@ -163,7 +163,7 @@ export function ClaimDetailPage() {
             />
           </Field>
           <button className="btn btn-primary" disabled={!file || uploading}>
-            {uploading ? "Yüklənir..." : "Sənəd yüklə"}
+            {uploading ? "Uploading..." : "Upload document"}
           </button>
         </form>
       </div>

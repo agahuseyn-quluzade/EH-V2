@@ -15,6 +15,7 @@ export function PlansPage() {
   const [loading, setLoading] = useState(true);
   const [purchasePlan, setPurchasePlan] = useState<Plan | null>(null);
   const [purchasing, setPurchasing] = useState(false);
+  const [detailsPlan, setDetailsPlan] = useState<Plan | null>(null);
 
   useEffect(() => {
     policyApi
@@ -32,7 +33,7 @@ export function PlansPage() {
     setPurchasing(true);
     try {
       await policyApi.purchase({ planId: purchasePlan.id });
-      toast.success("Sığorta uğurla alındı!");
+      toast.success("Insurance purchased successfully!");
       setPurchasePlan(null);
       navigate("/policy");
     } catch (err) {
@@ -48,17 +49,22 @@ export function PlansPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Sığorta planları</h1>
-          <p>Sizə uyğun sağlamlıq sığortası planını seçin</p>
+          <h1>Insurance Plans</h1>
+          <p>Choose the health insurance plan that suits you</p>
         </div>
       </div>
 
       {activePlans.length === 0 ? (
-        <EmptyState title="Aktiv plan tapılmadı" hint="Hazırda satışda plan yoxdur." />
+        <EmptyState title="No active plans found" hint="There are no plans available for purchase right now." />
       ) : (
         <div className="grid grid-3">
           {activePlans.map((plan) => (
-            <div key={plan.id} className="card plan-card">
+            <div
+              key={plan.id}
+              className="card plan-card"
+              style={{ cursor: "pointer" }}
+              onClick={() => setDetailsPlan(plan)}
+            >
               <h3 className="mb-0">{plan.name}</h3>
               {plan.description && (
                 <p className="muted" style={{ fontSize: "0.83rem" }}>
@@ -66,24 +72,27 @@ export function PlansPage() {
                 </p>
               )}
               <div className="plan-price">
-                {money(plan.premiumAmount)} <small>/ ay</small>
+                {money(plan.premiumAmount)} <small>/ year</small>
               </div>
               <ul className="plan-features">
                 <li>
-                  <span>Əhatə məbləği</span>
+                  <span>Coverage amount</span>
                   <span>{money(plan.coverageAmount)}</span>
                 </li>
                 <li>
-                  <span>Müddət</span>
-                  <span>{plan.durationMonths} ay</span>
+                  <span>Duration</span>
+                  <span>{plan.durationMonths} months</span>
                 </li>
               </ul>
               <div className="plan-actions">
                 <button
                   className="btn btn-primary"
-                  onClick={() => setPurchasePlan(plan)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPurchasePlan(plan);
+                  }}
                 >
-                  Sığorta al
+                  Buy insurance
                 </button>
               </div>
             </div>
@@ -91,16 +100,56 @@ export function PlansPage() {
         </div>
       )}
 
+      {detailsPlan && (
+        <Modal title={detailsPlan.name} onClose={() => setDetailsPlan(null)}>
+          {detailsPlan.description && (
+            <p className="muted" style={{ fontSize: "0.85rem" }}>{detailsPlan.description}</p>
+          )}
+          <ul className="plan-features">
+            <li>
+              <span>Yearly premium</span>
+              <span>{money(detailsPlan.premiumAmount)}</span>
+            </li>
+            <li>
+              <span>Coverage amount</span>
+              <span>{money(detailsPlan.coverageAmount)}</span>
+            </li>
+            <li>
+              <span>Duration</span>
+              <span>{detailsPlan.durationMonths} months</span>
+            </li>
+          </ul>
+          <div className="form-actions">
+            <button
+              type="button"
+              className="btn btn-secondary"
+              onClick={() => setDetailsPlan(null)}
+            >
+              Close
+            </button>
+            <button
+              className="btn btn-primary"
+              onClick={() => {
+                setPurchasePlan(detailsPlan);
+                setDetailsPlan(null);
+              }}
+            >
+              Buy insurance
+            </button>
+          </div>
+        </Modal>
+      )}
+
       {purchasePlan && (
-        <Modal title={`"${purchasePlan.name}" planını al`} onClose={() => setPurchasePlan(null)}>
+        <Modal title={`Buy "${purchasePlan.name}" plan`} onClose={() => setPurchasePlan(null)}>
           <form onSubmit={onPurchase}>
             <div className="alert alert-info">
-              Aylıq haqq: <strong>{money(purchasePlan.premiumAmount)}</strong> •
-              Müddət: <strong>{purchasePlan.durationMonths} ay</strong>
+              Yearly premium: <strong>{money(purchasePlan.premiumAmount)}</strong> •
+              Duration: <strong>{purchasePlan.durationMonths} months</strong>
             </div>
             <p className="muted" style={{ fontSize: "0.85rem" }}>
-              Sığorta alındıqdan sonra ödəniş emalı başlayacaq. Ödəniş tamamlandıqdan
-              sonra sığortanız aktiv olacaq.
+              Payment processing will begin after you purchase this plan. Your policy
+              will become active once the payment completes.
             </p>
             <div className="form-actions">
               <button
@@ -108,10 +157,10 @@ export function PlansPage() {
                 className="btn btn-secondary"
                 onClick={() => setPurchasePlan(null)}
               >
-                İmtina
+                Cancel
               </button>
               <button className="btn btn-primary" disabled={purchasing}>
-                {purchasing ? "Alınır..." : "Təsdiq et və al"}
+                {purchasing ? "Purchasing..." : "Confirm and buy"}
               </button>
             </div>
           </form>

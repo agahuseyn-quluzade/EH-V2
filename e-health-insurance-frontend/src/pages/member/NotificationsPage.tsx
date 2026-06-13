@@ -1,21 +1,49 @@
 import { useEffect, useState } from "react";
 import { extractError } from "../../api/client";
 import { notificationApi } from "../../api/notification";
-import { Badge, EmptyState, ErrorState, Spinner } from "../../components/ui";
+import { EmptyState, ErrorState, Spinner } from "../../components/ui";
 import { Notification } from "../../types";
-import { formatDateTime, notificationStatusLabels } from "../../utils/format";
+import { claimTypeLabels, formatDateTime, money } from "../../utils/format";
 
 const notificationTypeLabels: Record<string, string> = {
-  WELCOME: "Xoş gəlmisiniz",
-  POLICY_ACTIVATED: "Sığorta aktivləşdi",
-  POLICY_PENDING: "Sığorta gözləmədə",
-  CLAIM_SUBMITTED: "İddia təqdim edildi",
-  CLAIM_APPROVED: "İddia təsdiqləndi",
-  CLAIM_REJECTED: "İddia rədd edildi",
-  PAYMENT_SUCCESS: "Ödəniş uğurlu",
-  PAYMENT_FAILED: "Ödəniş uğursuz",
-  FRAUD_ALERT: "Fırıldaqçılıq xəbərdarlığı",
+  WELCOME: "Welcome",
+  POLICY_ACTIVATED: "Policy activated",
+  POLICY_PENDING: "Policy pending",
+  CLAIM_SUBMITTED: "Claim submitted",
+  CLAIM_APPROVED: "Claim approved",
+  CLAIM_REJECTED: "Claim rejected",
+  PAYMENT_SUCCESS: "Payment successful",
+  PAYMENT_FAILED: "Payment failed",
+  FRAUD_ALERT: "Fraud alert",
 };
+
+const notificationTypeIcons: Record<string, string> = {
+  WELCOME: "👋",
+  POLICY_ACTIVATED: "✅",
+  POLICY_PENDING: "⏳",
+  CLAIM_SUBMITTED: "📝",
+  CLAIM_APPROVED: "✅",
+  CLAIM_REJECTED: "❌",
+  PAYMENT_SUCCESS: "💳",
+  PAYMENT_FAILED: "⚠️",
+  FRAUD_ALERT: "🚨",
+};
+
+function formatNotificationBody(body: string): string {
+  let text = body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+
+  text = text.replace(/\s*\(transaction\s+[^)]+\)/gi, "");
+
+  for (const [type, label] of Object.entries(claimTypeLabels)) {
+    text = text.replace(new RegExp(`\\b${type}\\b`, "g"), label);
+  }
+
+  text = text.replace(/\b(of|for)\s+(\d+(?:\.\d+)?)\b/gi, (_match, keyword, amount) => {
+    return `${keyword} ${money(Number(amount))}`;
+  });
+
+  return text;
+}
 
 export function NotificationsPage() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -42,13 +70,13 @@ export function NotificationsPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Bildirişlər</h1>
-          <p>Sizə göndərilən bildirişlər</p>
+          <h1>Notifications</h1>
+          <p>Notifications sent to you</p>
         </div>
       </div>
 
       {notifications.length === 0 ? (
-        <EmptyState title="Bildiriş yoxdur" hint="Hələ heç bir bildiriş almamısınız." />
+        <EmptyState title="No notifications" hint="You haven't received any notifications yet." />
       ) : (
         <div className="card" style={{ padding: 0 }}>
           <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
@@ -63,20 +91,13 @@ export function NotificationsPage() {
                 onClick={() => setExpanded(expanded === n.id ? null : n.id)}
               >
                 <div className="flex-between">
-                  <strong>{n.subject || notificationTypeLabels[n.type] || n.type}</strong>
-                  <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                    <Badge
-                      status={n.status}
-                      label={notificationStatusLabels[n.status]}
-                    />
-                    <span className="muted" style={{ fontSize: "0.78rem" }}>
-                      {formatDateTime(n.createdAt)}
-                    </span>
-                  </div>
-                </div>
-                <div className="muted" style={{ fontSize: "0.8rem" }}>
-                  {n.channel === "EMAIL" ? "📧" : "📱"} {n.recipient} •{" "}
-                  {notificationTypeLabels[n.type] || n.type}
+                  <strong>
+                    {notificationTypeIcons[n.type] ?? "🔔"}{" "}
+                    {n.subject || notificationTypeLabels[n.type] || n.type}
+                  </strong>
+                  <span className="muted" style={{ fontSize: "0.78rem" }}>
+                    {formatDateTime(n.createdAt)}
+                  </span>
                 </div>
                 {expanded === n.id && n.body && (
                   <div
@@ -91,7 +112,7 @@ export function NotificationsPage() {
                       overflow: "auto",
                     }}
                   >
-                    {n.body.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
+                    {formatNotificationBody(n.body)}
                   </div>
                 )}
               </li>

@@ -11,29 +11,28 @@ interface NavItem {
 }
 
 const memberNav: NavItem[] = [
-  { to: "/dashboard", label: "İdarə paneli", icon: "🏠", end: true },
-  { to: "/plans", label: "Sığorta planları", icon: "📋" },
-  { to: "/policy", label: "Mənim sığortam", icon: "🛡️" },
-  { to: "/claims", label: "İddialarım", icon: "🧾" },
-  { to: "/chat", label: "AI Köməkçi", icon: "💬" },
-  { to: "/notifications", label: "Bildirişlər", icon: "🔔" },
-  { to: "/profile", label: "Profil", icon: "👤" },
+  { to: "/dashboard", label: "Dashboard", icon: "🏠", end: true },
+  { to: "/plans", label: "Insurance Plans", icon: "📋" },
+  { to: "/policy", label: "My Policy", icon: "🛡️" },
+  { to: "/claims", label: "My Claims", icon: "🧾" },
+  { to: "/chat", label: "AI Assistant", icon: "💬" },
+  { to: "/notifications", label: "Notifications", icon: "🔔" },
+  { to: "/profile", label: "Profile", icon: "👤" },
 ];
 
 const staffNav: NavItem[] = [
-  { to: "/staff", label: "İdarə paneli", icon: "📊", end: true },
-  { to: "/staff/queue", label: "Baxış növbəsi", icon: "🗂️" },
-  { to: "/staff/members", label: "Üzv axtarışı", icon: "🔎" },
-  { to: "/profile", label: "Profil", icon: "👤" },
+  { to: "/staff", label: "Dashboard", icon: "📊", end: true },
+  { to: "/staff/queue", label: "Review Queue", icon: "🗂️" },
+  { to: "/staff/members", label: "Member Search", icon: "🔎" },
+  { to: "/profile", label: "Profile", icon: "👤" },
 ];
 
 const adminNav: NavItem[] = [
-  { to: "/admin", label: "İdarə paneli", icon: "📊", end: true },
-  { to: "/admin/plans", label: "Plan idarəetməsi", icon: "📋" },
-  { to: "/admin/policies", label: "Sığorta müqavilələri", icon: "🛡️" },
-  { to: "/admin/users", label: "İstifadəçilər", icon: "👥" },
-  { to: "/staff/queue", label: "Baxış növbəsi", icon: "🗂️" },
-  { to: "/profile", label: "Profil", icon: "👤" },
+  { to: "/admin", label: "Dashboard", icon: "📊", end: true },
+  { to: "/admin/plans", label: "Plan Management", icon: "📋" },
+  { to: "/admin/policies", label: "Policies", icon: "🛡️" },
+  { to: "/admin/users", label: "Users", icon: "👥" },
+  { to: "/profile", label: "Profile", icon: "👤" },
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -54,8 +53,8 @@ export function Layout({ children }: { children: ReactNode }) {
         <div className="sidebar-brand">
           <span className="brand-icon">🏥</span>
           <div>
-            <strong>E-Sağlamlıq</strong>
-            <span className="brand-sub">Sığorta Platforması</span>
+            <strong>E-Health</strong>
+            <span className="brand-sub">Insurance Platform</span>
           </div>
         </div>
         <nav className="sidebar-nav">
@@ -80,13 +79,13 @@ export function Layout({ children }: { children: ReactNode }) {
             </div>
             <div className="user-meta">
               <strong>
-                {user ? `${user.firstName} ${user.lastName}` : "İstifadəçi"}
+                {user ? `${user.firstName} ${user.lastName}` : "User"}
               </strong>
               <span>{role ? roleLabels[role] : ""}</span>
             </div>
           </div>
           <button className="btn btn-ghost btn-block" onClick={handleLogout}>
-            Çıxış
+            Log out
           </button>
         </div>
       </aside>
@@ -96,11 +95,11 @@ export function Layout({ children }: { children: ReactNode }) {
           <button
             className="menu-toggle"
             onClick={() => setMenuOpen((v) => !v)}
-            aria-label="Menyu"
+            aria-label="Menu"
           >
             ☰
           </button>
-          <span className="topbar-title">E-Sağlamlıq Sığortası</span>
+          <span className="topbar-title">E-Health Insurance</span>
         </header>
         <main className="content">{children}</main>
       </div>

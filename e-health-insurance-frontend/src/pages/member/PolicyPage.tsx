@@ -21,7 +21,6 @@ export function PolicyPage() {
     policyApi
       .myPolicies()
       .then((policies) => {
-        // Show the first active policy, or the first one if no active policy
         const active = policies.find((p) => p.status === "ACTIVE");
         setPolicy(active ?? policies[0] ?? null);
         setLoading(false);
@@ -40,7 +39,7 @@ export function PolicyPage() {
     setBusy(true);
     try {
       await policyApi.cancelPolicy(policy.id);
-      toast.success("Sığorta ləğv edildi");
+      toast.success("Insurance cancelled");
       setShowCancel(false);
       load();
     } catch (err) {
@@ -56,23 +55,23 @@ export function PolicyPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Mənim sığortam</h1>
-          <p>Aktiv sığortanız</p>
+          <h1>My Policy</h1>
+          <p>Your active insurance</p>
         </div>
         {policy && policy.status !== "CANCELLED" && (
           <button className="btn btn-danger" onClick={() => setShowCancel(true)}>
-            Ləğv et
+            Cancel
           </button>
         )}
       </div>
 
       {!policy ? (
         <EmptyState
-          title="Aktiv sığortanız yoxdur"
-          hint="Plan seçərək sığorta ala bilərsiniz."
+          title="You don't have an active policy"
+          hint="You can purchase insurance by choosing a plan."
           action={
             <Link to="/plans" className="btn btn-primary">
-              Planlara bax
+              View plans
             </Link>
           }
         />
@@ -84,38 +83,33 @@ export function PolicyPage() {
           </div>
           <dl className="detail-list">
             <div>
-              <dt>Müqavilə №</dt>
+              <dt>Policy No.</dt>
               <dd className="mono">{policy.policyNumber}</dd>
             </div>
             <div>
-              <dt>Aylıq haqq</dt>
+              <dt>Yearly premium</dt>
               <dd>{money(policy.premiumAmount)}</dd>
             </div>
             <div>
-              <dt>Başlama</dt>
+              <dt>Start date</dt>
               <dd>{formatDate(policy.startDate)}</dd>
             </div>
             <div>
-              <dt>Bitmə</dt>
+              <dt>End date</dt>
               <dd>{formatDate(policy.endDate)}</dd>
-            </div>
-            <div>
-              <dt>Qeydiyyat tarixi</dt>
-              <dd>{formatDate(policy.createdAt)}</dd>
             </div>
           </dl>
         </div>
       )}
 
       {showCancel && policy && (
-        <Modal title="Sığortanı ləğv et" onClose={() => setShowCancel(false)}>
+        <Modal title="Cancel insurance" onClose={() => setShowCancel(false)}>
           <div className="alert alert-warning">
-            Diqqət: ləğv edildikdən sonra sığorta bərpa olunmur.
+            Warning: once cancelled, this policy cannot be restored.
           </div>
           <form onSubmit={onCancel}>
             <p>
-              <strong>{policy.planName}</strong> planı üzrə sığortanızı ləğv etmək
-              istədiyinizə əminsiniz?
+              Are you sure you want to cancel your <strong>{policy.planName}</strong> policy?
             </p>
             <div className="form-actions">
               <button
@@ -123,10 +117,10 @@ export function PolicyPage() {
                 className="btn btn-secondary"
                 onClick={() => setShowCancel(false)}
               >
-                İmtina
+                Cancel
               </button>
               <button className="btn btn-danger" disabled={busy}>
-                {busy ? "Ləğv edilir..." : "Ləğvi təsdiqlə"}
+                {busy ? "Cancelling..." : "Confirm cancellation"}
               </button>
             </div>
           </form>

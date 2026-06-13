@@ -85,7 +85,6 @@ class ClaimServiceImplTest {
                 .build();
     }
 
-    // ---- submitClaim ----
 
     @Test
     void submitClaim_setsSubmittedStatus_generatesClmNumber_andPublishesEvent() {
@@ -110,7 +109,6 @@ class ClaimServiceImplTest {
         assertThat(eventCaptor.getValue().amount()).isEqualTo(BigDecimal.valueOf(500));
     }
 
-    // ---- ownership ----
 
     @Test
     void getClaimById_throwsNotFound_whenNonOwnerNonPrivileged() {
@@ -149,7 +147,6 @@ class ClaimServiceImplTest {
         assertThat(result.userId()).isEqualTo(ownerId);
     }
 
-    // ---- reviewClaim ----
 
     @Test
     void reviewClaim_throwsBadRequest_whenStatusNotReviewable() {
@@ -230,7 +227,6 @@ class ClaimServiceImplTest {
         assertThat(eventCaptor.getValue().reviewedBy()).isEqualTo(reviewerId);
     }
 
-    // ---- applyFraudResult decision matrix ----
 
     @Test
     void applyFraudResult_lowScore_autoApproves_withFullAmount_andPublishesEvent() {

@@ -50,7 +50,7 @@ export function AdminPlansPage() {
       .finally(() => setLoading(false));
   };
 
-  useEffect(load, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(load, []);
 
   const set =
     (key: keyof PlanFormState) =>
@@ -62,7 +62,7 @@ export function AdminPlansPage() {
     setSaving(true);
     try {
       await policyApi.createPlan(toRequest(form));
-      toast.success("Plan yaradıldı");
+      toast.success("Plan created");
       setShowCreate(false);
       setForm(emptyForm());
       load();
@@ -75,38 +75,40 @@ export function AdminPlansPage() {
 
   if (loading) return <Spinner />;
 
+  const visiblePlans = plans.filter((p) => p.name !== "Smoke Test Plan");
+
   return (
     <>
       <div className="page-header">
         <div>
-          <h1>Plan idarəetməsi</h1>
-          <p>Sığorta planlarının yaradılması</p>
+          <h1>Plan Management</h1>
+          <p>Create insurance plans</p>
         </div>
         <button className="btn btn-primary" onClick={() => { setForm(emptyForm()); setShowCreate(true); }}>
-          + Yeni plan
+          + New plan
         </button>
       </div>
 
       <div className="alert alert-info">
-        Plan redaktəsi, arxivləşdirmə və aktivləşdirmə backend tərəfindən dəstəklənmir.
+        Plan editing, archiving, and activation are not supported by the backend.
       </div>
 
-      {plans.length === 0 ? (
-        <EmptyState title="Plan yoxdur" hint="İlk planı yaradın." />
+      {visiblePlans.length === 0 ? (
+        <EmptyState title="No plans" hint="Create your first plan." />
       ) : (
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>Ad</th>
-                <th>Haqq</th>
-                <th>Əhatə məbləği</th>
-                <th>Müddət</th>
+                <th>Name</th>
+                <th>Premium</th>
+                <th>Coverage amount</th>
+                <th>Duration</th>
                 <th>Status</th>
               </tr>
             </thead>
             <tbody>
-              {plans.map((p) => (
+              {visiblePlans.map((p) => (
                 <tr key={p.id}>
                   <td>
                     <strong>{p.name}</strong>
@@ -118,11 +120,11 @@ export function AdminPlansPage() {
                   </td>
                   <td>{money(p.premiumAmount)}</td>
                   <td>{money(p.coverageAmount)}</td>
-                  <td>{p.durationMonths} ay</td>
+                  <td>{p.durationMonths} months</td>
                   <td>
                     <Badge
                       status={p.active ? "ACTIVE" : "CANCELLED"}
-                      label={p.active ? "Aktiv" : "Deaktiv"}
+                      label={p.active ? "Active" : "Inactive"}
                     />
                   </td>
                 </tr>
@@ -133,12 +135,12 @@ export function AdminPlansPage() {
       )}
 
       {showCreate && (
-        <Modal title="Yeni plan" onClose={() => setShowCreate(false)}>
+        <Modal title="New plan" onClose={() => setShowCreate(false)}>
           <form onSubmit={onSave}>
-            <Field label="Plan adı" required>
+            <Field label="Plan name" required>
               <input value={form.name} onChange={set("name")} required maxLength={120} />
             </Field>
-            <Field label="Təsvir" required>
+            <Field label="Description" required>
               <textarea
                 value={form.description}
                 onChange={set("description")}
@@ -147,7 +149,7 @@ export function AdminPlansPage() {
               />
             </Field>
             <div className="form-row">
-              <Field label="Aylıq haqq (AZN)" required>
+              <Field label="Yearly premium (USD)" required>
                 <input
                   type="number"
                   min="0"
@@ -157,7 +159,7 @@ export function AdminPlansPage() {
                   required
                 />
               </Field>
-              <Field label="Əhatə məbləği (AZN)" required>
+              <Field label="Coverage amount (USD)" required>
                 <input
                   type="number"
                   min="0"
@@ -168,7 +170,7 @@ export function AdminPlansPage() {
                 />
               </Field>
             </div>
-            <Field label="Müddət (ay)" required>
+            <Field label="Duration (months)" required>
               <input
                 type="number"
                 min="1"
@@ -183,10 +185,10 @@ export function AdminPlansPage() {
                 className="btn btn-secondary"
                 onClick={() => setShowCreate(false)}
               >
-                İmtina
+                Cancel
               </button>
               <button className="btn btn-primary" disabled={saving}>
-                {saving ? "Yadda saxlanılır..." : "Yarat"}
+                {saving ? "Saving..." : "Create"}
               </button>
             </div>
           </form>

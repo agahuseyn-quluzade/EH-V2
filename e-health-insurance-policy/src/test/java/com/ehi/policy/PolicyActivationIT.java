@@ -92,7 +92,6 @@ class PolicyActivationIT {
                         .transactionId("txn-" + UUID.randomUUID())
                         .build());
 
-        // Give the consumer time to (not) act, then confirm the policy was left untouched
         await().pollDelay(Duration.ofSeconds(2)).atMost(Duration.ofSeconds(5)).untilAsserted(() -> {
             Policy unchanged = policyRepository.findById(policy.getId()).orElseThrow();
             assertThat(unchanged.getStatus()).isEqualTo(PolicyStatus.PENDING);

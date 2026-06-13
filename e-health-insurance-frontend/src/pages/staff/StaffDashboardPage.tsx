@@ -35,23 +35,23 @@ export function StaffDashboardPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>İdarə paneli</h1>
-          <p>Xoş gəlmisiniz, {user?.firstName}! Baxış gözləyən iddiaların icmalı.</p>
+          <h1>Dashboard</h1>
+          <p>Welcome, {user?.firstName}! Overview of claims awaiting review.</p>
         </div>
         <Link to="/staff/queue" className="btn btn-primary">
-          Növbəyə keç
+          Go to queue
         </Link>
       </div>
 
       <div className="grid grid-3">
         <StatCard
-          label="Baxış gözləyən iddialar"
+          label="Claims awaiting review"
           value={queue.length}
           tone={queue.length > 0 ? "warning" : "success"}
         />
-        <StatCard label="Ümumi məbləğ" value={money(totalAmount)} tone="info" />
+        <StatCard label="Total amount" value={money(totalAmount)} tone="info" />
         <StatCard
-          label="Ən köhnə iddia"
+          label="Oldest claim"
           value={oldest ? formatDateTime(oldest.createdAt) : "—"}
           tone="neutral"
         />
@@ -59,21 +59,21 @@ export function StaffDashboardPage() {
 
       <div className="card" style={{ marginTop: 16 }}>
         <div className="card-title">
-          <h2>Növbədəki son iddialar</h2>
+          <h2>Latest claims in queue</h2>
           <Link to="/staff/queue" className="btn btn-secondary btn-sm">
-            Hamısı
+            View all
           </Link>
         </div>
         {queue.length === 0 ? (
-          <p className="muted">Baxış gözləyən iddia yoxdur. 🎉</p>
+          <p className="muted">No claims awaiting review. 🎉</p>
         ) : (
           <div className="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>Təqdim edilib</th>
-                  <th>İddia növü</th>
-                  <th>Məbləğ</th>
+                  <th>Submitted</th>
+                  <th>Claim type</th>
+                  <th>Amount</th>
                   <th>Status</th>
                   <th></th>
                 </tr>
@@ -92,7 +92,7 @@ export function StaffDashboardPage() {
                         to={`/staff/claims/${c.id}`}
                         className="btn btn-primary btn-sm"
                       >
-                        Bax
+                        View
                       </Link>
                     </td>
                   </tr>

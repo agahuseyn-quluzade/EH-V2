@@ -190,7 +190,7 @@ public class ClaimServiceImpl implements ClaimService {
                 .orElseThrow(() -> new NotFoundException("Claim", event.claimId()));
 
         if (claim.getStatus() != ClaimStatus.SUBMITTED) {
-            return; // already reviewed manually, don't overwrite
+            return;
         }
 
         claim.setRiskScore(event.riskScore());
@@ -204,7 +204,7 @@ public class ClaimServiceImpl implements ClaimService {
             claim.setApprovedAmount(claim.getAmount());
         } else if (score >= 70) {
             claim.setStatus(ClaimStatus.REJECTED);
-            claim.setRejectionReason("Avtomatik rədd: yüksək fırıldaqçılıq riski (bal: " + score + ")");
+            claim.setRejectionReason("Automatic rejection: high fraud risk (score: " + score + ")");
         } else {
             claim.setStatus(ClaimStatus.UNDER_REVIEW);
         }

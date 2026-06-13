@@ -70,7 +70,7 @@ export function StaffClaimReviewPage() {
         rejectionReason:
           decision === "REJECTED" ? rejectionReason.trim() : undefined,
       });
-      toast.success(decision === "APPROVED" ? "İddia təsdiqləndi" : "İddia rədd edildi");
+      toast.success(decision === "APPROVED" ? "Claim approved" : "Claim rejected");
       navigate("/staff/queue");
     } catch (err) {
       toast.error(extractError(err));
@@ -81,7 +81,7 @@ export function StaffClaimReviewPage() {
 
   if (loading) return <Spinner />;
   if (error || !claim)
-    return <ErrorState message={error ?? "İddia tapılmadı"} onRetry={load} />;
+    return <ErrorState message={error ?? "Claim not found"} onRetry={load} />;
 
   const reviewable =
     claim.status === "SUBMITTED" || claim.status === "UNDER_REVIEW";
@@ -90,11 +90,11 @@ export function StaffClaimReviewPage() {
     <>
       <div className="page-header">
         <div>
-          <h1>İddia baxışı</h1>
+          <h1>Claim Review</h1>
           <p className="mono">{claim.claimNumber}</p>
         </div>
         <Link to="/staff/queue" className="btn btn-secondary">
-          ← Növbəyə qayıt
+          ← Back to queue
         </Link>
       </div>
 
@@ -102,39 +102,39 @@ export function StaffClaimReviewPage() {
         <div>
           <div className="card">
             <div className="card-title">
-              <h2>İddia məlumatları</h2>
+              <h2>Claim information</h2>
               <Badge status={claim.status} label={claimStatusLabels[claim.status]} />
             </div>
             <dl className="detail-list">
               <div>
-                <dt>İstifadəçi ID</dt>
+                <dt>User ID</dt>
                 <dd className="mono">{claim.userId}</dd>
               </div>
               <div>
-                <dt>Sığorta ID</dt>
+                <dt>Policy ID</dt>
                 <dd className="mono">{claim.policyId}</dd>
               </div>
               <div>
-                <dt>İddia növü</dt>
+                <dt>Claim type</dt>
                 <dd>{claimTypeLabels[claim.claimType] ?? claim.claimType}</dd>
               </div>
               <div>
-                <dt>Məbləğ</dt>
+                <dt>Amount</dt>
                 <dd>
                   <strong>{money(claim.amount)}</strong>
                 </dd>
               </div>
               <div>
-                <dt>Təsvir</dt>
+                <dt>Description</dt>
                 <dd>{claim.description}</dd>
               </div>
               <div>
-                <dt>Tarix</dt>
+                <dt>Date</dt>
                 <dd>{formatDateTime(claim.createdAt)}</dd>
               </div>
               {claim.riskScore != null && (
                 <div>
-                  <dt>Risk balı</dt>
+                  <dt>Risk score</dt>
                   <dd>{claim.riskScore}/100</dd>
                 </div>
               )}
@@ -143,7 +143,7 @@ export function StaffClaimReviewPage() {
             {claim.fraudFlags && claim.fraudFlags.length > 0 && (
               <>
                 <hr className="divider" />
-                <h3>Fırıldaqçılıq siqnalları</h3>
+                <h3>Fraud signals</h3>
                 <div className="chip-row">
                   {claim.fraudFlags.map((f) => (
                     <span key={f} className="chip">
@@ -162,34 +162,34 @@ export function StaffClaimReviewPage() {
 
           <div className="card">
             <div className="card-title">
-              <h2>AI fırıldaqçılıq analizi</h2>
+              <h2>AI fraud analysis</h2>
               <button
                 className="btn btn-secondary btn-sm"
                 onClick={onAnalyze}
                 disabled={analyzing}
               >
-                {analyzing ? "Analiz edilir..." : "🤖 Yenidən analiz et"}
+                {analyzing ? "Analyzing..." : "🤖 Re-analyze"}
               </button>
             </div>
             {!fraudResult ? (
               <p className="muted">
-                Yenidən analiz üçün düyməyə basın.
+                Click the button to run a new analysis.
               </p>
             ) : (
               <>
                 <dl className="detail-list">
                   <div>
-                    <dt>Yekun bal</dt>
+                    <dt>Final score</dt>
                     <dd>{fraudResult.finalScore}/100</dd>
                   </div>
                   {fraudResult.aiScore != null && (
                     <div>
-                      <dt>AI balı</dt>
+                      <dt>AI score</dt>
                       <dd>{fraudResult.aiScore}/100</dd>
                     </div>
                   )}
                   <div>
-                    <dt>Qayda balı</dt>
+                    <dt>Rule score</dt>
                     <dd>{fraudResult.ruleScore}/100</dd>
                   </div>
                 </dl>
@@ -213,28 +213,28 @@ export function StaffClaimReviewPage() {
         </div>
 
         <div className="card">
-          <h2>Qərar ver</h2>
+          <h2>Make a decision</h2>
           {!reviewable ? (
             <div className="alert alert-warning">
-              Bu iddia üzrə qərar artıq verilib ({claimStatusLabels[claim.status]}).
+              A decision has already been made on this claim ({claimStatusLabels[claim.status]}).
             </div>
           ) : (
             <form onSubmit={onReview}>
-              <Field label="Qərar" required>
+              <Field label="Decision" required>
                 <select
                   value={decision}
                   onChange={(e) =>
                     setDecision(e.target.value as "APPROVED" | "REJECTED")
                   }
                 >
-                  <option value="APPROVED">Təsdiqlə</option>
-                  <option value="REJECTED">Rədd et</option>
+                  <option value="APPROVED">Approve</option>
+                  <option value="REJECTED">Reject</option>
                 </select>
               </Field>
               {decision === "APPROVED" && (
                 <Field
-                  label="Təsdiqlənən məbləğ (AZN)"
-                  hint="Boş saxlasanız tam məbləğ təsdiqlənəcək"
+                  label="Approved amount (USD)"
+                  hint="Leave empty to approve the full amount"
                 >
                   <input
                     type="number"
@@ -246,12 +246,12 @@ export function StaffClaimReviewPage() {
                 </Field>
               )}
               {decision === "REJECTED" && (
-                <Field label="Rədd səbəbi" required>
+                <Field label="Rejection reason" required>
                   <textarea
                     value={rejectionReason}
                     onChange={(e) => setRejectionReason(e.target.value)}
                     required
-                    placeholder="Rədd etmənin əsaslandırılması..."
+                    placeholder="Justification for rejection..."
                   />
                 </Field>
               )}
@@ -260,10 +260,10 @@ export function StaffClaimReviewPage() {
                 disabled={submitting || (decision === "REJECTED" && !rejectionReason.trim())}
               >
                 {submitting
-                  ? "Göndərilir..."
+                  ? "Submitting..."
                   : decision === "APPROVED"
-                    ? "✓ Təsdiqlə"
-                    : "✕ Rədd et"}
+                    ? "✓ Approve"
+                    : "✕ Reject"}
               </button>
             </form>
           )}

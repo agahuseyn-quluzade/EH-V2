@@ -28,11 +28,11 @@ export function RegisterPage() {
     e.preventDefault();
     setError(null);
     if (form.password.length < 8) {
-      setError("Şifrə ən azı 8 simvoldan ibarət olmalıdır");
+      setError("Password must be at least 8 characters");
       return;
     }
     if (form.password !== form.passwordConfirm) {
-      setError("Şifrələr uyğun gəlmir");
+      setError("Passwords do not match");
       return;
     }
     setLoading(true);
@@ -43,7 +43,7 @@ export function RegisterPage() {
         firstName: form.firstName,
         lastName: form.lastName,
       });
-      toast.success("Qeydiyyat uğurla tamamlandı!");
+      toast.success("Registration completed successfully!");
       navigate(homePathForRole(role), { replace: true });
     } catch (err) {
       setError(extractError(err));
@@ -55,43 +55,43 @@ export function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-hero">
-        <h1>🏥 E-Sağlamlıq Sığortası</h1>
+        <h1>🏥 E-Health Insurance</h1>
         <p>
-          Bir neçə dəqiqəyə qeydiyyatdan keçin və sağlamlıq sığortanızı tam
-          onlayn idarə edin.
+          Sign up in a few minutes and manage your health insurance
+          entirely online.
         </p>
         <ul>
-          <li>✅ Pulsuz hesab yaradılması</li>
-          <li>✅ Büdcənizə uyğun plan tövsiyələri</li>
-          <li>✅ İddia statusunun real vaxtda izlənməsi</li>
-          <li>✅ E-poçt bildirişləri</li>
+          <li>✅ Free account creation</li>
+          <li>✅ Plan recommendations that fit your budget</li>
+          <li>✅ Real-time claim status tracking</li>
+          <li>✅ Email notifications</li>
         </ul>
       </div>
       <div className="auth-form-side">
         <div className="auth-card">
-          <h2>Qeydiyyat</h2>
-          <p className="auth-sub">Yeni hesab yaradın</p>
+          <h2>Register</h2>
+          <p className="auth-sub">Create a new account</p>
           {error && <div className="alert alert-danger">{error}</div>}
           <form onSubmit={onSubmit}>
             <div className="form-row">
-              <Field label="Ad" required>
+              <Field label="First name" required>
                 <input value={form.firstName} onChange={set("firstName")} required />
               </Field>
-              <Field label="Soyad" required>
+              <Field label="Last name" required>
                 <input value={form.lastName} onChange={set("lastName")} required />
               </Field>
             </div>
-            <Field label="E-poçt" required>
+            <Field label="Email" required>
               <input
                 type="email"
                 value={form.email}
                 onChange={set("email")}
-                placeholder="ad@nümunə.az"
+                placeholder="name@example.com"
                 required
                 autoComplete="email"
               />
             </Field>
-            <Field label="Telefon">
+            <Field label="Phone">
               <input
                 type="tel"
                 value={form.phone}
@@ -99,7 +99,7 @@ export function RegisterPage() {
                 placeholder="+994 50 000 00 00"
               />
             </Field>
-            <Field label="Şifrə" required hint="Ən azı 8 simvol">
+            <Field label="Password" required hint="At least 8 characters">
               <input
                 type="password"
                 value={form.password}
@@ -109,7 +109,7 @@ export function RegisterPage() {
                 autoComplete="new-password"
               />
             </Field>
-            <Field label="Şifrənin təkrarı" required>
+            <Field label="Confirm password" required>
               <input
                 type="password"
                 value={form.passwordConfirm}
@@ -119,11 +119,11 @@ export function RegisterPage() {
               />
             </Field>
             <button className="btn btn-primary btn-block" disabled={loading}>
-              {loading ? "Qeydiyyat aparılır..." : "Qeydiyyatdan keç"}
+              {loading ? "Registering..." : "Sign up"}
             </button>
           </form>
           <div className="auth-switch">
-            Artıq hesabınız var? <Link to="/login">Daxil olun</Link>
+            Already have an account? <Link to="/login">Log in</Link>
           </div>
         </div>
       </div>

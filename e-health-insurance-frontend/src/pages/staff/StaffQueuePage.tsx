@@ -15,7 +15,6 @@ export function StaffQueuePage() {
   const load = () => {
     setLoading(true);
     setError(null);
-    // GET /api/v1/claims?status=UNDER_REVIEW — claims awaiting staff review
     claimApi
       .getAllClaims("UNDER_REVIEW", 0, 50)
       .then((page) => setQueue(page.content ?? []))
@@ -32,31 +31,31 @@ export function StaffQueuePage() {
     <>
       <div className="page-header">
         <div>
-          <h1>Baxış növbəsi</h1>
-          <p>Baxış tələb edən iddialar</p>
+          <h1>Review Queue</h1>
+          <p>Claims awaiting review</p>
         </div>
         <button className="btn btn-secondary" onClick={load}>
-          ↻ Yenilə
+          ↻ Refresh
         </button>
       </div>
 
       {queue.length === 0 ? (
         <EmptyState
-          title="Növbə boşdur"
-          hint="Hazırda baxış tələb edən iddia yoxdur."
+          title="Queue is empty"
+          hint="There are no claims awaiting review right now."
         />
       ) : (
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
-                <th>№</th>
-                <th>İstifadəçi ID</th>
-                <th>Növ</th>
-                <th>Məbləğ</th>
-                <th>Risk balı</th>
+                <th>No.</th>
+                <th>User ID</th>
+                <th>Type</th>
+                <th>Amount</th>
+                <th>Risk score</th>
                 <th>Status</th>
-                <th>Tarix</th>
+                <th>Date</th>
               </tr>
             </thead>
             <tbody>

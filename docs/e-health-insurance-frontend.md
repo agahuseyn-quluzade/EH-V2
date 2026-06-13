@@ -158,13 +158,14 @@ Per project decision: these are **not implemented**. The corresponding frontend 
 - Optionally upgrade the UUID-only lookup to use `iamApi.searchUsers(query)` (STAFF is
   allowed on `/users/search`). Read-only — no role/status controls for agents.
 
-## UI Cleanup & English Localization (Planned — frontend only, NO backend changes)
+## UI Cleanup & English Localization (✅ Completed — frontend only, no backend changes)
 
-> Scope: presentation only. Do **not** add/remove/rename any backend field, DTO, endpoint,
-> or API call. Keep all existing data fetches; only change what is rendered and the language.
-> Type gate after the work: `node_modules/.bin/tsc -b --noEmit` (run from the frontend dir).
+> Scope: presentation only. No backend field, DTO, endpoint, or API call was added, removed,
+> or renamed; all existing data fetches were kept — only what is rendered and the language
+> changed. Type gate: `node_modules/.bin/tsc -b --noEmit` (run from the frontend dir) passes
+> with zero errors.
 
-### 0. Global — translate the whole UI to English
+### 0. ✅ Global — translate the whole UI to English
 Every Azerbaijani string in `src/**` becomes English: page headers, buttons, table headers,
 form labels/placeholders, toasts, alerts, empty/error states, and the comments that label
 sections. Touch all pages under `pages/{auth,public,member,staff,admin}`, plus
@@ -180,30 +181,44 @@ sections. Touch all pages under `pages/{auth,public,member,staff,admin}`, plus
 - `Layout.tsx`: brand "E-Sağlamlıq" → "E-Health", "Sığorta Platforması" → "Insurance Platform",
   all `*Nav` labels, "Çıxış" → "Log out", "İstifadəçi" → "User".
 
-### 1. Member · ProfilePage (`pages/member/ProfilePage.tsx`)
+Done: every page under `pages/{auth,public,member,staff,admin}`, `components/Layout.tsx`,
+`components/ui.tsx`, `context/AuthContext.tsx`, `context/ToastContext.tsx`, and
+`src/api/client.ts` are now fully English (locale `en-US`, currency `AZN` unchanged). No
+Azerbaijani strings remain under `src/**`.
+
+### 1. ✅ Member · ProfilePage (`pages/member/ProfilePage.tsx`)
 In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>` at lines ~143-163):
 - **Remove the "Rol" row** (the `<dt>Rol</dt>` block with the role `<Badge>`).
 - **Remove the "İstifadəçi ID" row** (the `<dt>İstifadəçi ID</dt>` block showing `user.id`).
 - Drop the now-unused `roleLabels` / `Badge` imports if nothing else uses them.
 - Keep E-mail and Registration date rows.
 
-### 2. Member · NotificationsPage (`pages/member/NotificationsPage.tsx`)
+Done: both rows removed; only "Email" and "Registered on" remain in "Account information".
+`Badge` and `roleLabels` imports dropped.
+
+### 2. ✅ Member · NotificationsPage (`pages/member/NotificationsPage.tsx`)
 - **Remove the status `<Badge>`** (the "Göndərilib"/Sent badge) from each notification row
   (lines ~67-71). Keep the timestamp. Drop the `notificationStatusLabels` import (and `Badge`
   if unused).
 
-### 3. Member · ChatPage (`pages/member/ChatPage.tsx`)
+Done: status badge removed from each row; `Badge` and `notificationStatusLabels` imports dropped.
+
+### 3. ✅ Member · ChatPage (`pages/member/ChatPage.tsx`)
 - **Delete the header subtitle** `<p>Sığorta ilə bağlı suallarınızı verin</p>` (line ~64).
   Keep the title (→ "AI Assistant"). (The big empty-state example text in the chat body is
   separate — leave it, just translate it.)
 
-### 4. Member · ClaimsPage (`pages/member/ClaimsPage.tsx`)
+Done: subtitle removed, only `<h1>AI Assistant</h1>` remains; empty-state examples translated.
+
+### 4. ✅ Member · ClaimsPage (`pages/member/ClaimsPage.tsx`)
 - **Remove the `SUBMITTED` filter button** — delete the `{ value: "SUBMITTED", label: ... }`
   entry from the `FILTERS` array (line ~11). Rationale: AI auto-decides on submit, so claims
   effectively never sit in `SUBMITTED`; the filter is dead. Leave the `Badge`/label mapping in
   place (still referenced by `claimStatusLabels`).
 
-### 5. Member · PlansPage (`pages/member/PlansPage.tsx`) — plan-details popup
+Done: `FILTERS` now `ALL / UNDER_REVIEW / APPROVED / REJECTED`; `claimStatusLabels` untouched.
+
+### 5. ✅ Member · PlansPage (`pages/member/PlansPage.tsx`) — plan-details popup
 - Keep the short `plan.description` on the card.
 - Make each plan card **clickable** (or add a small "Details" link/button) that opens a small
   `Modal` (already imported in this file) showing that plan's full details — using **only the
@@ -218,7 +233,12 @@ In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>
   fix: filter it out there too, e.g. `plans.filter(p => p.name !== "Smoke Test Plan")` before
   rendering the table. Backend/DB row is untouched.
 
-### 6. Admin · AdminDashboardPage (`pages/admin/AdminDashboardPage.tsx`)
+Done: plan card is clickable and opens a details `Modal` (name, description, premiumAmount,
+coverageAmount, durationMonths) with "Close" and "Buy insurance" actions; the existing Buy
+button calls `e.stopPropagation()` so the two don't collide. "Smoke Test Plan" exclusion is
+covered under item 8.
+
+### 6. ✅ Admin · AdminDashboardPage (`pages/admin/AdminDashboardPage.tsx`)
 - **Remove statistics entirely** ("statistika endpoint"): delete the info alert at lines ~38-41
   ("Statistika endpoint-i ... dəstəklənmir") **and** the three `StatCard`s grid (lines ~43-60).
   Remove the now-dead state/fetch they depended on (`plans`, `queue`, the `Promise.allSettled`)
@@ -228,7 +248,11 @@ In the **"Account information"** card (`<h2>Hesab məlumatları</h2>`, the `<dl>
   "Quick links" (Plan management, Policies, Users). If nothing else needs `claimApi`, remove its
   import and the queue fetch.
 
-### 7. Admin · remove claim-review access elsewhere (duplicates of item 6)
+Done: page rewritten to header + "Quick links" card (Plan Management, Policies, Users only);
+all dead state/fetches and unused imports (`useEffect`, `useState`, `claimApi`, `policyApi`,
+`Spinner`, `StatCard`, `Claim`, `Plan`, `money`) removed.
+
+### 7. ✅ Admin · remove claim-review access elsewhere (duplicates of item 6)
 The admin's ability to approve claims is also wired here — remove for consistency:
 - `components/Layout.tsx` → `adminNav`: delete the `{ to: "/staff/queue", label: "Baxış növbəsi" }`
   entry (line ~35).
@@ -236,9 +260,20 @@ The admin's ability to approve claims is also wired here — remove for consiste
   (lines ~63-64). ⚠️ Decide whether ADMIN should keep *any* staff access (`/staff`, `/staff/members`)
   — see Open Questions. (`homePathForRole` already sends ADMIN to `/admin`, so this is safe.)
 
-### 8. Admin · AdminUsersPage (`pages/admin/AdminUsersPage.tsx`)
+Done: `adminNav` "Baxış növbəsi" entry removed from `Layout.tsx`; `/staff/queue` and
+`/staff/claims/:id` route guards in `App.tsx` are now `["AGENT"]` only. `/staff` and
+`/staff/members` left unchanged (`["AGENT", "ADMIN"]`) per the resolved decision below.
+
+### 8. ✅ Admin · AdminPlansPage — filter out "Smoke Test Plan" (`pages/admin/AdminPlansPage.tsx`)
+
+Done: added `visiblePlans = plans.filter((p) => p.name !== "Smoke Test Plan")`, used for the
+empty-state check and table rendering; `listPlans()`/`createPlan()` calls unchanged.
+
+### 9. ✅ Admin · AdminUsersPage (`pages/admin/AdminUsersPage.tsx`)
 - In the "Search by ID" card, change the field label **`İstifadəçi ID (UUID)` → `User ID`**
   (drop the "(UUID)" parenthetical only — line ~225). No other change; the lookup still works.
+
+Done: `<Field label="İstifadəçi ID (UUID)">` → `<Field label="User ID">`; lookup behavior unchanged.
 
 ### Duplicate-logic audit (where the same removed concept appears elsewhere — for awareness)
 - **Role shown elsewhere:** the sidebar user chip (`Layout.tsx` line ~85) and the AdminUsers

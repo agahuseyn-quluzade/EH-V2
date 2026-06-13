@@ -27,7 +27,6 @@ class IamAuthIT {
     @Autowired TestRestTemplate restTemplate;
     @Autowired UserRepository userRepository;
 
-    // Mock Kafka producer — no real Kafka needed for these HTTP-flow tests
     @MockBean UserRegisteredEventProducer userRegisteredEventProducer;
 
     @Test
@@ -64,7 +63,6 @@ class IamAuthIT {
                 new RegisterRequest("suspended-it@example.com", "password123", "Sus", "User"),
                 Map.class);
 
-        // Suspend directly via repository (avoids needing an admin token)
         userRepository.findByEmail("suspended-it@example.com").ifPresent(u -> {
             u.setActive(false);
             userRepository.save(u);

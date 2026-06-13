@@ -5,7 +5,7 @@ export function Badge({ status, label }: { status: string; label?: string }) {
   return <span className={`badge badge-${statusTone(status)}`}>{label ?? status}</span>;
 }
 
-export function Spinner({ label = "Yüklənir..." }: { label?: string }) {
+export function Spinner({ label = "Loading..." }: { label?: string }) {
   return (
     <div className="spinner-wrap" role="status">
       <div className="spinner" />
@@ -37,11 +37,11 @@ export function ErrorState({ message, onRetry }: { message: string; onRetry?: ()
   return (
     <div className="empty-state">
       <div className="empty-icon">⚠️</div>
-      <h3>Xəta baş verdi</h3>
+      <h3>An error occurred</h3>
       <p>{message}</p>
       {onRetry && (
         <button className="btn btn-secondary" onClick={onRetry}>
-          Yenidən cəhd et
+          Retry
         </button>
       )}
     </div>
@@ -70,7 +70,7 @@ export function Modal({
       >
         <div className="modal-header">
           <h2>{title}</h2>
-          <button className="modal-close" onClick={onClose} aria-label="Bağla">
+          <button className="modal-close" onClick={onClose} aria-label="Close">
             ✕
           </button>
         </div>

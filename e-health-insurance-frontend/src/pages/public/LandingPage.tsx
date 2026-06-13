@@ -8,41 +8,41 @@ import { money } from "../../utils/format";
 const FEATURES = [
   {
     icon: "📋",
-    title: "Plan seçimi və müqayisə",
-    text: "Müxtəlif sığorta planlarını yan-yana müqayisə edin, büdcənizə və ehtiyaclarınıza uyğun olanı seçin.",
+    title: "Plan selection and comparison",
+    text: "Compare different insurance plans side by side and choose the one that fits your budget and needs.",
   },
   {
     icon: "⚡",
-    title: "Ani iddia qiymətləndirməsi",
-    text: "İddialarınız avtomatik qiymətləndirilir — əhatə yoxlaması və qərar bir neçə saniyəyə hazır olur.",
+    title: "Instant claim evaluation",
+    text: "Your claims are evaluated automatically — coverage checks and decisions are ready within seconds.",
   },
   {
     icon: "🤖",
-    title: "Süni intellekt köməkçisi",
-    text: "AI çat-bot sığortanızla bağlı suallarınızı cavablandırır, sizə ən uyğun planı tövsiyə edir.",
+    title: "AI assistant",
+    text: "Our AI chatbot answers your insurance-related questions and recommends the plan that suits you best.",
   },
   {
     icon: "🔒",
-    title: "Təhlükəsiz sənəd saxlanması",
-    text: "Tibbi sənədlərinizi təhlükəsiz yükləyin — yalnız siz və səlahiyyətli əməkdaşlar onlara baxa bilər.",
+    title: "Secure document storage",
+    text: "Upload your medical documents securely — only you and authorized staff can view them.",
   },
   {
     icon: "📧",
-    title: "Anında bildirişlər",
-    text: "İddia qərarları və sığorta dəyişiklikləri barədə e-poçt bildirişləri alın.",
+    title: "Instant notifications",
+    text: "Receive email notifications about claim decisions and insurance changes.",
   },
   {
     icon: "📊",
-    title: "Şəffaf izləmə",
-    text: "Limitlərinizi, ödənişlərinizi və iddia tarixçənizi istənilən vaxt onlayn izləyin.",
+    title: "Transparent tracking",
+    text: "Track your limits, payments, and claim history online at any time.",
   },
 ];
 
 const STEPS = [
-  { n: "1", title: "Qeydiyyatdan keçin", text: "Bir neçə dəqiqəyə pulsuz hesab yaradın." },
-  { n: "2", title: "Plan seçin", text: "Planları müqayisə edin və ya AI tövsiyəsi alın." },
-  { n: "3", title: "Sığorta alın", text: "Başlama tarixini seçib müqaviləni onlayn rəsmiləşdirin." },
-  { n: "4", title: "İddia göndərin", text: "Tibbi xərclərinizi sənədlərlə birgə təqdim edin, ödənişi izləyin." },
+  { n: "1", title: "Register", text: "Create a free account in a few minutes." },
+  { n: "2", title: "Choose a plan", text: "Compare plans or get an AI recommendation." },
+  { n: "3", title: "Buy insurance", text: "Pick a start date and finalize your contract online." },
+  { n: "4", title: "Submit a claim", text: "Submit your medical expenses with documents and track payment." },
 ];
 
 export function LandingPage() {
@@ -50,7 +50,6 @@ export function LandingPage() {
   const [plans, setPlans] = useState<Plan[]>([]);
 
   useEffect(() => {
-    // Plan kataloqu açıq endpoint-dir — giriş tələb olunmur
     policyApi
       .listPlans()
       .then((all) => setPlans(all.filter((p) => p.active === true).slice(0, 3)))
@@ -65,25 +64,25 @@ export function LandingPage() {
         <div className="landing-container landing-nav-inner">
           <div className="landing-logo">
             <span className="brand-icon">🏥</span>
-            <strong>E-Sağlamlıq Sığortası</strong>
+            <strong>E-Health Insurance</strong>
           </div>
           <nav className="landing-nav-links">
-            <a href="#features">Üstünlüklər</a>
-            <a href="#plans">Planlar</a>
-            <a href="#how">Necə işləyir?</a>
+            <a href="#features">Features</a>
+            <a href="#plans">Plans</a>
+            <a href="#how">How it works</a>
           </nav>
           <div className="landing-nav-actions">
             {isAuthenticated ? (
               <Link to={panelPath} className="btn btn-primary">
-                Panelə keç →
+                Go to dashboard →
               </Link>
             ) : (
               <>
                 <Link to="/login" className="btn btn-secondary">
-                  Daxil ol
+                  Log in
                 </Link>
                 <Link to="/register" className="btn btn-primary">
-                  Qeydiyyat
+                  Sign up
                 </Link>
               </>
             )}
@@ -94,69 +93,68 @@ export function LandingPage() {
       <section className="landing-hero">
         <div className="landing-container landing-hero-inner">
           <div className="landing-hero-text">
-            <span className="landing-eyebrow">Rəqəmsal tibbi sığorta platforması</span>
+            <span className="landing-eyebrow">Digital health insurance platform</span>
             <h1>
-              Sağlamlığınız üçün <span className="landing-accent">etibarlı sığorta</span>,
-              tam onlayn
+              <span className="landing-accent">Reliable insurance</span> for your health,
+              fully online
             </h1>
             <p>
-              Plan seçimindən iddia ödənişinə qədər hər şey bir platformada.
-              Kağız işi yoxdur, gözləmə yoxdur — sığortanızı dəqiqələr içində
-              idarə edin.
+              From choosing a plan to claim payouts — everything in one platform.
+              No paperwork, no waiting — manage your insurance in minutes.
             </p>
             <div className="landing-hero-actions">
               {isAuthenticated ? (
                 <Link to={panelPath} className="btn btn-primary btn-lg">
-                  Panelə keç
+                  Go to dashboard
                 </Link>
               ) : (
                 <>
                   <Link to="/register" className="btn btn-primary btn-lg">
-                    İndi başla — pulsuz
+                    Get started — free
                   </Link>
                   <a href="#plans" className="btn btn-secondary btn-lg">
-                    Planlara bax
+                    View plans
                   </a>
                 </>
               )}
             </div>
             <div className="landing-trust">
               <div>
-                <strong>5 dəq</strong>
-                <span>qeydiyyat müddəti</span>
+                <strong>5 min</strong>
+                <span>registration time</span>
               </div>
               <div>
-                <strong>~30 san</strong>
-                <span>avtomatik iddia qərarı</span>
+                <strong>~30 sec</strong>
+                <span>automatic claim decision</span>
               </div>
               <div>
                 <strong>24/7</strong>
-                <span>AI köməkçi dəstəyi</span>
+                <span>AI assistant support</span>
               </div>
             </div>
           </div>
           <div className="landing-hero-card">
             <div className="landing-mock-card">
               <div className="landing-mock-head">
-                <span>🛡️ Aktiv sığorta</span>
-                <span className="badge badge-success">Aktiv</span>
+                <span>🛡️ Active insurance</span>
+                <span className="badge badge-success">Active</span>
               </div>
               <div className="landing-mock-row">
                 <span>Plan</span>
-                <strong>Premium Sağlamlıq</strong>
+                <strong>Premium Health</strong>
               </div>
               <div className="landing-mock-row">
-                <span>Əhatə faizi</span>
+                <span>Coverage rate</span>
                 <strong>90%</strong>
               </div>
               <div className="landing-mock-row">
-                <span>İllik limit</span>
-                <strong>20 000 ₼</strong>
+                <span>Annual limit</span>
+                <strong>$20,000</strong>
               </div>
               <div className="landing-mock-bar">
                 <div style={{ width: "32%" }} />
               </div>
-              <small>Limitdən istifadə: 32%</small>
+              <small>Limit used: 32%</small>
             </div>
           </div>
         </div>
@@ -164,9 +162,9 @@ export function LandingPage() {
 
       <section className="landing-section" id="features">
         <div className="landing-container">
-          <h2 className="landing-section-title">Niyə E-Sağlamlıq Sığortası?</h2>
+          <h2 className="landing-section-title">Why E-Health Insurance?</h2>
           <p className="landing-section-sub">
-            Sığortanızı idarə etmək heç vaxt bu qədər asan olmayıb
+            Managing your insurance has never been this easy
           </p>
           <div className="grid grid-3">
             {FEATURES.map((f) => (
@@ -182,13 +180,13 @@ export function LandingPage() {
 
       <section className="landing-section landing-section-alt" id="plans">
         <div className="landing-container">
-          <h2 className="landing-section-title">Sığorta planları</h2>
+          <h2 className="landing-section-title">Insurance plans</h2>
           <p className="landing-section-sub">
-            Hər büdcəyə uyğun şəffaf qiymətlər
+            Transparent pricing for every budget
           </p>
           {plans.length === 0 ? (
             <p className="muted" style={{ textAlign: "center" }}>
-              Planları görmək üçün qeydiyyatdan keçin — kataloq daim yenilənir.
+              Sign up to see the plans — the catalog is updated regularly.
             </p>
           ) : (
             <div className="grid grid-3">
@@ -201,23 +199,23 @@ export function LandingPage() {
                     </p>
                   )}
                   <div className="plan-price">
-                    {money(plan.premiumAmount)} <small>/ ay</small>
+                    {money(plan.premiumAmount)} <small>/ year</small>
                   </div>
                   <ul className="plan-features">
                     <li>
-                      <span>Əhatə məbləği</span>
+                      <span>Coverage amount</span>
                       <span>{money(plan.coverageAmount)}</span>
                     </li>
                     <li>
-                      <span>Müddət</span>
-                      <span>{plan.durationMonths} ay</span>
+                      <span>Duration</span>
+                      <span>{plan.durationMonths} months</span>
                     </li>
                   </ul>
                   <Link
                     to={isAuthenticated ? "/plans" : "/register"}
                     className="btn btn-primary"
                   >
-                    {isAuthenticated ? "Ətraflı bax" : "Bu planla başla"}
+                    {isAuthenticated ? "View details" : "Get started with this plan"}
                   </Link>
                 </div>
               ))}
@@ -228,8 +226,8 @@ export function LandingPage() {
 
       <section className="landing-section" id="how">
         <div className="landing-container">
-          <h2 className="landing-section-title">Necə işləyir?</h2>
-          <p className="landing-section-sub">4 sadə addımda sığortalanın</p>
+          <h2 className="landing-section-title">How it works</h2>
+          <p className="landing-section-sub">Get insured in 4 simple steps</p>
           <div className="grid grid-4">
             {STEPS.map((s) => (
               <div key={s.n} className="landing-step">
@@ -244,15 +242,15 @@ export function LandingPage() {
 
       <section className="landing-cta">
         <div className="landing-container">
-          <h2>Bu gün sığortalanın</h2>
-          <p>Qeydiyyat pulsuzdur və 5 dəqiqədən az çəkir.</p>
+          <h2>Get insured today</h2>
+          <p>Registration is free and takes less than 5 minutes.</p>
           {isAuthenticated ? (
             <Link to={panelPath} className="btn btn-lg landing-cta-btn">
-              Panelə keç
+              Go to dashboard
             </Link>
           ) : (
             <Link to="/register" className="btn btn-lg landing-cta-btn">
-              Pulsuz hesab yarat
+              Create a free account
             </Link>
           )}
         </div>
@@ -262,17 +260,17 @@ export function LandingPage() {
         <div className="landing-container landing-footer-inner">
           <div className="landing-logo">
             <span className="brand-icon">🏥</span>
-            <strong>E-Sağlamlıq Sığortası</strong>
+            <strong>E-Health Insurance</strong>
           </div>
           <nav className="landing-footer-links">
-            <a href="#features">Üstünlüklər</a>
-            <a href="#plans">Planlar</a>
-            <a href="#how">Necə işləyir?</a>
-            <Link to="/login">Daxil ol</Link>
-            <Link to="/register">Qeydiyyat</Link>
+            <a href="#features">Features</a>
+            <a href="#plans">Plans</a>
+            <a href="#how">How it works</a>
+            <Link to="/login">Log in</Link>
+            <Link to="/register">Sign up</Link>
           </nav>
           <span className="muted">
-            © {new Date().getFullYear()} E-Sağlamlıq Sığortası
+            © {new Date().getFullYear()} E-Health Insurance
           </span>
         </div>
       </footer>

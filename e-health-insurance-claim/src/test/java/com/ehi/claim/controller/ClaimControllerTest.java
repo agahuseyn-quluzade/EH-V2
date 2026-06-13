@@ -41,7 +41,6 @@ class ClaimControllerTest {
 
     private static final String USER_ID = "11111111-1111-1111-1111-111111111111";
 
-    // Minimal security config: stateless, all authenticated, method security enabled
     @TestConfiguration
     @EnableMethodSecurity
     static class TestSecurityConfig {
@@ -58,7 +57,6 @@ class ClaimControllerTest {
     @Autowired ObjectMapper objectMapper;
 
     @MockBean ClaimService claimService;
-    // JwtAuthenticationFilter is auto-scanned as a Filter; mock JwtProvider so it can be created
     @MockBean JwtProvider jwtProvider;
 
     private ClaimDto stubDto() {

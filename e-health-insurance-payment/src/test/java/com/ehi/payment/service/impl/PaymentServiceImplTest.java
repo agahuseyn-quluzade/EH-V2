@@ -58,7 +58,6 @@ class PaymentServiceImplTest {
                 .build();
     }
 
-    // ---- processPayment ----
 
     @Test
     void processPayment_savesPending_andHandsOffToProcessor_forPositiveAmount() {
@@ -159,7 +158,6 @@ class PaymentServiceImplTest {
         verify(mockPaymentProcessor).process(any());
     }
 
-    // ---- getPaymentById ----
 
     @Test
     void getPaymentById_throwsNotFound_whenMissing() {
@@ -198,7 +196,6 @@ class PaymentServiceImplTest {
         assertThat(result.userId()).isEqualTo(ownerId);
     }
 
-    // ---- getAllPayments ----
 
     @Test
     void getAllPayments_returnsPagedResponse() {
