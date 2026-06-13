@@ -34,7 +34,7 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-hero">
-        <h1>🏥 E-Health Insurance</h1>
+        <h1>SaglamOl</h1>
         <p>
           A reliable digital insurance platform for your health. Compare
           plans, purchase insurance, and track your claims online.

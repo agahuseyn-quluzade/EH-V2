@@ -56,7 +56,7 @@ export function RegisterPage() {
   return (
     <div className="auth-page">
       <div className="auth-hero">
-        <h1>🏥 E-Health Insurance</h1>
+        <h1>SaglamOl</h1>
         <p>
           Sign up in a few minutes and manage your health insurance
           entirely online.

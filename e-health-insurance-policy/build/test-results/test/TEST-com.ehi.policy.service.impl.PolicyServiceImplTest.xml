@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.policy.service.impl.PolicyServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:29:39" hostname="Mac" time="0.082">
+<testsuite name="com.ehi.policy.service.impl.PolicyServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:51:48" hostname="Mac" time="0.08">
   <properties/>
   <testcase name="cancelPolicy_throwsBadRequest_whenAlreadyCancelled()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.069"/>
-  <testcase name="getPolicyById_returnsPolicy_forAdmin_regardlessOfOwner()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
+  <testcase name="getPolicyById_returnsPolicy_forAdmin_regardlessOfOwner()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.0"/>
   <testcase name="purchasePolicy_throwsBadRequest_whenPlanInactive()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
   <testcase name="cancelPolicy_allowsFromPendingOrActive()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
-  <testcase name="purchasePolicy_createsPendingPolicy_copiesPremium_andPublishesEvent()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.004"/>
-  <testcase name="activatePolicy_activatesPendingPolicy_withEndDateFromDuration()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
-  <testcase name="activatePolicy_skipsNonPendingPolicy()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
-  <testcase name="getPolicyById_throwsNotFound_whenNonOwnerNonAdmin()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
-  <testcase name="purchasePolicy_throwsNotFound_whenPlanMissing()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T18:29:39.303+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] c.e.p.service.impl.PolicyServiceImpl     : Policy cancelled: policyId=6f61c7e8-64dd-41dc-a375-88791710daa3, userId=6c73b073-c00f-40ea-8e55-0f06ee15ab33
-2026-06-13T18:29:39.305+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] c.e.p.service.impl.PolicyServiceImpl     : Policy purchased: policyId=null, userId=cf06f405-712f-4faf-9b9c-6ca3f0ed2c56, planId=ece740e6-13ad-4049-bd83-232b30ac0dad
+  <testcase name="purchasePolicy_createsPendingPolicy_copiesPremium_andPublishesEvent()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.003"/>
+  <testcase name="activatePolicy_activatesPendingPolicy_withEndDateFromDuration()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.0"/>
+  <testcase name="activatePolicy_skipsNonPendingPolicy()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.0"/>
+  <testcase name="getPolicyById_throwsNotFound_whenNonOwnerNonAdmin()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.0"/>
+  <testcase name="purchasePolicy_throwsNotFound_whenPlanMissing()" classname="com.ehi.policy.service.impl.PolicyServiceImplTest" time="0.0"/>
+  <system-out><![CDATA[2026-06-13T18:51:48.236+04:00  INFO 35198 --- [e-health-insurance-policy] [    Test worker] c.e.p.service.impl.PolicyServiceImpl     : Policy cancelled: policyId=afcdb0b6-19d1-4313-89df-93b2a5f2ba42, userId=99416534-f351-4303-a124-f6914b04e294
+2026-06-13T18:51:48.237+04:00  INFO 35198 --- [e-health-insurance-policy] [    Test worker] c.e.p.service.impl.PolicyServiceImpl     : Policy purchased: policyId=null, userId=c3b3a3df-f9cd-4126-a7b6-afa389f65b56, planId=d37e6f68-6424-48d2-8c4b-063357235377
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

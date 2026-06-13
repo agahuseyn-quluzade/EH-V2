@@ -47,6 +47,10 @@ public class PolicyServiceImpl implements PolicyService {
             throw new BadRequestException("Plan is not active: " + plan.getName());
         }
 
+        if (policyRepository.existsByUserIdAndStatusIn(userId, List.of(PolicyStatus.PENDING, PolicyStatus.ACTIVE))) {
+            throw new BadRequestException("You already have an active or pending policy");
+        }
+
         Policy policy = Policy.builder()
                 .policyNumber(generatePolicyNumber())
                 .userId(userId)

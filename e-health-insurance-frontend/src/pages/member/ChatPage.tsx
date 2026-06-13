@@ -10,6 +10,12 @@ interface LocalMessage {
   createdAt?: string;
 }
 
+function cleanText(text: string) {
+  return text
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1");
+}
+
 export function ChatPage() {
   const toast = useToast();
 
@@ -87,7 +93,7 @@ export function ChatPage() {
                 key={i}
                 className={`chat-bubble ${m.role === "user" ? "chat-user" : "chat-assistant"}`}
               >
-                {m.content}
+                {m.role === "assistant" ? cleanText(m.content) : m.content}
                 {m.createdAt && (
                   <div className="muted" style={{ fontSize: "0.72rem", marginTop: 4 }}>
                     {formatDateTime(m.createdAt)}

@@ -51,9 +51,9 @@ export function Layout({ children }: { children: ReactNode }) {
     <div className="layout">
       <aside className={`sidebar ${menuOpen ? "open" : ""}`}>
         <div className="sidebar-brand">
-          <span className="brand-icon">🏥</span>
+          <img className="brand-icon" src="/logo.png" alt="SaglamOl" />
           <div>
-            <strong>E-Health</strong>
+            <strong>SaglamOl</strong>
             <span className="brand-sub">Insurance Platform</span>
           </div>
         </div>
@@ -99,7 +99,7 @@ export function Layout({ children }: { children: ReactNode }) {
           >
             ☰
           </button>
-          <span className="topbar-title">E-Health Insurance</span>
+          <span className="topbar-title">SaglamOl</span>
         </header>
         <main className="content">{children}</main>
       </div>

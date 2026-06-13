@@ -63,8 +63,8 @@ export function LandingPage() {
       <header className="landing-nav">
         <div className="landing-container landing-nav-inner">
           <div className="landing-logo">
-            <span className="brand-icon">🏥</span>
-            <strong>E-Health Insurance</strong>
+            <img className="brand-icon" src="/logo.png" alt="SaglamOl" />
+            <strong>SaglamOl</strong>
           </div>
           <nav className="landing-nav-links">
             <a href="#features">Features</a>
@@ -162,7 +162,7 @@ export function LandingPage() {
 
       <section className="landing-section" id="features">
         <div className="landing-container">
-          <h2 className="landing-section-title">Why E-Health Insurance?</h2>
+          <h2 className="landing-section-title">Why SaglamOl?</h2>
           <p className="landing-section-sub">
             Managing your insurance has never been this easy
           </p>
@@ -259,8 +259,8 @@ export function LandingPage() {
       <footer className="landing-footer">
         <div className="landing-container landing-footer-inner">
           <div className="landing-logo">
-            <span className="brand-icon">🏥</span>
-            <strong>E-Health Insurance</strong>
+            <img className="brand-icon" src="/logo.png" alt="SaglamOl" />
+            <strong>SaglamOl</strong>
           </div>
           <nav className="landing-footer-links">
             <a href="#features">Features</a>
@@ -270,7 +270,7 @@ export function LandingPage() {
             <Link to="/register">Sign up</Link>
           </nav>
           <span className="muted">
-            © {new Date().getFullYear()} E-Health Insurance
+            © {new Date().getFullYear()} SaglamOl
           </span>
         </div>
       </footer>

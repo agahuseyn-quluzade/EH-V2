@@ -21,8 +21,11 @@ export function PolicyPage() {
     policyApi
       .myPolicies()
       .then((policies) => {
-        const active = policies.find((p) => p.status === "ACTIVE");
-        setPolicy(active ?? policies[0] ?? null);
+        const current =
+          policies.find((p) => p.status === "ACTIVE") ??
+          policies.find((p) => p.status === "PENDING") ??
+          null;
+        setPolicy(current);
         setLoading(false);
       })
       .catch(() => {

@@ -30,8 +30,11 @@ export function DashboardPage() {
     ]).then(([p, c, n]) => {
       if (p.status === "fulfilled") {
         const policies = p.value;
-        const active = policies.find((x) => x.status === "ACTIVE");
-        setPolicy(active ?? policies[0] ?? null);
+        const current =
+          policies.find((x) => x.status === "ACTIVE") ??
+          policies.find((x) => x.status === "PENDING") ??
+          null;
+        setPolicy(current);
       }
       if (c.status === "fulfilled") setClaims(c.value);
       if (n.status === "fulfilled") setNotifications(n.value);
