@@ -196,16 +196,3 @@ services:
       - "8080:8080"
     networks:
       - ehi-network
-
-  frontend:
-    build:
-      context: ../e-health-insurance-frontend
-      dockerfile: Dockerfile
-    depends_on:
-      - gw
-    environment:
-      VITE_GATEWAY_URL: http://gw:8080
-    ports:
-      - "5173:5173"
-    networks:
-      - ehi-network
