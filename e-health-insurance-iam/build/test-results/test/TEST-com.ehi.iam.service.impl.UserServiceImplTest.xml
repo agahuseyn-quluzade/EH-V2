@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.iam.service.impl.UserServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-13T08:40:47" hostname="Nijats-MacBook-Pro.local" time="0.024">
+<testsuite name="com.ehi.iam.service.impl.UserServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:29:31" hostname="Mac" time="0.025">
   <properties/>
   <testcase name="getCurrentUser_throwsNotFound_whenEmailMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.017"/>
   <testcase name="changeRole_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
   <testcase name="changePassword_throwsBadRequest_whenCurrentPasswordWrong()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.0"/>
   <testcase name="changeStatus_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.0"/>
-  <testcase name="searchUsers_returnsPagedResponse()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.004"/>
+  <testcase name="searchUsers_returnsPagedResponse()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.005"/>
   <testcase name="changePassword_encodesNewPassword()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T12:40:47.828+04:00  WARN 2886 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password change rejected (wrong current) for email=test@example.com
-2026-06-13T12:40:47.834+04:00  INFO 2886 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password changed for userId=114fb5c6-9529-486a-ab42-648bda533f8a
+  <system-out><![CDATA[2026-06-13T18:29:31.932+04:00  WARN 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password change rejected (wrong current) for email=test@example.com
+2026-06-13T18:29:31.938+04:00  INFO 32708 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password changed for userId=03f288e3-f76f-4767-b8d5-98ab03e3e107
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

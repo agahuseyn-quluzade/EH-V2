@@ -9,7 +9,6 @@ public final class KafkaTopics {
     public static final String CLAIM_SUBMITTED = "claim.submitted";
     public static final String CLAIM_DECISION = "claim.decision";
     public static final String FRAUD_DETECTED = "fraud.detected";
-    public static final String NOTIFICATION_SEND = "notification.send";
 
     private KafkaTopics() {
     }

@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.policy.controller.PolicyControllerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:14:49" hostname="Mac" time="0.137">
+<testsuite name="com.ehi.policy.controller.PolicyControllerTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-13T14:29:38" hostname="Mac" time="0.14">
   <properties/>
-  <testcase name="purchasePolicy_allowedForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.099"/>
-  <testcase name="createPlan_forbiddenForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.013"/>
-  <testcase name="createPlan_allowedForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.004"/>
+  <testcase name="purchasePolicy_allowedForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.09"/>
+  <testcase name="createPlan_forbiddenForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.027"/>
+  <testcase name="createPlan_allowedForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.005"/>
   <testcase name="getAllPolicies_allowedForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.006"/>
-  <testcase name="purchasePolicy_forbiddenForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.004"/>
-  <testcase name="getAllPolicies_forbiddenForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.002"/>
-  <testcase name="getActivePlans_isPublic()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.004"/>
-  <system-out><![CDATA[2026-06-13T18:14:49.326+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.policy.PolicyApplication for test class com.ehi.policy.controller.PolicyControllerTest
+  <testcase name="purchasePolicy_forbiddenForAdmin()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.003"/>
+  <testcase name="getAllPolicies_forbiddenForCustomer()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.003"/>
+  <testcase name="getActivePlans_isPublic()" classname="com.ehi.policy.controller.PolicyControllerTest" time="0.003"/>
+  <system-out><![CDATA[2026-06-13T18:29:38.493+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.policy.PolicyApplication for test class com.ehi.policy.controller.PolicyControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -19,19 +19,19 @@
 
  :: Spring Boot ::                (v3.3.5)
 
-2026-06-13T18:14:49.343+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Starting PolicyControllerTest using Java 21.0.11 with PID 31116 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-policy)
-2026-06-13T18:14:49.343+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : No active profile set, falling back to 1 default profile: "default"
-2026-06-13T18:14:49.599+04:00  WARN 31116 --- [e-health-insurance-policy] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-13T18:29:38.509+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Starting PolicyControllerTest using Java 21.0.11 with PID 32759 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-policy)
+2026-06-13T18:29:38.509+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : No active profile set, falling back to 1 default profile: "default"
+2026-06-13T18:29:38.761+04:00  WARN 32759 --- [e-health-insurance-policy] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 40490653-d606-466d-8b03-8572e8f7f216
+Using generated security password: c673cf85-a951-438d-9fa9-b82375d31b95
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-13T18:14:49.600+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
-2026-06-13T18:14:49.809+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-13T18:14:49.810+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-13T18:14:49.810+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-06-13T18:14:49.820+04:00  INFO 31116 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Started PolicyControllerTest in 0.489 seconds (process running for 5.786)
+2026-06-13T18:29:38.762+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] r$InitializeUserDetailsManagerConfigurer : Global AuthenticationManager configured with UserDetailsService bean with name inMemoryUserDetailsManager
+2026-06-13T18:29:38.982+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-13T18:29:38.982+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-13T18:29:38.983+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 1 ms
+2026-06-13T18:29:38.993+04:00  INFO 32759 --- [e-health-insurance-policy] [    Test worker] c.e.p.controller.PolicyControllerTest    : Started PolicyControllerTest in 0.494 seconds (process running for 5.621)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

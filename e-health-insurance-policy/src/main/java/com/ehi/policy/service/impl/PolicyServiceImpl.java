@@ -126,6 +126,21 @@ public class PolicyServiceImpl implements PolicyService {
         policyRepository.save(policy);
     }
 
+    @Override
+    @Transactional
+    public void cancelPolicyOnPaymentFailure(UUID policyId) {
+        Policy policy = policyRepository.findById(policyId)
+                .orElseThrow(() -> new NotFoundException("Policy", policyId));
+
+        if (policy.getStatus() != PolicyStatus.PENDING) {
+            return;
+        }
+
+        policy.setStatus(PolicyStatus.CANCELLED);
+        policyRepository.save(policy);
+        log.info("Policy {} cancelled after premium payment failure", policyId);
+    }
+
     private Policy findAccessiblePolicy(UUID policyId, UUID requesterId, boolean admin) {
         Policy policy = policyRepository.findById(policyId)
                 .orElseThrow(() -> new NotFoundException("Policy", policyId));

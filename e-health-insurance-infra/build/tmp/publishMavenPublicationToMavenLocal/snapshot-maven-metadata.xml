@@ -3,7 +3,7 @@
   <groupId>com.ehi</groupId>
   <artifactId>e-health-insurance-infra</artifactId>
   <versioning>
-    <lastUpdated>20260613083629</lastUpdated>
+    <lastUpdated>20260613142820</lastUpdated>
     <snapshot>
       <localCopy>true</localCopy>
     </snapshot>
@@ -11,17 +11,17 @@
       <snapshotVersion>
         <extension>pom</extension>
         <value>0.0.1-SNAPSHOT</value>
-        <updated>20260613083629</updated>
+        <updated>20260613142820</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>jar</extension>
         <value>0.0.1-SNAPSHOT</value>
-        <updated>20260613083629</updated>
+        <updated>20260613142820</updated>
       </snapshotVersion>
       <snapshotVersion>
         <extension>module</extension>
         <value>0.0.1-SNAPSHOT</value>
-        <updated>20260613083629</updated>
+        <updated>20260613142820</updated>
       </snapshotVersion>
     </snapshotVersions>
   </versioning>
