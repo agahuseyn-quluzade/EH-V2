@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.gw.security.JwtProviderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:57:31" hostname="Nijats-MacBook-Pro.local" time="0.006">
+<testsuite name="com.ehi.gw.security.JwtProviderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:37" hostname="Nijats-MacBook-Pro.local" time="0.005">
   <properties/>
   <testcase name="isTokenValid_returnsFalse_forMalformedToken()" classname="com.ehi.gw.security.JwtProviderTest" time="0.001"/>
   <testcase name="validToken_isValid_andClaimsExtracted()" classname="com.ehi.gw.security.JwtProviderTest" time="0.002"/>
-  <testcase name="isTokenValid_returnsFalse_forTokenSignedWithWrongSecret()" classname="com.ehi.gw.security.JwtProviderTest" time="0.002"/>
+  <testcase name="isTokenValid_returnsFalse_forTokenSignedWithWrongSecret()" classname="com.ehi.gw.security.JwtProviderTest" time="0.001"/>
   <testcase name="isTokenValid_returnsFalse_forExpiredToken()" classname="com.ehi.gw.security.JwtProviderTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>

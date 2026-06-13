@@ -48,7 +48,7 @@
 ## Decisions & Notes
 - Payment is MOCK for MVP — 2 second async delay then auto-complete (`MockPaymentProcessor`).
 - Endpoints corrected from the doc's original `/api/payments/...` to `/api/v1/payments/...` (same correction as ai/gw).
-- Package root: `com.ehi.payment`. Same Gradle setup as claim (Gradle 8.10.2 wrapper, `io.spring.dependency-management` 1.1.7, JDK 17 `Contents/Home` path in `gradle.properties`).
+- Package root: `com.ehi.payment`. Same Gradle setup as claim (Gradle 8.10.2 wrapper, `io.spring.dependency-management` 1.1.7, JDK 21 `Contents/Home` path in `gradle.properties`).
 - Security setup mirrors claim exactly: `JwtProperties`, `JwtProvider` (validation-only), `JwtAuthenticationFilter`, `SecurityConfig` (stateless, `@EnableMethodSecurity`, `.anyRequest().authenticated()`, role-based `@PreAuthorize` per endpoint).
 - `PaymentApplication` annotated `@EnableAsync` to support `MockPaymentProcessor`'s `@Async` processing.
 - DTOs: `PaymentDto` (9 fields, `@Builder`, mirrors `Payment`); `ProcessPaymentRequest` (4 fields, `@NotNull`/`@Positive` validated — `userId`, `referenceId`, `referenceType`, `amount`).
@@ -66,7 +66,7 @@
 - `PaymentErrorEnum implements BaseErrorService`: single `FORBIDDEN("PAYMENT-FORBIDDEN-0001", "Access denied", 403)` entry, same pattern as `ClaimErrorEnum`/`AiErrorEnum`. `NotFoundException` (infra) used directly for not-found cases.
 - `GlobalExceptionHandler`: identical structure to claim/ai — `BaseException` → `ApiResponse.error`, `MethodArgumentNotValidException` → `VALIDATION_ERROR`, `AccessDeniedException` → `PaymentErrorEnum.FORBIDDEN`, generic `Exception` → `INTERNAL_ERROR`.
 - Build verification: `./gradlew build` → BUILD SUCCESSFUL. `application.yml` uses `ddl-auto: validate` and `show-sql: false`.
-- Dockerfile (multi-stage, same pattern as claim): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
+- Dockerfile (multi-stage, same pattern as claim): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:21-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_payment` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
 
 ## Logging (SLF4J) — DONE

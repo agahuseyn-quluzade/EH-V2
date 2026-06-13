@@ -19,7 +19,7 @@
       "attributes": {
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
-        "org.gradle.jvm.version": 17,
+        "org.gradle.jvm.version": 21,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-api"
       },
@@ -50,11 +50,11 @@
         {
           "name": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
           "url": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
-          "size": 36137,
-          "sha512": "5a56b020cd570596acd2bfe349d3afbca8df1c0298600626537b9299dbb68e093aea5d8a55ba2f688052e457b33e21fa23a872b17d0666fb09b0db20c77ed6d5",
-          "sha256": "c4e538cea14b8f8a7572ef39789f20058c80348c9e02baa5d3a8682de7a8bf51",
-          "sha1": "a5f263c52546ce71e251258bdb00d6c65f96dc99",
-          "md5": "d7b2c33673ac039b4bfb254fed994e75"
+          "size": 37129,
+          "sha512": "41a45037857cea91731197cda253251a0b89930d3dcae2a7500e98772960901d105a994976c0c7ae6ce948eaa61ebad02e65ea81545eeee4c2d2a672582d3d38",
+          "sha256": "dc2b222df3196b8edeb46e43b5e95366d068063377cf8036d56fe06d36346414",
+          "sha1": "e7a35c17949e9bc3714044025cfa40bb8b1c051b",
+          "md5": "9f50772abcb37fc0d3dc705eb09db5dc"
         }
       ]
     },
@@ -63,7 +63,7 @@
       "attributes": {
         "org.gradle.category": "library",
         "org.gradle.dependency.bundling": "external",
-        "org.gradle.jvm.version": 17,
+        "org.gradle.jvm.version": 21,
         "org.gradle.libraryelements": "jar",
         "org.gradle.usage": "java-runtime"
       },
@@ -94,11 +94,11 @@
         {
           "name": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
           "url": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
-          "size": 36137,
-          "sha512": "5a56b020cd570596acd2bfe349d3afbca8df1c0298600626537b9299dbb68e093aea5d8a55ba2f688052e457b33e21fa23a872b17d0666fb09b0db20c77ed6d5",
-          "sha256": "c4e538cea14b8f8a7572ef39789f20058c80348c9e02baa5d3a8682de7a8bf51",
-          "sha1": "a5f263c52546ce71e251258bdb00d6c65f96dc99",
-          "md5": "d7b2c33673ac039b4bfb254fed994e75"
+          "size": 37129,
+          "sha512": "41a45037857cea91731197cda253251a0b89930d3dcae2a7500e98772960901d105a994976c0c7ae6ce948eaa61ebad02e65ea81545eeee4c2d2a672582d3d38",
+          "sha256": "dc2b222df3196b8edeb46e43b5e95366d068063377cf8036d56fe06d36346414",
+          "sha1": "e7a35c17949e9bc3714044025cfa40bb8b1c051b",
+          "md5": "9f50772abcb37fc0d3dc705eb09db5dc"
         }
       ]
     }

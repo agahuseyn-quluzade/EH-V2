@@ -68,7 +68,7 @@
 
 ## Decisions & Notes
 - Package root: `com.ehi.claim`.
-- Same Gradle setup as iam/policy: Gradle 8.10.2 wrapper, `io.spring.dependency-management` 1.1.7, `gradle.properties` with full JDK 17 `Contents/Home` path.
+- Same Gradle setup as iam/policy: Gradle 8.10.2 wrapper, `io.spring.dependency-management` 1.1.7, `gradle.properties` with full JDK 21 `Contents/Home` path.
 - Same dependency set as policy (web, data-jpa, security, validation, spring-kafka, jjwt, postgresql, lombok+mapstruct, infra via mavenLocal) — JWT validation-only (shared secret with iam).
 - `application.yml` has Kafka producer (claim.submitted, claim.decision) and consumer (fraud.detected) config, `group-id: claim-service`, `spring.json.trusted.packages: com.ehi.infra.event`.
 - Multipart upload config: `spring.servlet.multipart.max-file-size`/`max-request-size` = 10MB. Evidence files stored on local disk under `app.upload-dir` (`./uploads/claims`, overridable via `UPLOAD_DIR` env var).
@@ -101,7 +101,7 @@
   - Private `isStaff(Authentication)` checks for `ROLE_STAFF` or `ROLE_ADMIN`, passed as the `privileged` flag to the service.
 - `GlobalExceptionHandler` + `ClaimErrorEnum`: identical structure/content to policy's — handles `BaseException`, `MethodArgumentNotValidException`, `AccessDeniedException` (→ `ClaimErrorEnum.FORBIDDEN`, `"CLAIM-FORBIDDEN-0001"`, 403), and generic `Exception` → 500.
 - Step 10 build verification: `./gradlew build` → BUILD SUCCESSFUL. `application.yml` uses `ddl-auto: validate` and `show-sql: false`. `build.gradle` includes `runtimeOnly 'org.liquibase:liquibase-core'` for future migration support.
-- Dockerfile (multi-stage, same pattern as iam/policy): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`, `uploads/`.
+- Dockerfile (multi-stage, same pattern as iam/policy): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:21-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`, `uploads/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_claim` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`.
 
 ## Logging (SLF4J) — DONE

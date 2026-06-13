@@ -1,9 +1,9 @@
 [versions]
-java = "17"
-springBoot = "3.2.5"
+java = "21"
+springBoot = "3.3.5"
 springCloud = "2023.0.3"
 springDependencyManagement = "1.1.7"
-lombok = "1.18.30"
+lombok = "1.18.34"
 jjwt = "0.12.5"
 
 [libraries]

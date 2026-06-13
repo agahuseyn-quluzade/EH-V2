@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.gw.GatewayRoutingIT" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:57:30" hostname="Nijats-MacBook-Pro.local" time="0.491">
+<testsuite name="com.ehi.gw.GatewayRoutingIT" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:36" hostname="Nijats-MacBook-Pro.local" time="0.51">
   <properties/>
-  <testcase name="protectedRoute_withValidToken_forwardsRequest_withUserHeaders()" classname="com.ehi.gw.GatewayRoutingIT" time="0.478"/>
-  <testcase name="publicAuthRoute_forwardsWithoutToken_toDownstreamService()" classname="com.ehi.gw.GatewayRoutingIT" time="0.008"/>
-  <testcase name="protectedRoute_withoutToken_returnsUnauthorized_andNeverReachesDownstream()" classname="com.ehi.gw.GatewayRoutingIT" time="0.005"/>
-  <system-out><![CDATA[22:57:29.867 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ehi.gw.GatewayRoutingIT]: GatewayRoutingIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
-22:57:29.896 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.gw.GatewayApplication for test class com.ehi.gw.GatewayRoutingIT
+  <testcase name="protectedRoute_withValidToken_forwardsRequest_withUserHeaders()" classname="com.ehi.gw.GatewayRoutingIT" time="0.498"/>
+  <testcase name="publicAuthRoute_forwardsWithoutToken_toDownstreamService()" classname="com.ehi.gw.GatewayRoutingIT" time="0.006"/>
+  <testcase name="protectedRoute_withoutToken_returnsUnauthorized_andNeverReachesDownstream()" classname="com.ehi.gw.GatewayRoutingIT" time="0.004"/>
+  <system-out><![CDATA[11:19:35.675 [Test worker] INFO org.springframework.test.context.support.AnnotationConfigContextLoaderUtils -- Could not detect default configuration classes for test class [com.ehi.gw.GatewayRoutingIT]: GatewayRoutingIT does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+11:19:35.702 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.gw.GatewayApplication for test class com.ehi.gw.GatewayRoutingIT
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -13,29 +13,34 @@
  \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
   '  |____| .__|_| |_|_| |_\__, | / / / /
  =========|_|==============|___/=/_/_/_/
- :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T22:57:30.277+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Starting GatewayRoutingIT using Java 17.0.19 with PID 22169 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-gw)
-2026-06-12T22:57:30.278+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : No active profile set, falling back to 1 default profile: "default"
-2026-06-12T22:57:30.471+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.cloud.context.scope.GenericScope     : BeanFactory id=49a05afb-7a75-343f-85ba-05dd67503a50
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [After]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Before]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Between]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Cookie]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Header]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Host]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Method]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Path]
-2026-06-12T22:57:30.705+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Query]
-2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [ReadBody]
-2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [RemoteAddr]
-2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [XForwardedRemoteAddr]
-2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Weight]
-2026-06-12T22:57:30.706+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [CloudFoundryRouteService]
-2026-06-12T22:57:30.796+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 56171
-2026-06-12T22:57:30.815+04:00  INFO 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Started GatewayRoutingIT in 0.881 seconds (process running for 1.198)
-2026-06-12T22:57:31.174+04:00 ERROR 22169 --- [e-health-insurance-gw] [    Test worker] i.n.r.d.DnsServerAddressStreamProviders  : Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
-2026-06-12T22:57:31.313+04:00  WARN 22169 --- [e-health-insurance-gw] [ctor-http-nio-8] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: GET /api/v1/claims/123 (missing/invalid token)
+ :: Spring Boot ::                (v3.3.5)
+
+2026-06-13T11:19:36.078+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Starting GatewayRoutingIT using Java 21.0.11 with PID 92608 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V2/e-health-insurance-gw)
+2026-06-13T11:19:36.078+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : No active profile set, falling back to 1 default profile: "default"
+2026-06-13T11:19:36.258+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.cloud.context.scope.GenericScope     : BeanFactory id=49a05afb-7a75-343f-85ba-05dd67503a50
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [After]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Before]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Between]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Cookie]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Header]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Host]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Method]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Path]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Query]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [ReadBody]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [RemoteAddr]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [XForwardedRemoteAddr]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [Weight]
+2026-06-13T11:19:36.485+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.c.g.r.RouteDefinitionRouteLocator    : Loaded RoutePredicateFactory [CloudFoundryRouteService]
+2026-06-13T11:19:36.577+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] o.s.b.web.embedded.netty.NettyWebServer  : Netty started on port 60820 (http)
+2026-06-13T11:19:36.597+04:00  INFO 92608 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.GatewayRoutingIT              : Started GatewayRoutingIT in 0.861 seconds (process running for 1.186)
+2026-06-13T11:19:36.974+04:00 ERROR 92608 --- [e-health-insurance-gw] [    Test worker] i.n.r.d.DnsServerAddressStreamProviders  : Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. This may result in incorrect DNS resolutions on MacOS. Check whether you have a dependency on 'io.netty:netty-resolver-dns-native-macos'. Use DEBUG level to see the full stack: java.lang.UnsatisfiedLinkError: failed to load the required native library
+2026-06-13T11:19:37.112+04:00  WARN 92608 --- [e-health-insurance-gw] [flux-http-nio-4] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: GET /api/v1/claims/123 (missing/invalid token)
 ]]></system-out>
-  <system-err><![CDATA[]]></system-err>
+  <system-err><![CDATA[WARNING: A Java agent has been loaded dynamically (/Users/nijatnasirli/.gradle/caches/modules-2/files-2.1/net.bytebuddy/byte-buddy-agent/1.14.19/154da3a65b4f4a909d3e5bdec55d1b2b4cbb6ce1/byte-buddy-agent-1.14.19.jar)
+WARNING: If a serviceability tool is in use, please run with -XX:+EnableDynamicAgentLoading to hide this warning
+WARNING: If a serviceability tool is not in use, please run with -Djdk.instrument.traceUsage for more information
+WARNING: Dynamic loading of agents will be disallowed by default in a future release
+]]></system-err>
 </testsuite>

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.gw.security.JwtAuthFilterTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:57:31" hostname="Nijats-MacBook-Pro.local" time="0.101">
+<testsuite name="com.ehi.gw.security.JwtAuthFilterTest" tests="7" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:37" hostname="Nijats-MacBook-Pro.local" time="0.103">
   <properties/>
-  <testcase name="protectedPath_withValidToken_forwardsRequest_withUserHeaders()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.088"/>
+  <testcase name="protectedPath_withValidToken_forwardsRequest_withUserHeaders()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.091"/>
   <testcase name="protectedPath_returnsUnauthorized_whenAuthorizationHeaderMissing()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.004"/>
   <testcase name="getOrder_isMinusOne()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
   <testcase name="publicPath_passesThrough_withoutToken()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
   <testcase name="publicGetPath_passesThrough_withoutToken()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
-  <testcase name="postToPublicGetPath_isProtected_andReturnsUnauthorized_withoutToken()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
+  <testcase name="postToPublicGetPath_isProtected_andReturnsUnauthorized_withoutToken()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.002"/>
   <testcase name="protectedPath_returnsUnauthorized_whenTokenInvalid()" classname="com.ehi.gw.security.JwtAuthFilterTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-12T22:57:31.411+04:00  WARN 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: GET /api/v1/claims/123 (missing/invalid token)
-2026-06-12T22:57:31.421+04:00  WARN 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: POST /api/v1/plans (missing/invalid token)
-2026-06-12T22:57:31.422+04:00  WARN 22169 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: GET /api/v1/claims/123 (missing/invalid token)
+  <system-out><![CDATA[2026-06-13T11:19:37.211+04:00  WARN 92608 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: GET /api/v1/claims/123 (missing/invalid token)
+2026-06-13T11:19:37.219+04:00  WARN 92608 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: POST /api/v1/plans (missing/invalid token)
+2026-06-13T11:19:37.221+04:00  WARN 92608 --- [e-health-insurance-gw] [    Test worker] com.ehi.gw.security.JwtAuthFilter        : Auth rejected: GET /api/v1/claims/123 (missing/invalid token)
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

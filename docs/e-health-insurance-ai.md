@@ -75,7 +75,7 @@
 - Chatbot uses multi-turn conversation with session history.
 - Fallback: if OpenAI API fails, use rule-only score.
 - Package root: `com.ehi.ai`.
-- Same Gradle setup as iam/policy/claim: Gradle 8.10.2 wrapper, `io.spring.dependency-management` 1.1.7, `gradle.properties` with full JDK 17 `Contents/Home` path.
+- Same Gradle setup as iam/policy/claim: Gradle 8.10.2 wrapper, `io.spring.dependency-management` 1.1.7, `gradle.properties` with full JDK 21 `Contents/Home` path.
 - Same dependency set as claim, plus `spring-boot-starter-webflux` (for `WebClient` to call the OpenAI API — app remains a servlet/MVC app, webflux is added only as an HTTP client library).
 - `application.yml`: port 8085, `jdbc:postgresql://localhost:5432/ehi_ai`, JWT validation-only (shared secret with iam), Kafka producer (fraud.detected) + consumer (claim.submitted, group-id `ai-service`, trusted packages `com.ehi.infra.event`).
 - AI client config via `openai.*` properties (OpenRouter, OpenAI-compatible): `openai.api-key` (env `OPENROUTER_API_KEY`, blank default), `openai.base-url` (default `https://openrouter.ai/api/v1`), `openai.model` (default `google/gemini-2.5-flash`). Key stored in `e-health-insurance-infra/.env` (auto-loaded by Docker Compose).
@@ -130,7 +130,7 @@
 - `./gradlew build` → BUILD SUCCESSFUL. Service complete.
 
 ### Docker
-- Dockerfile (multi-stage, same pattern as claim/payment): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:17-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
+- Dockerfile (multi-stage, same pattern as claim/payment): `infra-build` stage publishes `e-health-insurance-infra` (via Compose's `additional_contexts: infra`) to `/root/.m2`, `build` stage compiles `bootJar`, runtime stage `eclipse-temurin:21-jre-jammy`. `gradle.properties` removed before building. `.dockerignore` excludes `.gradle/`, `build/`, `out/`.
 - `application-docker.yml` overrides `spring.datasource.url` → `postgres:5432/ehi_ai` and `spring.kafka.bootstrap-servers` → `kafka:29092`, activated via `SPRING_PROFILES_ACTIVE=docker`. `openai.*` properties remain env-var driven (`OPENAI_API_KEY`, etc.) — set via docker-compose environment, no profile override needed.
 
 ## Logging (SLF4J) — DONE

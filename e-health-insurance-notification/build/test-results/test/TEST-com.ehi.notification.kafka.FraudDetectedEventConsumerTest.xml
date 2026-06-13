@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.FraudDetectedEventConsumerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.002">
+<testsuite name="com.ehi.notification.kafka.FraudDetectedEventConsumerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.002">
   <properties/>
   <testcase name="consume_sendsNothing_whenRiskScoreIsNull()" classname="com.ehi.notification.kafka.FraudDetectedEventConsumerTest" time="0.0"/>
-  <testcase name="consume_sendsNothing_whenRiskScoreBelowThreshold()" classname="com.ehi.notification.kafka.FraudDetectedEventConsumerTest" time="0.0"/>
+  <testcase name="consume_sendsNothing_whenRiskScoreBelowThreshold()" classname="com.ehi.notification.kafka.FraudDetectedEventConsumerTest" time="0.001"/>
   <testcase name="consume_sendsFraudAlertNotification_whenRiskScoreAtThreshold()" classname="com.ehi.notification.kafka.FraudDetectedEventConsumerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-12T22:56:30.807+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.FraudDetectedEventConsumer   : Received FraudDetectedEvent for claimId=e8780cd1-3ea4-4b69-b0bf-977cc33bc977, userId=f3a0528f-f984-48dd-a0f6-b324213c31dd, riskScore=70
+  <system-out><![CDATA[2026-06-13T11:19:25.024+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.FraudDetectedEventConsumer   : Received FraudDetectedEvent for claimId=c864f08d-307f-47d8-b6ce-dafbb63509f4, userId=600b5a8f-ac71-494b-8294-87669508326a, riskScore=70
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

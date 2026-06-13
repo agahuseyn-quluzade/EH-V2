@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.ai.service.impl.ChatbotServiceImplTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-06-12T19:00:54" hostname="Nijats-MacBook-Pro.local" time="0.082">
+<testsuite name="com.ehi.ai.service.impl.ChatbotServiceImplTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:07" hostname="Nijats-MacBook-Pro.local" time="0.104">
   <properties/>
-  <testcase name="sendMessage_generatesNewSessionId_whenNoneProvided()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.071"/>
-  <testcase name="sendMessage_savesBothUserAndAssistantMessages()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.003"/>
+  <testcase name="sendMessage_generatesNewSessionId_whenNoneProvided()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.096"/>
+  <testcase name="sendMessage_savesBothUserAndAssistantMessages()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.002"/>
   <testcase name="sendMessage_includesSessionHistory_andNewMessage_inAiPrompt()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.004"/>
   <testcase name="sendMessage_reusesProvidedSessionId()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.001"/>
-  <testcase name="getHistory_returnsMappedDtos_scopedBySessionAndUser()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.003"/>
+  <testcase name="getHistory_returnsMappedDtos_scopedBySessionAndUser()" classname="com.ehi.ai.service.impl.ChatbotServiceImplTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

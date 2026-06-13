@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.iam.security.JwtProviderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-12T19:00:37" hostname="Nijats-MacBook-Pro.local" time="0.008">
+<testsuite name="com.ehi.iam.security.JwtProviderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:17:43" hostname="Nijats-MacBook-Pro.local" time="0.006">
   <properties/>
-  <testcase name="isTokenValid_returnsFalse_forMalformedToken()" classname="com.ehi.iam.security.JwtProviderTest" time="0.002"/>
-  <testcase name="accessToken_containsUserIdAndRoleClaims()" classname="com.ehi.iam.security.JwtProviderTest" time="0.004"/>
+  <testcase name="isTokenValid_returnsFalse_forMalformedToken()" classname="com.ehi.iam.security.JwtProviderTest" time="0.001"/>
+  <testcase name="accessToken_containsUserIdAndRoleClaims()" classname="com.ehi.iam.security.JwtProviderTest" time="0.003"/>
   <testcase name="isTokenValid_returnsFalse_forTokenSignedWithWrongSecret()" classname="com.ehi.iam.security.JwtProviderTest" time="0.001"/>
   <testcase name="refreshToken_containsUserIdAndRoleClaims()" classname="com.ehi.iam.security.JwtProviderTest" time="0.001"/>
   <system-out><![CDATA[]]></system-out>

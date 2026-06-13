@@ -2,7 +2,7 @@
 
 ## Project
 
-E-Health Insurance — microservices backend (Java 17, Spring Boot 3.2.5, Gradle, Kafka, PostgreSQL).
+E-Health Insurance — microservices backend (Java 21, Spring Boot 3.3.5, Gradle, Kafka, PostgreSQL).
 
 ## Scope & Direction
 
@@ -169,7 +169,7 @@ gateway (no infra dependency, only routing + JWT filter)
 
 | Concern | Tool |
 |---|---|
-| Framework | Spring Boot 3.2.5 |
+| Framework | Spring Boot 3.3.5 |
 | Build | Gradle Groovy DSL + Version Catalog (per-repo, multi-repo setup) |
 | DB | PostgreSQL 16 (database-per-service) |
 | Messaging | Apache Kafka (Confluent 7.5.0) |

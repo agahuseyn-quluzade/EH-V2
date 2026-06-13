@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.payment.service.impl.PaymentServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:52:28" hostname="Nijats-MacBook-Pro.local" time="0.066">
+<testsuite name="com.ehi.payment.service.impl.PaymentServiceImplTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:18:43" hostname="Nijats-MacBook-Pro.local" time="0.083">
   <properties/>
-  <testcase name="getPaymentById_throwsNotFound_whenMissing()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.053"/>
+  <testcase name="getPaymentById_throwsNotFound_whenMissing()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.069"/>
   <testcase name="processPayment_idempotent_returnsExistingPayment_whenNonFailedPaymentExists()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.001"/>
-  <testcase name="processPayment_savesFailed_andPublishesEvent_forZeroAmount()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.001"/>
+  <testcase name="processPayment_savesFailed_andPublishesEvent_forZeroAmount()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.002"/>
   <testcase name="processPayment_savesFailed_andPublishesEvent_forNegativeAmount()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.001"/>
-  <testcase name="getAllPayments_returnsPagedResponse()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.005"/>
-  <testcase name="processPayment_savesPending_andHandsOffToProcessor_forPositiveAmount()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.002"/>
-  <testcase name="getPaymentById_throwsNotFound_whenNonOwnerNonPrivileged()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.0"/>
+  <testcase name="getAllPayments_returnsPagedResponse()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.003"/>
+  <testcase name="processPayment_savesPending_andHandsOffToProcessor_forPositiveAmount()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.001"/>
+  <testcase name="getPaymentById_throwsNotFound_whenNonOwnerNonPrivileged()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.001"/>
   <testcase name="processPayment_createsNew_whenExistingPaymentForReferenceIsFailed()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.001"/>
-  <testcase name="getPaymentById_allowsPrivilegedRequester_regardlessOfOwner()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-12T22:52:28.175+04:00  WARN 21276 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Duplicate payment skipped for referenceId=e387ac40-9620-407a-b831-dcd481c226d8, type=POLICY_PREMIUM
-2026-06-12T22:52:28.177+04:00  WARN 21276 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Payment failed (invalid amount): referenceId=dbae0160-6ff4-4759-a94b-077690092f48, amount=0
-2026-06-12T22:52:28.179+04:00  WARN 21276 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Payment failed (invalid amount): referenceId=80c1d8b1-948f-4ded-8aaa-8d99e6199aa1, amount=-50
-2026-06-12T22:52:28.185+04:00  INFO 21276 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Processing payment: referenceId=161c029c-20de-4299-9445-0cade10eb632, type=POLICY_PREMIUM, amount=100
-2026-06-12T22:52:28.187+04:00  INFO 21276 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Processing payment: referenceId=cf5d9c6b-9339-441e-9cd8-43c9ab444034, type=CLAIM_PAYOUT, amount=200
+  <testcase name="getPaymentById_allowsPrivilegedRequester_regardlessOfOwner()" classname="com.ehi.payment.service.impl.PaymentServiceImplTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-13T11:18:43.868+04:00  WARN 92346 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Duplicate payment skipped for referenceId=c369ba18-e09d-413a-aa76-25c99e659a7d, type=POLICY_PREMIUM
+2026-06-13T11:18:43.870+04:00  WARN 92346 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Payment failed (invalid amount): referenceId=7e66e9ae-12a7-4a9a-9bb1-66d6aa844098, amount=0
+2026-06-13T11:18:43.871+04:00  WARN 92346 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Payment failed (invalid amount): referenceId=f2a800fd-a950-4b49-8ef0-6414e785d802, amount=-50
+2026-06-13T11:18:43.877+04:00  INFO 92346 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Processing payment: referenceId=f1bbf9bb-1e2e-4ce9-b665-475cf13cc2de, type=POLICY_PREMIUM, amount=100
+2026-06-13T11:18:43.879+04:00  INFO 92346 --- [e-health-insurance-payment] [    Test worker] c.e.p.service.impl.PaymentServiceImpl    : Processing payment: referenceId=7969a1e6-c2cb-4e40-a569-2b472f4b0f44, type=CLAIM_PAYOUT, amount=200
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

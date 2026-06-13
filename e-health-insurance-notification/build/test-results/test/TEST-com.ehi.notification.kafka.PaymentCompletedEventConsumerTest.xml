@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.001">
+<testsuite name="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:19:25" hostname="Nijats-MacBook-Pro.local" time="0.001">
   <properties/>
   <testcase name="consume_sendsPolicyActivatedNotification_forPolicyPremium()" classname="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" time="0.001"/>
   <testcase name="consume_sendsPaymentSuccessNotification_forClaimPayout()" classname="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-12T22:56:30.809+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=bce9851c-4e21-4901-a011-682f483e4884, userId=aef6c3ba-5bb6-4e77-9ee6-b2fd5be8df5b
-2026-06-12T22:56:30.810+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=16e0be89-d81a-4746-8eec-b303d45d2f34, userId=243e7231-a1c0-46e1-a38a-75e63e1d5ebf
+  <system-out><![CDATA[2026-06-13T11:19:25.025+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=0baaafef-b93f-4651-a7d7-cfd3ca8dd442, userId=f2c3f0ea-83cb-423a-991e-a61d85abbdaa
+2026-06-13T11:19:25.025+04:00  INFO 92524 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=1af44734-e428-4a3f-945a-f0dfc72e9a97, userId=4291e61b-2a89-4bea-aa08-c49c70beefd1
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
