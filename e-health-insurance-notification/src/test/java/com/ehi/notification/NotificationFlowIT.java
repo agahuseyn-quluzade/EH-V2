@@ -55,7 +55,8 @@ class NotificationFlowIT {
     void userRegistered_createsWelcomeNotification_withEmailRecipient() {
         UUID userId = UUID.randomUUID();
         kafkaTemplate.send(KafkaTopics.USER_REGISTERED, userId.toString(),
-                new UserRegisteredEvent(userId, "user@example.com", "John", "Doe"));
+                UserRegisteredEvent.builder().userId(userId).email("user@example.com")
+                        .firstName("John").lastName("Doe").phone("+994501234567").build());
 
         Notification notification = awaitNotification(userId, NotificationType.WELCOME);
 

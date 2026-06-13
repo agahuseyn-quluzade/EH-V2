@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" tests="12" skipped="0" failures="0" errors="0" timestamp="2026-06-13T04:07:13" hostname="AGA" time="0.211">
+  <properties/>
+  <testcase name="refreshStatus_throws_whenNoEpointTransaction()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.14"/>
+  <testcase name="handleCallback_duplicateSuccess_isIdempotent()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.011"/>
+  <testcase name="handleCallback_rejectsInvalidSignature()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.004"/>
+  <testcase name="startCardRegistration_savesInactiveCard_andReturnsRedirect()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.005"/>
+  <testcase name="startCardRegistration_throws_whenEpointRejects()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.005"/>
+  <testcase name="handleCallback_success_completesPayment_andPublishesEvent()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.009"/>
+  <testcase name="handleCallback_unknownPayment_isIgnored()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.004"/>
+  <testcase name="handleCallback_cardRegistrationSuccess_activatesCard()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.005"/>
+  <testcase name="refreshStatus_throwsNotFound_forNonOwner()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.004"/>
+  <testcase name="handleCallback_failed_failsPayment_andPublishesEvent()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.005"/>
+  <testcase name="handleCallback_cardRegistrationFailed_leavesCardInactive()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.005"/>
+  <testcase name="refreshStatus_appliesSuccessResult()" classname="com.ehi.payment.service.impl.EpointPaymentServiceImplTest" time="0.004"/>
+  <system-out><![CDATA[2026-06-13T08:07:13.928+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Duplicate Epoint success for payment f7fa3df4-c1ad-4d76-8ff9-fa902aae2722 skipped
+2026-06-13T08:07:13.933+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint callback rejected: invalid signature
+2026-06-13T08:07:13.939+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payout card registration started for user 4cb83041-d16c-4c04-b91f-c7fd7e0e7cf2: card=null
+2026-06-13T08:07:13.945+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint card registration failed for user 3a9e5102-c245-447e-a8fa-009510b3684e: Invalid merchant
+2026-06-13T08:07:13.954+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payment eb832231-8a00-4836-b6ad-85581f7f4fc5 completed via Epoint: transaction=tw000123, rrn=rrn-1
+2026-06-13T08:07:13.961+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint callback for unknown payment be8f07d1-4d93-4454-b1ba-779aba9e23f5 ignored
+2026-06-13T08:07:13.966+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payout card af914c3b-cbe0-4324-a4a2-bfb649cc437f activated for user fa395c6d-368d-478c-9aab-348150561d06
+2026-06-13T08:07:13.977+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payment 8dbc530f-9319-472f-bce1-ef6b66056c06 failed via Epoint: code=116, message=Declined, insufficient funds
+2026-06-13T08:07:13.983+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint card registration failed for card c0c07ae1-bce5-4210-910f-8083fddfa571: Rejected
+2026-06-13T08:07:13.988+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payment 0f73c955-c940-4261-a983-be3381be359a completed via Epoint: transaction=tw000123, rrn=rrn-1
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

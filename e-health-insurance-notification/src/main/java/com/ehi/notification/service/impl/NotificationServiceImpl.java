@@ -5,6 +5,7 @@ import com.ehi.notification.entity.Notification;
 import com.ehi.notification.enums.NotificationStatus;
 import com.ehi.notification.mapper.NotificationMapper;
 import com.ehi.notification.repository.NotificationRepository;
+import com.ehi.notification.service.NotificationSender;
 import com.ehi.notification.service.NotificationService;
 import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.NotificationChannel;
@@ -28,8 +29,15 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationSender notificationSender;
 
     @Override
-    public NotificationDto send(UUID userId, NotificationType type, NotificationChannel channel, String recipient, String subject, String body) {
+    public NotificationDto send(UUID correlationId, UUID userId, NotificationType type, NotificationChannel channel, String recipient, String subject, String body) {
+        if (notificationRepository.existsByCorrelationIdAndType(correlationId, type)) {
+            log.warn("Duplicate notification skipped: correlationId={}, type={}", correlationId, type);
+            return notificationMapper.toDto(
+                    notificationRepository.findByCorrelationIdAndType(correlationId, type));
+        }
+
         Notification notification = Notification.builder()
+                .correlationId(correlationId)
                 .userId(userId)
                 .type(type)
                 .channel(channel)

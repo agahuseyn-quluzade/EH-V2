@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>Arxitektura</title>
+</head>
+<body>
+
+<section class="cover">
+  <div class="badge">E-Health Insurance · Sənəd 5 / 5</div>
+  <div class="kicker">Sistem Memarlığı</div>
+  <h1>Arxitekturanın<br>İzahı</h1>
+  <div class="subtitle">Memarlıq prinsipləri, texnologiya yığını, əlaqə nümunələri, təhlükəsizlik və texniki borc</div>
+  <div class="meta">E-Sağlamlıq Sığortası — Event-Driven Mikroservis Memarlığı<br>2026</div>
+</section>
+
+<h2>Memarlıq üslubu</h2>
+<p>Sistem <strong>event-driven mikroservis</strong> memarlığıdır. Əsas xüsusiyyətlər:</p>
+<ul>
+  <li><strong>Multi-repo:</strong> hər servis öz git repozitoriyasıdır — monorepo və ya Gradle <code>include()</code> yoxdur. Hər biri öz <code>settings.gradle</code>, <code>build.gradle</code> və wrapper-i ilə müstəqildir.</li>
+  <li><strong>Database-per-service:</strong> hər servisin öz PostgreSQL bazası var. Servislər bir-birinin bazasına birbaşa müraciət etmir.</li>
+  <li><strong>İki əlaqə kanalı:</strong> sinxron (Gateway üzərindən REST) komandalar üçün, asinxron (Kafka) hadisələrin yayılması üçün.</li>
+  <li><strong>Paylaşılan kontrakt kitabxanası:</strong> <code>infra</code> jar bütün enum, event və exception tiplərini mərkəzləşdirir.</li>
+</ul>
+
+<div class="diagram">
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <defs><marker id="ar" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker></defs>
+  <!-- layers -->
+  <rect x="40" y="20" width="640" height="50" rx="8" fill="#0c4a6e"/><text x="360" y="50" fill="#fff" text-anchor="middle" font-weight="600">Təqdimat Qatı — React SPA (brauzer)</text>
+  <rect x="40" y="90" width="640" height="50" rx="8" fill="#0f766e"/><text x="360" y="120" fill="#fff" text-anchor="middle" font-weight="600">Giriş Qatı — API Gateway (marşrut + JWT)</text>
+  <rect x="40" y="160" width="640" height="60" rx="8" fill="#0891b2"/><text x="360" y="186" fill="#fff" text-anchor="middle" font-weight="600">Biznes Qatı — 6 Mikroservis</text><text x="360" y="204" fill="#e0f7fa" text-anchor="middle" font-size="9">iam · policy · claim · payment · ai · notification</text>
+  <rect x="40" y="240" width="300" height="48" rx="8" fill="#475569"/><text x="190" y="269" fill="#fff" text-anchor="middle" font-weight="600">Data Qatı — PostgreSQL (6 baza)</text>
+  <rect x="380" y="240" width="300" height="48" rx="8" fill="#ea580c"/><text x="530" y="269" fill="#fff" text-anchor="middle" font-weight="600">Mesajlaşma — Apache Kafka</text>
+  <line x1="360" y1="70" x2="360" y2="88" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="360" y1="140" x2="360" y2="158" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="190" y1="220" x2="190" y2="238" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+  <line x1="530" y1="220" x2="530" y2="238" stroke="#64748b" stroke-width="1.5" marker-end="url(#ar)"/>
+</svg>
+<div class="caption">Şəkil — Qatlı baxış: təqdimat → giriş → biznes → data/mesajlaşma.</div>
+</div>
+
+<h2>Texnologiya yığını</h2>
+<table>
+  <tr><th>Sahə</th><th>Texnologiya</th></tr>
+  <tr><td>Dil / Runtime</td><td>Java 17</td></tr>
+  <tr><td>Framework</td><td>Spring Boot 3.2.5</td></tr>
+  <tr><td>Build</td><td>Gradle (Groovy DSL + Version Catalog), per-repo</td></tr>
+  <tr><td>Baza</td><td>PostgreSQL 16 (database-per-service)</td></tr>
+  <tr><td>Mesajlaşma</td><td>Apache Kafka (Confluent 7.5.0)</td></tr>
+  <tr><td>Autentifikasiya</td><td>JWT (jjwt 0.12.5)</td></tr>
+  <tr><td>Mapping</td><td>MapStruct 1.5.5</td></tr>
+  <tr><td>Gateway</td><td>Spring Cloud Gateway (WebFlux)</td></tr>
+  <tr><td>Konteyner</td><td>Docker Compose</td></tr>
+  <tr><td>AI</td><td>OpenRouter (OpenAI-uyğun API), google/gemini-2.5-flash, WebClient</td></tr>
+  <tr><td>Frontend</td><td>React + Vite + React Router (+ Vitest/MSW test)</td></tr>
+</table>
+
+<!-- COMMUNICATION -->
+<h2 class="pagebreak">Əlaqə nümunələri</h2>
+<h3>Sinxron — REST (komandalar/sorğular)</h3>
+<p>İstifadəçi əməlləri (login, plan al, iddia göndər) Gateway üzərindən HTTP ilə gəlir. Gateway JWT-ni doğrulayır, sorğunu uyğun servisə marşrutlayır. Hər servis ayrıca yenidən JWT doğrulaması da edir (per-service validation).</p>
+<h3>Asinxron — Kafka (hadisələr)</h3>
+<p>Bir servisdə baş verən vacib hadisə (police yarandı, ödəniş tamamlandı) Kafka topic-inə yayımlanır. Maraqlanan servislər abunədir və müstəqil reaksiya verir. Bu, servisləri <strong>boş-bağlı (loosely coupled)</strong> saxlayır.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 720 360" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="10">
+  <defs><marker id="t" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L5,3 L0,6 Z" fill="#ea580c"/></marker></defs>
+  <text x="360" y="22" text-anchor="middle" font-weight="700" fill="#334155" font-size="12">8 Kafka Topic və Producer/Consumer əlaqələri</text>
+  <!-- producers left, topics middle, consumers right -->
+  <g text-anchor="middle" font-size="9.5">
+    <!-- topics -->
+    <rect x="290" y="50"  width="160" height="26" rx="5" fill="#ea580c"/><text x="370" y="68" fill="#fff">user.registered</text>
+    <rect x="290" y="86"  width="160" height="26" rx="5" fill="#ea580c"/><text x="370" y="104" fill="#fff">policy.created</text>
+    <rect x="290" y="122" width="160" height="26" rx="5" fill="#ea580c"/><text x="370" y="140" fill="#fff">payment.completed</text>
+    <rect x="290" y="158" width="160" height="26" rx="5" fill="#ea580c"/><text x="370" y="176" fill="#fff">payment.failed</text>
+    <rect x="290" y="194" width="160" height="26" rx="5" fill="#ea580c"/><text x="370" y="212" fill="#fff">claim.submitted</text>
+    <rect x="290" y="230" width="160" height="26" rx="5" fill="#ea580c"/><text x="370" y="248" fill="#fff">claim.decision</text>
+    <rect x="290" y="266" width="160" height="26" rx="5" fill="#ea580c"/><text x="370" y="284" fill="#fff">fraud.detected</text>
+  </g>
+  <!-- producers -->
+  <g text-anchor="middle" font-size="9" fill="#075985">
+    <rect x="40" y="50" width="90" height="22" rx="4" fill="#e0f7fa" stroke="#0891b2"/><text x="85" y="65">iam</text>
+    <rect x="40" y="86" width="90" height="22" rx="4" fill="#e0f7fa" stroke="#0891b2"/><text x="85" y="101">policy</text>
+    <rect x="40" y="140" width="90" height="22" rx="4" fill="#e0f7fa" stroke="#0891b2"/><text x="85" y="155">payment</text>
+    <rect x="40" y="212" width="90" height="22" rx="4" fill="#e0f7fa" stroke="#0891b2"/><text x="85" y="227">claim</text>
+    <rect x="40" y="266" width="90" height="22" rx="4" fill="#e0f7fa" stroke="#0891b2"/><text x="85" y="281">ai</text>
+  </g>
+  <g stroke="#0891b2" stroke-width="1.1">
+    <line x1="130" y1="61" x2="288" y2="63" marker-end="url(#t)"/>
+    <line x1="130" y1="97" x2="288" y2="99" marker-end="url(#t)"/>
+    <line x1="130" y1="151" x2="288" y2="135" marker-end="url(#t)"/>
+    <line x1="130" y1="151" x2="288" y2="171" marker-end="url(#t)"/>
+    <line x1="130" y1="220" x2="288" y2="207" marker-end="url(#t)"/>
+    <line x1="130" y1="223" x2="288" y2="243" marker-end="url(#t)"/>
+    <line x1="130" y1="277" x2="288" y2="279" marker-end="url(#t)"/>
+  </g>
+  <!-- consumers -->
+  <g text-anchor="middle" font-size="9" fill="#166534">
+    <rect x="590" y="50"  width="100" height="22" rx="4" fill="#dcfce7" stroke="#16a34a"/><text x="640" y="65">notification</text>
+    <rect x="590" y="122" width="100" height="22" rx="4" fill="#dcfce7" stroke="#16a34a"/><text x="640" y="137">policy</text>
+    <rect x="590" y="194" width="100" height="22" rx="4" fill="#dcfce7" stroke="#16a34a"/><text x="640" y="209">payment</text>
+    <rect x="590" y="230" width="100" height="22" rx="4" fill="#dcfce7" stroke="#16a34a"/><text x="640" y="245">claim</text>
+    <rect x="590" y="266" width="100" height="22" rx="4" fill="#dcfce7" stroke="#16a34a"/><text x="640" y="281">ai</text>
+  </g>
+  <g stroke="#16a34a" stroke-width="1.1">
+    <line x1="450" y1="63" x2="588" y2="61" marker-end="url(#t)"/>
+    <line x1="450" y1="99" x2="588" y2="61" marker-end="url(#t)"/>
+    <line x1="450" y1="99" x2="588" y2="133" marker-end="url(#t)"/>
+    <line x1="450" y1="135" x2="588" y2="61" marker-end="url(#t)"/>
+    <line x1="450" y1="135" x2="588" y2="133" marker-end="url(#t)"/>
+    <line x1="450" y1="171" x2="588" y2="61" marker-end="url(#t)"/>
+    <line x1="450" y1="207" x2="588" y2="277" marker-end="url(#t)"/>
+    <line x1="450" y1="207" x2="588" y2="61" marker-end="url(#t)"/>
+    <line x1="450" y1="243" x2="588" y2="205" marker-end="url(#t)"/>
+    <line x1="450" y1="243" x2="588" y2="61" marker-end="url(#t)"/>
+    <line x1="450" y1="279" x2="588" y2="241" marker-end="url(#t)"/>
+    <line x1="450" y1="279" x2="588" y2="61" marker-end="url(#t)"/>
+  </g>
+  <text x="85" y="320" text-anchor="middle" font-size="9" fill="#0891b2" font-weight="600">PRODUCER</text>
+  <text x="370" y="320" text-anchor="middle" font-size="9" fill="#ea580c" font-weight="600">TOPIC</text>
+  <text x="640" y="320" text-anchor="middle" font-size="9" fill="#16a34a" font-weight="600">CONSUMER</text>
+</svg>
+<div class="caption">Şəkil — Hadisə şini: notification demək olar bütün topic-lərə abunədir; AI claim.submitted-i dinləyir, claim isə fraud.detected-i.</div>
+</div>
+
+<!-- LAYERED STRUCTURE -->
+<h2 class="pagebreak">Servis daxili struktur (təkrarlanan şablon)</h2>
+<p>Hər biznes servisi eyni paket konvensiyasını izləyir. Bu ardıcıllıq komandanın hər servisdə eyni yeri tapmasını asanlaşdırır:</p>
+<table>
+  <tr><th>Paket</th><th>Məsuliyyət</th></tr>
+  <tr><td>controller/</td><td>REST endpoint-lər, <code>@PreAuthorize</code> rol yoxlaması</td></tr>
+  <tr><td>service/ + service/impl/</td><td>Biznes məntiqi — interfeys + implementasiya</td></tr>
+  <tr><td>repository/</td><td>Spring Data JPA interfeysləri</td></tr>
+  <tr><td>entity/</td><td>JPA entity-ləri (UUID PK, Instant vaxt)</td></tr>
+  <tr><td>dto/request + dto/response/</td><td>Record DTO-lar (giriş/çıxış)</td></tr>
+  <tr><td>kafka/</td><td>XxxEventProducer / XxxEventConsumer</td></tr>
+  <tr><td>mapper/</td><td>MapStruct Entity ↔ DTO çevirmələri</td></tr>
+  <tr><td>config/ · security/</td><td>JWT, SecurityConfig, ConfigurationProperties</td></tr>
+  <tr><td>exception/</td><td>GlobalExceptionHandler + XxxErrorEnum</td></tr>
+</table>
+<div class="note"><strong>Kod prinsipləri:</strong> Lombok hər yerdə · konstruktor injection (heç vaxt <code>@Autowired</code> sahə) · DTO-lar immutable record · bütün cavablar <code>ApiResponse&lt;T&gt;</code> zərfində · endpoint-lər <code>/api/v1/</code> prefiksli.</p></div>
+
+<!-- SECURITY -->
+<h2>Təhlükəsizlik memarlığı</h2>
+<ul>
+  <li><strong>JWT axını:</strong> Yalnız IAM token <em>verir</em>; bütün servislər ortaq <code>jwt.secret</code> ilə token-i <em>doğrulayır</em>.</li>
+  <li><strong>Subyekt fərqi:</strong> IAM-da JWT subyekti email-dir; digər servislərdə userId (UUID) — çünki onlar istifadəçini userId ilə tanıyır.</li>
+  <li><strong>Rol modeli:</strong> ADMIN / STAFF / CUSTOMER — metod səviyyəsində <code>@PreAuthorize</code>.</li>
+  <li><strong>İki qatlı doğrulama:</strong> həm gateway, həm də hər servis JWT-ni yoxlayır (cari model: per-service validation).</li>
+  <li><strong>Sızma qarşısı:</strong> başqasının resursuna müraciət 403 yox, 404 qaytarır.</li>
+</ul>
+
+<!-- TECH DEBT -->
+<h2 class="pagebreak">Məlum problemlər və texniki borc</h2>
+<p>Memarlıq MVP üçün sağlamdır, lakin prod-a keçməzdən əvvəl həll olunmalı bəzi məsələlər var (tam siyahı <code>check.md</code>-də). Önəm: 🔴 kritik · 🟠 yüksək · 🟡 orta · 🟢 aşağı.</p>
+<table>
+  <tr><th>Önəm</th><th>Problem</th><th>Təsir / Həll</th></tr>
+  <tr><td>🔴</td><td>JWT secret və DB kreditləri commit-də</td><td>Prod-da real secret-ləri env/secret manager ilə inject et</td></tr>
+  <tr><td>🟠</td><td>Kafka xəta idarəsi / DLT yoxdur</td><td>Zədəli payload partition-u kilidləyə bilər; ErrorHandlingDeserializer + DLT əlavə et</td></tr>
+  <tr><td>🟠</td><td>İkiqat JWT doğrulama; gateway X-User-* başlıqları ölü kod</td><td>Bir model seç: gateway-authoritative və ya per-service</td></tr>
+  <tr><td>🟠</td><td>Bütün servis portları host-a açıq</td><td>Prod-da yalnız 8080 + frontend açıq qalsın</td></tr>
+  <tr><td>🟡</td><td>Yaz+yayımla tranzaksiyalı deyil (outbox yox)</td><td><code>@Transactional</code> (ucuz) və ya transactional outbox (düzgün)</td></tr>
+  <tr><td>🟡</td><td>notification hələ <code>ddl-auto: update</code></td><td>Flyway/Liquibase migrasiyalarına keç</td></tr>
+  <tr><td>🟢</td><td>Səhifələmə həddi yoxdur (<code>?size=100000</code>)</td><td><code>@PageableDefault</code> + maksimum həd</td></tr>
+  <tr><td>🟢</td><td>Police EXPIRED heç vaxt təyin olunmur</td><td>Planlaşdırılmış "endDate keçdi" işi əlavə et</td></tr>
+</table>
+
+<h2>Testləşmə memarlığı</h2>
+<p>Hər servis testlə təchiz olunub (cəmi ~190+ test, hamısı yaşıl). Yığın:</p>
+<ul>
+  <li><strong>Unit:</strong> JUnit 5 + Mockito + AssertJ — service qatı (qərar həddləri, sahiblik/404 məntiqi).</li>
+  <li><strong>İnteqrasiya:</strong> <code>@SpringBootTest</code> + <code>@EmbeddedKafka</code> + Compose PostgreSQL — hadisə zəncirləri (giriş hadisəsi yayımla, həm DB vəziyyətini, həm çıxış hadisəsini yoxla).</li>
+  <li><strong>Web qatı:</strong> <code>@WebMvcTest</code> — rol əsaslı icazələr.</li>
+  <li><strong>AI:</strong> MockWebServer ilə OpenRouter çağırışları.</li>
+  <li><strong>Frontend:</strong> Vitest + React Testing Library + MSW.</li>
+</ul>
+<div class="note"><strong>Niyə inteqrasiya testləri vacibdir:</strong> Məhz onlar ödəniş ikiqat-ödəniş və police aktivləşmə (LazyInitialization) kimi reqressiyaları tutdu.</div>
+
+</body>
+</html>

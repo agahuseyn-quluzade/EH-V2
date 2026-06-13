@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2026-06-12T14:21:50+0400",
-    comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.2.jar, environment: Java 17.0.19 (Homebrew)"
+    date = "2026-06-13T06:36:21+0400",
+    comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.2.jar, environment: Java 17.0.19 (Eclipse Adoptium)"
 )
 @Component
 public class PaymentMapperImpl implements PaymentMapper {
@@ -29,6 +29,9 @@ public class PaymentMapperImpl implements PaymentMapper {
         paymentDto.status( payment.getStatus() );
         paymentDto.transactionId( payment.getTransactionId() );
         paymentDto.failureReason( payment.getFailureReason() );
+        paymentDto.checkoutUrl( payment.getCheckoutUrl() );
+        paymentDto.epointTransaction( payment.getEpointTransaction() );
+        paymentDto.cardMask( payment.getCardMask() );
         paymentDto.createdAt( payment.getCreatedAt() );
 
         return paymentDto.build();

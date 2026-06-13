@@ -54,6 +54,17 @@ public class Payment {
 
     private String failureReason;
 
+    private String epointTransaction;
+
+    @Column(length = 1024)
+    private String checkoutUrl;
+
+    private String bankTransaction;
+
+    private String rrn;
+
+    private String cardMask;
+
     @Column(nullable = false)
     private Instant createdAt;
 

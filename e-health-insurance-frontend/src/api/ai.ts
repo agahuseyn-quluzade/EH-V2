@@ -14,17 +14,17 @@ export const aiApi = {
       .get<ChatMessageDto[]>(`${ROOT}/chatbot/history?sessionId=${sessionId}`)
       .then((r) => r.data),
 
-  // GET /api/v1/ai/fraud-checks/{claimId} — fraud check result (AGENT, ADMIN)
+  // GET /api/v1/ai/fraud-checks/{claimId} — fraud check result (STAFF, ADMIN)
   getFraudCheck: (claimId: string) =>
     api.get<FraudAiResponse>(`${ROOT}/fraud-checks/${claimId}`).then((r) => r.data),
 
-  // POST /api/v1/ai/claims/{claimId}/analyze — manual re-analysis (AGENT, ADMIN)
+  // POST /api/v1/ai/claims/{claimId}/analyze — manual re-analysis (STAFF, ADMIN)
   analyzeClaim: (claimId: string) =>
     api
       .post<FraudAiResponse>(`${ROOT}/claims/${claimId}/analyze`)
       .then((r) => r.data),
 
-  // GET /api/v1/ai/risk-profile/{userId} — user risk profile (AGENT, ADMIN)
+  // GET /api/v1/ai/risk-profile/{userId} — user risk profile (STAFF, ADMIN)
   getRiskProfile: (userId: string) =>
     api.get<RiskAiResponse>(`${ROOT}/risk-profile/${userId}`).then((r) => r.data),
 };

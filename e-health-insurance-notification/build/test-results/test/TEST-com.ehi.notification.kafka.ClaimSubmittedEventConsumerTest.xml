@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.001">
+<testsuite name="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-13T04:04:07" hostname="AGA" time="0.02">
   <properties/>
-  <testcase name="consume_sendsClaimSubmittedNotification()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-12T22:56:30.805+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=fceff316-f292-4ebb-8d9a-a12afb095ed0, userId=c25d0f2c-7f0f-4a83-bbc7-f05789e5d769
+  <testcase name="consume_sendsClaimSubmittedNotification_viaEmail()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.011"/>
+  <testcase name="consume_sendsNothing_whenContactNotFound()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.007"/>
+  <system-out><![CDATA[2026-06-13T08:04:07.513+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=ef041822-c254-42cb-b06c-0f2402f8f45c, userId=bc36fc57-8e8e-4fa6-af1c-e3e75afcd2c1
+2026-06-13T08:04:07.523+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=11f42cf8-edb7-4332-9a11-43b6b934d547, userId=ed94947a-aad0-4e35-80ca-dd9883d3ffe3
+2026-06-13T08:04:07.524+04:00  WARN 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : No contact for userId=ed94947a-aad0-4e35-80ca-dd9883d3ffe3, skipping CLAIM_SUBMITTED notification
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

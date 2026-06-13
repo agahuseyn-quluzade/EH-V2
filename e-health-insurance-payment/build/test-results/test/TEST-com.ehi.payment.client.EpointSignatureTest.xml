@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.payment.client.EpointSignatureTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T04:07:06" hostname="AGA" time="0.021">
+  <properties/>
+  <testcase name="verify_rejectsTamperedData()" classname="com.ehi.payment.client.EpointSignatureTest" time="0.006"/>
+  <testcase name="sign_matchesEpointDocExample()" classname="com.ehi.payment.client.EpointSignatureTest" time="0.01"/>
+  <testcase name="verify_rejectsWrongKey()" classname="com.ehi.payment.client.EpointSignatureTest" time="0.001"/>
+  <testcase name="verify_acceptsValidSignature()" classname="com.ehi.payment.client.EpointSignatureTest" time="0.001"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

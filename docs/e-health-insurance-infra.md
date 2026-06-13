@@ -40,7 +40,7 @@
 ## Event DTOs
 | Class | Key Fields | Used By Topic |
 |---|---|---|
-| UserRegisteredEvent | userId, email, firstName, lastName | user.registered |
+| UserRegisteredEvent | userId, email, firstName, lastName, phone | user.registered |
 | PolicyCreatedEvent | policyId, userId, planId, policyNumber, premiumAmount | policy.created |
 | PaymentCompletedEvent | paymentId, userId, referenceId, referenceType, amount, transactionId | payment.completed |
 | PaymentFailedEvent | paymentId, userId, referenceId, referenceType, amount, reason | payment.failed |
@@ -90,7 +90,7 @@ Services import `BaseErrorEnum`/`BaseException`/`BaseErrorService`/`BadRequestEx
 - `java-library` + `maven-publish` plugins. Coordinates: `com.ehi:e-health-insurance-infra:0.0.1-SNAPSHOT`.
 - Published via `./gradlew publishToMavenLocal`; consumed by services from `mavenLocal()`.
 - Event DTOs and response DTOs are Java records (immutable) — Jackson 2.15.4 supports records natively.
-- Records with 5+ fields (or several same-typed fields, e.g. multiple UUIDs) get Lombok `@Builder`: PolicyCreatedEvent, PaymentCompletedEvent, PaymentFailedEvent, ClaimSubmittedEvent, ClaimDecisionEvent, FraudDetectedEvent, NotificationEvent. UserRegisteredEvent (4 fields) has none.
+- Records with 5+ fields (or several same-typed fields, e.g. multiple UUIDs) get Lombok `@Builder`: PolicyCreatedEvent, PaymentCompletedEvent, PaymentFailedEvent, ClaimSubmittedEvent, ClaimDecisionEvent, FraudDetectedEvent, NotificationEvent, UserRegisteredEvent (5 fields after adding `phone`).
 - Error-code-driven exception model (adapted from teacher-provided example): `BaseErrorService` interface + `BaseErrorEnum` (generic codes) replace the old `(message, statusCode)` constructor on `BaseException`. Per-service errors implement `BaseErrorEnum`'s sibling interface as `XxxErrorEnum implements BaseErrorService` in the service's own `exception` package and are thrown via `ServiceException` — no per-domain exception subclasses, no `ProblemDetail`. `ApiResponse`/`ErrorResponse`/`PagedResponse` from Step 6 remain the response envelope.
 - Build requires a Java 17 toolchain. On macOS with only a newer JDK installed, install via `brew install openjdk@17` and point Gradle at it with `org.gradle.java.installations.paths=/opt/homebrew/opt/openjdk@17` in `~/.gradle/gradle.properties` (machine-level, not part of any repo).
 - `./gradlew build` and `./gradlew publishToMavenLocal` both verified successful; jar published to `~/.m2/repository/com/ehi/e-health-insurance-infra/0.0.1-SNAPSHOT/`.

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>Axınlar</title>
+</head>
+<body>
+
+<section class="cover">
+  <div class="badge">E-Health Insurance · Sənəd 4 / 5</div>
+  <div class="kicker">Ssenarilər və Hadisə Zəncirləri</div>
+  <h1>Proyektdəki<br>Axınlar (Flows)</h1>
+  <div class="subtitle">Əsas biznes ssenarilərinin addım-addım, servislərarası və Kafka hadisələri üzərindən izahı</div>
+  <div class="meta">E-Sağlamlıq Sığortası — Event-Driven İş Axınları<br>2026</div>
+</section>
+
+<h2>Axınları oxumaq</h2>
+<p>Sistem <strong>hadisə-yönümlüdür (event-driven)</strong>. Bir HTTP sorğusu çox vaxt sadəcə zənciri başladır; qalan addımlar Kafka hadisələri ilə asinxron baş verir. Aşağıdakı diaqramlarda:</p>
+<div class="legend">
+  <span><span class="swatch" style="background:#0c4a6e"></span> İstifadəçi / aktor</span>
+  <span><span class="swatch" style="background:#0891b2"></span> Servis</span>
+  <span><span class="swatch" style="background:#ea580c"></span> Kafka hadisəsi</span>
+</div>
+<div class="note"><strong>Vacib:</strong> Alış HTTP cavabı dərhal <code>PENDING</code> qaytarır. Police-nin aktivləşməsi və ödəniş bir neçə saniyə sonra fonda tamamlanır — interfeys yenidən sorğu etməlidir.</div>
+
+<!-- FLOW 1 -->
+<h2 class="pagebreak">Axın 1 — Qeydiyyat</h2>
+<p>Ən sadə axın. Bir HTTP sorğusu, bir hadisə, bir bildiriş.</p>
+<div class="diagram">
+<svg viewBox="0 0 700 230" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <defs><marker id="f1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#475569"/></marker></defs>
+  <!-- lifelines -->
+  <g font-weight="600" font-size="11" text-anchor="middle">
+    <rect x="20" y="15" width="120" height="34" rx="6" fill="#0c4a6e"/><text x="80" y="37" fill="#fff">Müştəri</text>
+    <rect x="190" y="15" width="120" height="34" rx="6" fill="#0f766e"/><text x="250" y="37" fill="#fff">Gateway</text>
+    <rect x="360" y="15" width="120" height="34" rx="6" fill="#0891b2"/><text x="420" y="37" fill="#fff">IAM</text>
+    <rect x="540" y="15" width="140" height="34" rx="6" fill="#0891b2"/><text x="610" y="37" fill="#fff">Notification</text>
+  </g>
+  <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="80" y1="49" x2="80" y2="220"/><line x1="250" y1="49" x2="250" y2="220"/><line x1="420" y1="49" x2="420" y2="220"/><line x1="610" y1="49" x2="610" y2="220"/>
+  </g>
+  <!-- messages -->
+  <line x1="80" y1="75" x2="248" y2="75" stroke="#475569" stroke-width="1.5" marker-end="url(#f1)"/><text x="90" y="68" fill="#334155" font-size="10">POST /auth/register</text>
+  <line x1="250" y1="100" x2="418" y2="100" stroke="#475569" stroke-width="1.5" marker-end="url(#f1)"/><text x="258" y="93" fill="#334155" font-size="10">marşrutla (public)</text>
+  <line x1="420" y1="135" x2="608" y2="135" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f1)"/><text x="430" y="128" fill="#ea580c" font-size="10">user.registered</text>
+  <line x1="608" y1="160" x2="612" y2="160" stroke="#475569"/><rect x="555" y="150" width="120" height="22" rx="4" fill="#ecfdf5" stroke="#0f766e"/><text x="615" y="165" fill="#0f766e" font-size="9" text-anchor="middle">WELCOME bildirişi</text>
+  <line x1="418" y1="195" x2="82" y2="195" stroke="#475569" stroke-width="1.5" marker-end="url(#f1)"/><text x="180" y="188" fill="#16a34a" font-size="10">201 + JWT token-lər</text>
+</svg>
+</div>
+
+<!-- FLOW 2 -->
+<h2 class="pagebreak">Axın 2 — Plan alışı və avtomatik aktivləşmə</h2>
+<p>Burada güc asinxronluqdadır. Müştəri "al" düyməsini basır, dərhal PENDING cavab alır; police arxa planda 2 saniyəyə aktivləşir.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 340" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <defs><marker id="f2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#475569"/></marker></defs>
+  <g font-weight="600" font-size="10.5" text-anchor="middle">
+    <rect x="15" y="12" width="110" height="32" rx="6" fill="#0c4a6e"/><text x="70" y="33" fill="#fff">Müştəri</text>
+    <rect x="170" y="12" width="110" height="32" rx="6" fill="#0891b2"/><text x="225" y="33" fill="#fff">Policy</text>
+    <rect x="330" y="12" width="60" height="32" rx="6" fill="#ea580c"/><text x="360" y="33" fill="#fff">Kafka</text>
+    <rect x="440" y="12" width="110" height="32" rx="6" fill="#0891b2"/><text x="495" y="33" fill="#fff">Payment</text>
+    <rect x="600" y="12" width="110" height="32" rx="6" fill="#0891b2"/><text x="655" y="33" fill="#fff">Notification</text>
+  </g>
+  <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="70" y1="44" x2="70" y2="330"/><line x1="225" y1="44" x2="225" y2="330"/><line x1="360" y1="44" x2="360" y2="330"/><line x1="495" y1="44" x2="495" y2="330"/><line x1="655" y1="44" x2="655" y2="330"/>
+  </g>
+  <line x1="70" y1="68" x2="223" y2="68" stroke="#475569" stroke-width="1.5" marker-end="url(#f2)"/><text x="78" y="61" font-size="9.5" fill="#334155">POST /policies (planId)</text>
+  <rect x="160" y="80" width="130" height="20" rx="4" fill="#fef3c7" stroke="#f59e0b"/><text x="225" y="94" font-size="8.5" text-anchor="middle" fill="#92400e">PENDING police yarat</text>
+  <line x1="225" y1="114" x2="358" y2="114" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f2)"/><text x="232" y="108" font-size="9.5" fill="#ea580c">policy.created</text>
+  <line x1="223" y1="138" x2="72" y2="138" stroke="#475569" stroke-width="1.5" marker-end="url(#f2)"/><text x="95" y="132" font-size="9.5" fill="#f59e0b">200 PENDING (dərhal)</text>
+  <line x1="360" y1="162" x2="493" y2="162" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f2)"/><text x="368" y="156" font-size="9.5" fill="#ea580c">consume → ödəniş</text>
+  <rect x="430" y="174" width="130" height="20" rx="4" fill="#e0f2fe" stroke="#0891b2"/><text x="495" y="188" font-size="8.5" text-anchor="middle" fill="#075985">mock 2s → COMPLETED</text>
+  <line x1="495" y1="210" x2="362" y2="210" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f2)"/><text x="372" y="204" font-size="9.5" fill="#ea580c">payment.completed</text>
+  <line x1="360" y1="234" x2="227" y2="234" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f2)"/><text x="235" y="228" font-size="9.5" fill="#ea580c">consume</text>
+  <rect x="160" y="246" width="135" height="20" rx="4" fill="#dcfce7" stroke="#16a34a"/><text x="227" y="260" font-size="8.5" text-anchor="middle" fill="#166534">ACTIVE + start/end tarix</text>
+  <line x1="495" y1="288" x2="653" y2="288" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f2)"/><text x="503" y="282" font-size="9.5" fill="#ea580c">payment.completed</text>
+  <rect x="585" y="300" width="130" height="20" rx="4" fill="#ecfdf5" stroke="#0f766e"/><text x="650" y="314" font-size="8.5" text-anchor="middle" fill="#0f766e">POLICY_ACTIVATED bildirişi</text>
+</svg>
+<div class="caption">Diqqət: müştəri 200 PENDING aldıqdan SONRA police aktivləşir. Frontend bir neçə saniyə sonra yenidən soruşmalıdır.</div>
+</div>
+
+<!-- FLOW 3 -->
+<h2 class="pagebreak">Axın 3 — İddia göndərmə və AI avtomatik qərarı</h2>
+<p>Sistemin ürəyi. İddia göndərilir, AI hibrid qiymətləndirmə aparır, bal üç yoldan birini seçir.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <defs><marker id="f3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#475569"/></marker></defs>
+  <g font-weight="600" font-size="10.5" text-anchor="middle">
+    <rect x="15" y="12" width="100" height="32" rx="6" fill="#0c4a6e"/><text x="65" y="33" fill="#fff">Müştəri</text>
+    <rect x="160" y="12" width="100" height="32" rx="6" fill="#0891b2"/><text x="210" y="33" fill="#fff">Claim</text>
+    <rect x="300" y="12" width="55" height="32" rx="6" fill="#ea580c"/><text x="327" y="33" fill="#fff">Kafka</text>
+    <rect x="400" y="12" width="100" height="32" rx="6" fill="#0891b2"/><text x="450" y="33" fill="#fff">AI</text>
+    <rect x="540" y="12" width="100" height="32" rx="6" fill="#78716c"/><text x="590" y="33" fill="#fff">OpenRouter</text>
+  </g>
+  <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="65" y1="44" x2="65" y2="370"/><line x1="210" y1="44" x2="210" y2="370"/><line x1="327" y1="44" x2="327" y2="370"/><line x1="450" y1="44" x2="450" y2="370"/><line x1="590" y1="44" x2="590" y2="370"/>
+  </g>
+  <line x1="65" y1="66" x2="208" y2="66" stroke="#475569" stroke-width="1.5" marker-end="url(#f3)"/><text x="72" y="60" font-size="9" fill="#334155">POST /claims</text>
+  <rect x="150" y="76" width="120" height="18" rx="4" fill="#e0f2fe" stroke="#0891b2"/><text x="210" y="89" font-size="8" text-anchor="middle" fill="#075985">SUBMITTED yarat</text>
+  <line x1="210" y1="108" x2="325" y2="108" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#f3)"/><text x="216" y="102" font-size="9" fill="#ea580c">claim.submitted</text>
+  <line x1="208" y1="128" x2="67" y2="128" stroke="#475569" stroke-width="1.3" marker-end="url(#f3)"/><text x="90" y="122" font-size="9" fill="#0891b2">201 SUBMITTED</text>
+  <line x1="327" y1="150" x2="448" y2="150" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#f3)"/><text x="333" y="144" font-size="9" fill="#ea580c">consume</text>
+  <rect x="395" y="160" width="110" height="18" rx="4" fill="#ede9fe" stroke="#6366f1"/><text x="450" y="173" font-size="8" text-anchor="middle" fill="#4338ca">qayda balı</text>
+  <line x1="450" y1="195" x2="588" y2="195" stroke="#475569" stroke-width="1.4" marker-end="url(#f3)"/><text x="455" y="189" font-size="9" fill="#334155">ruleScore≥40 → AI çağır</text>
+  <line x1="588" y1="218" x2="452" y2="218" stroke="#475569" stroke-width="1.4" marker-end="url(#f3)"/><text x="470" y="212" font-size="9" fill="#16a34a">aiScore + izah</text>
+  <rect x="385" y="228" width="130" height="18" rx="4" fill="#ccfbf1" stroke="#0d9488"/><text x="450" y="241" font-size="8" text-anchor="middle" fill="#0f766e">finalScore hesabla</text>
+  <line x1="450" y1="263" x2="329" y2="263" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#f3)"/><text x="335" y="257" font-size="9" fill="#ea580c">fraud.detected</text>
+  <line x1="327" y1="285" x2="212" y2="285" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#f3)"/><text x="218" y="279" font-size="9" fill="#ea580c">consume → qərar</text>
+  <!-- decision box -->
+  <rect x="120" y="300" width="180" height="62" rx="6" fill="#fff" stroke="#475569"/>
+  <text x="210" y="316" font-size="8.5" text-anchor="middle" fill="#16a34a">&lt;40 → APPROVED (+ payout)</text>
+  <text x="210" y="333" font-size="8.5" text-anchor="middle" fill="#f59e0b">40–69 → UNDER_REVIEW</text>
+  <text x="210" y="350" font-size="8.5" text-anchor="middle" fill="#dc2626">≥70 → REJECTED</text>
+</svg>
+<div class="caption">AI çağırışı yalnız ruleScore ≥ 40 olduqda baş verir. OpenRouter çökərsə, sistem sırf qayda balına düşür.</div>
+</div>
+
+<!-- FLOW 4 -->
+<h2 class="pagebreak">Axın 4 — Əməkdaş baxışı və iddia ödənişi</h2>
+<p>İddia UNDER_REVIEW-dadırsa, əməkdaş qərar verir. Təsdiq → müştəriyə ödəniş zənciri başlayır.</p>
+<div class="diagram">
+<svg viewBox="0 0 720 300" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <defs><marker id="f4" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#475569"/></marker></defs>
+  <g font-weight="600" font-size="10.5" text-anchor="middle">
+    <rect x="15" y="12" width="110" height="32" rx="6" fill="#0c4a6e"/><text x="70" y="33" fill="#fff">Əməkdaş</text>
+    <rect x="175" y="12" width="100" height="32" rx="6" fill="#0891b2"/><text x="225" y="33" fill="#fff">Claim</text>
+    <rect x="330" y="12" width="55" height="32" rx="6" fill="#ea580c"/><text x="357" y="33" fill="#fff">Kafka</text>
+    <rect x="440" y="12" width="110" height="32" rx="6" fill="#0891b2"/><text x="495" y="33" fill="#fff">Payment</text>
+    <rect x="600" y="12" width="110" height="32" rx="6" fill="#0891b2"/><text x="655" y="33" fill="#fff">Notification</text>
+  </g>
+  <g stroke="#cbd5e1" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="70" y1="44" x2="70" y2="290"/><line x1="225" y1="44" x2="225" y2="290"/><line x1="357" y1="44" x2="357" y2="290"/><line x1="495" y1="44" x2="495" y2="290"/><line x1="655" y1="44" x2="655" y2="290"/>
+  </g>
+  <line x1="70" y1="70" x2="223" y2="70" stroke="#475569" stroke-width="1.5" marker-end="url(#f4)"/><text x="76" y="63" font-size="9.5" fill="#334155">PUT /claims/{id}/review (APPROVED)</text>
+  <rect x="160" y="82" width="135" height="20" rx="4" fill="#dcfce7" stroke="#16a34a"/><text x="227" y="96" font-size="8.5" text-anchor="middle" fill="#166534">APPROVED + approvedAmount</text>
+  <line x1="225" y1="120" x2="355" y2="120" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f4)"/><text x="232" y="114" font-size="9.5" fill="#ea580c">claim.decision</text>
+  <line x1="357" y1="150" x2="493" y2="150" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f4)"/><text x="363" y="144" font-size="9.5" fill="#ea580c">consume (yalnız APPROVED)</text>
+  <rect x="430" y="162" width="130" height="20" rx="4" fill="#e0f2fe" stroke="#0891b2"/><text x="495" y="176" font-size="8.5" text-anchor="middle" fill="#075985">CLAIM_PAYOUT (mock 2s)</text>
+  <line x1="495" y1="200" x2="362" y2="200" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f4)"/><text x="370" y="194" font-size="9.5" fill="#ea580c">payment.completed</text>
+  <line x1="495" y1="234" x2="653" y2="234" stroke="#ea580c" stroke-width="1.6" stroke-dasharray="5 3" marker-end="url(#f4)"/><text x="503" y="228" font-size="9.5" fill="#ea580c">payment.completed</text>
+  <rect x="585" y="246" width="130" height="20" rx="4" fill="#ecfdf5" stroke="#0f766e"/><text x="650" y="260" font-size="8.5" text-anchor="middle" fill="#0f766e">PAYMENT_SUCCESS bildirişi</text>
+</svg>
+<div class="caption">REJECTED qərarı ödəniş yaratmır — Payment yalnız APPROVED claim.decision-ə reaksiya verir.</div>
+</div>
+
+<h2 class="pagebreak">Bütün hadisə zəncirlərinin xülasəsi</h2>
+<table>
+  <tr><th>Tetikləyici</th><th>Hadisə zənciri</th></tr>
+  <tr><td>Qeydiyyat</td><td>user.registered → WELCOME bildirişi</td></tr>
+  <tr><td>Plan alışı</td><td>policy.created → payment(POLICY_PREMIUM) → payment.completed → police ACTIVE + POLICY_ACTIVATED bildirişi</td></tr>
+  <tr><td>İddia göndərmə</td><td>claim.submitted → AI fraud → fraud.detected → avtomatik qərar (+ CLAIM_SUBMITTED bildirişi)</td></tr>
+  <tr><td>İddia təsdiqi</td><td>claim.decision(APPROVED) → payment(CLAIM_PAYOUT) → payment.completed → PAYMENT_SUCCESS bildirişi</td></tr>
+  <tr><td>İddia rəddi</td><td>claim.decision(REJECTED) → CLAIM_REJECTED bildirişi (ödəniş yox)</td></tr>
+  <tr><td>Yüksək risk</td><td>fraud.detected (riskScore ≥ 70) → FRAUD_ALERT bildirişi</td></tr>
+</table>
+
+<div class="warn"><strong>Etibarlılıq qeydi:</strong> Yaz+yayımla əməliyyatları hazırda tranzaksiyalı deyil (outbox yoxdur). Ödəniş idempotentliyi ikiqat ödənişi həll edir, lakin tam həll üçün transactional outbox planlaşdırılıb.</div>
+
+</body>
+</html>

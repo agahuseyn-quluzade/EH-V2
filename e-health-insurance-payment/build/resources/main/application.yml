@@ -10,7 +10,7 @@ spring:
     password: postgres
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     show-sql: false
   kafka:
     bootstrap-servers: localhost:9092
@@ -26,3 +26,16 @@ spring:
 
 jwt:
   secret: ${JWT_SECRET:change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please}
+
+payment:
+  provider: ${PAYMENT_PROVIDER:mock}
+
+epoint:
+  base-url: ${EPOINT_BASE_URL:https://epoint.az/api/1}
+  public-key: ${EPOINT_PUBLIC_KEY:}
+  private-key: ${EPOINT_PRIVATE_KEY:}
+  language: ${EPOINT_LANGUAGE:az}
+  currency: AZN
+  success-redirect-url: ${EPOINT_SUCCESS_REDIRECT_URL:http://localhost:5173/payments/success}
+  error-redirect-url: ${EPOINT_ERROR_REDIRECT_URL:http://localhost:5173/payments/error}
+  timeout-seconds: ${EPOINT_TIMEOUT_SECONDS:15}

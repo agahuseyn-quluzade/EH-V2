@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>Servislərin Detallı İzahı</title>
+</head>
+<body>
+
+<section class="cover">
+  <div class="badge">E-Health Insurance · Sənəd 2 / 5</div>
+  <div class="kicker">Texniki Sənədləşmə</div>
+  <h1>Servislərin<br>Detallı İzahı</h1>
+  <div class="subtitle">8 mikroservisin hər birinin məsuliyyəti, entity-ləri, endpoint-ləri, Kafka inteqrasiyası və daxili qərarları</div>
+  <div class="meta">E-Sağlamlıq Sığortası — Mikroservis Backend Platforması<br>Java 17 · Spring Boot 3.2.5 · Kafka · PostgreSQL · 2026</div>
+</section>
+
+<h2>Ümumi mənzərə</h2>
+<p>Sistem <strong>8 ayrıca repozitoriya</strong>dan ibarətdir: 1 paylaşılan kitabxana (infra), 1 gateway və 6 biznes servisi. Hər servis öz <code>build.gradle</code>, öz bazası və öz Docker konteyneri ilə müstəqildir. Aşağıdakı cədvəl xülasədir; sonrakı bölmələrdə hər biri ayrıca açıqlanır.</p>
+
+<table>
+  <tr><th>Servis</th><th>Port</th><th>Baza</th><th>Əsas məsuliyyət</th></tr>
+  <tr><td>infra</td><td>—</td><td>—</td><td>Paylaşılan enum, event, exception, DTO (jar)</td></tr>
+  <tr><td>gateway</td><td>8080</td><td>—</td><td>Marşrutlama + JWT doğrulama (giriş nöqtəsi)</td></tr>
+  <tr><td>iam</td><td>8081</td><td>ehi_iam</td><td>Qeydiyyat, login, JWT, istifadəçi idarəsi</td></tr>
+  <tr><td>policy</td><td>8082</td><td>ehi_policy</td><td>Planlar və police-lər (sığorta müqavilələri)</td></tr>
+  <tr><td>claim</td><td>8083</td><td>ehi_claim</td><td>İddialar, sübut faylları, baxış</td></tr>
+  <tr><td>payment</td><td>8084</td><td>ehi_payment</td><td>Mock ödəniş (premium + iddia ödənişi)</td></tr>
+  <tr><td>ai</td><td>8085</td><td>ehi_ai</td><td>Fırıldaq qiymətləndirmə, risk profili, chatbot</td></tr>
+  <tr><td>notification</td><td>8086</td><td>ehi_notification</td><td>Bütün hadisələrdən bildiriş yaratmaq</td></tr>
+</table>
+
+<!-- INFRA -->
+<h2 class="pagebreak">1. infra — Paylaşılan Kitabxana</h2>
+<p>Spring Boot deyil, sadə <code>java-library</code> jar-ıdır. Spring asılılığı yoxdur — yüngül qalsın deyə. Bütün servislərin paylaşdığı tipləri saxlayır və <code>./gradlew publishToMavenLocal</code> ilə <code>mavenLocal()</code>-a yerləşdirilir.</p>
+<h4>Tərkibi</h4>
+<ul>
+  <li><strong>8 enum:</strong> UserRole, PolicyStatus, ClaimStatus, ClaimType, PaymentStatus, PaymentReferenceType, NotificationType, NotificationChannel.</li>
+  <li><strong>8 event DTO (record):</strong> UserRegistered, PolicyCreated, PaymentCompleted, PaymentFailed, ClaimSubmitted, ClaimDecision, FraudDetected, Notification.</li>
+  <li><strong>KafkaTopics</strong> sabitləri — topic adları heç vaxt sətir kimi hardcode edilmir.</li>
+  <li><strong>Cavab zərfləri:</strong> <code>ApiResponse&lt;T&gt;</code>, <code>PagedResponse&lt;T&gt;</code>, <code>ErrorResponse</code>.</li>
+  <li><strong>Exception modeli:</strong> <code>BaseErrorService</code> interfeysi + <code>BaseErrorEnum</code> + <code>BaseException</code> və 4 hazır alt-sinif + <code>ServiceException</code>.</li>
+  <li><strong>DateUtil:</strong> bütün vaxtlar <code>Instant</code> ilə işlənir, <code>LocalDateTime</code> yox.</li>
+</ul>
+<div class="note"><strong>Niyə vacibdir:</strong> Bütün servislər eyni event və enum tiplərini import edir — heç bir tip dublikat olunmur. Bir hadisənin formatı dəyişəndə yalnız infra-da dəyişir.</div>
+
+<!-- GATEWAY -->
+<h2>2. gateway — API Gateway</h2>
+<p>Spring Cloud Gateway (reaktiv/WebFlux) üzərində qurulub. Bazası yoxdur — sırf marşrutlama və autentifikasiya çoxluğudur. <code>infra</code>-dan asılı deyil.</p>
+<h4>Necə işləyir</h4>
+<ul>
+  <li><strong>JwtAuthFilter</strong> (<code>order = -1</code>, marşrutlamadan əvvəl): yolu public siyahıya görə yoxlayır.</li>
+  <li><strong>Public yollar:</strong> <code>/api/v1/auth/**</code> (hər metod) və <code>/api/v1/plans/**</code> (yalnız GET).</li>
+  <li>Qalan yollar üçün <code>Authorization: Bearer &lt;token&gt;</code> tələb olunur; yoxdursa/yanlışdırsa → <strong>401</strong>.</li>
+  <li>Doğru token-də sorğuya <code>X-User-Id</code> və <code>X-User-Role</code> başlıqları əlavə olunur.</li>
+</ul>
+<table>
+  <tr><th>Marşrut prefiksi</th><th>Hədəf servis</th><th>Public?</th></tr>
+  <tr><td>/api/v1/auth/**</td><td>iam :8081</td><td>Bəli</td></tr>
+  <tr><td>/api/v1/users/**</td><td>iam :8081</td><td>Xeyr</td></tr>
+  <tr><td>/api/v1/plans/** (GET)</td><td>policy :8082</td><td>Bəli</td></tr>
+  <tr><td>/api/v1/policies/**</td><td>policy :8082</td><td>Xeyr</td></tr>
+  <tr><td>/api/v1/claims/**</td><td>claim :8083</td><td>Xeyr</td></tr>
+  <tr><td>/api/v1/payments/**</td><td>payment :8084</td><td>Xeyr</td></tr>
+  <tr><td>/api/v1/ai/**</td><td>ai :8085</td><td>Xeyr</td></tr>
+  <tr><td>/api/v1/notifications/**</td><td>notification :8086</td><td>Xeyr</td></tr>
+</table>
+
+<!-- IAM -->
+<h2 class="pagebreak">3. iam — Kimlik və Giriş İdarəsi</h2>
+<p>Yeganə servisdir ki, parolları idarə edir və JWT token-ləri <em>verir</em>. Digər servislər token-i yalnız doğrular. IAM-da JWT subyekti <strong>email</strong>-dir (digər servislərdə userId).</p>
+<h4>Entity: User (<code>users</code>)</h4>
+<table>
+  <tr><th>Sahə</th><th>Tip</th><th>Qeyd</th></tr>
+  <tr><td>id</td><td>UUID</td><td>PK</td></tr>
+  <tr><td>email</td><td>String</td><td>unikal</td></tr>
+  <tr><td>password</td><td>String</td><td>BCrypt hash</td></tr>
+  <tr><td>firstName / lastName</td><td>String</td><td>—</td></tr>
+  <tr><td>role</td><td>UserRole</td><td>ADMIN / STAFF / CUSTOMER</td></tr>
+  <tr><td>active</td><td>Boolean</td><td>false = bloklanmış (login qadağan)</td></tr>
+  <tr><td>createdAt / updatedAt</td><td>Instant</td><td>—</td></tr>
+</table>
+<h4>Əsas endpoint-lər</h4>
+<table>
+  <tr><th>Metod</th><th>Yol</th><th>Auth</th></tr>
+  <tr><td>POST</td><td>/api/v1/auth/register</td><td>Public</td></tr>
+  <tr><td>POST</td><td>/api/v1/auth/login</td><td>Public</td></tr>
+  <tr><td>POST</td><td>/api/v1/auth/refresh</td><td>Bearer</td></tr>
+  <tr><td>GET / PUT</td><td>/api/v1/users/me</td><td>Bearer</td></tr>
+  <tr><td>POST</td><td>/api/v1/users/me/password</td><td>Bearer</td></tr>
+  <tr><td>PATCH</td><td>/api/v1/users/{id}/role</td><td>ADMIN</td></tr>
+  <tr><td>PATCH</td><td>/api/v1/users/{id}/status</td><td>ADMIN</td></tr>
+  <tr><td>GET</td><td>/api/v1/users/search?query=</td><td>ADMIN, STAFF</td></tr>
+</table>
+<p><strong>Kafka:</strong> qeydiyyatdan sonra <code>user.registered</code> hadisəsini yayımlayır (consumer yoxdur). Login zamanı <code>active=false</code> olan istifadəçi rədd olunur (<em>Account is suspended</em>).</p>
+
+<!-- POLICY -->
+<h2 class="pagebreak">4. policy — Planlar və Police-lər</h2>
+<p>İki entity: <strong>Plan</strong> (sığorta məhsulu kataloqu) və <strong>Policy</strong> (müştərinin aldığı konkret müqavilə). Plan qiyməti alış anında police-yə kopyalanır ki, sonrakı qiymət dəyişikliyi köhnə police-lərə təsir etməsin.</p>
+<div class="cards">
+  <div class="card"><h4>Plan</h4>name, description, coverageAmount, premiumAmount, durationMonths, active</div>
+  <div class="card"><h4>Policy</h4>policyNumber (POL-xxxx), userId, plan (ManyToOne), status, premiumAmount, startDate, endDate</div>
+</div>
+<h4>Police həyat dövrü</h4>
+<p>Alış → <strong>PENDING</strong> (startDate/endDate boş) → ödəniş tamamlananda → <strong>ACTIVE</strong> (endDate = start + durationMonths). Ləğv yalnız PENDING/ACTIVE-dən mümkündür → CANCELLED.</p>
+<table>
+  <tr><th>Metod</th><th>Yol</th><th>Auth</th></tr>
+  <tr><td>GET</td><td>/api/v1/plans · /plans/{id}</td><td>Public</td></tr>
+  <tr><td>POST</td><td>/api/v1/plans</td><td>ADMIN</td></tr>
+  <tr><td>POST</td><td>/api/v1/policies</td><td>CUSTOMER</td></tr>
+  <tr><td>GET</td><td>/api/v1/policies/me</td><td>CUSTOMER</td></tr>
+  <tr><td>PUT</td><td>/api/v1/policies/{id}/cancel</td><td>CUSTOMER, ADMIN</td></tr>
+</table>
+<p><strong>Kafka:</strong> alışda <code>policy.created</code> yayımlayır; <code>payment.completed</code> (yalnız POLICY_PREMIUM) qəbul edib police-ni aktivləşdirir. Aktivləşdirmə <code>@Transactional</code>-dır (lazy Plan proxy üçün) və idempotentdir.</p>
+
+<!-- CLAIM -->
+<h2 class="pagebreak">5. claim — İddialar</h2>
+<p>Sistemin mərkəzi. Müştəri iddia göndərir, AI avtomatik qiymətləndirir, lazım gələrsə əməkdaş yoxlayır. Sübut faylları (multipart) diskdə saxlanılır.</p>
+<h4>Entity: Claim (<code>claims</code>)</h4>
+<p>claimNumber (CLM-xxxx), userId, policyId, claimType, amount, description, status, approvedAmount, rejectionReason, reviewedBy, <strong>riskScore</strong>, <strong>fraudFlags</strong>, <strong>aiExplanation</strong>. Ayrıca <code>ClaimEvidence</code> (fayl metadatası).</p>
+<h4>AI avtomatik qərar (applyFraudResult)</h4>
+<p><code>fraud.detected</code> qəbul edildikdə risk balına görə avtomatik qərar verilir. Status <code>SUBMITTED</code> deyilsə heç nə edilmir (manual baxış üzərinə yazılmır):</p>
+<table>
+  <tr><th>Risk balı</th><th>Avtomatik qərar</th><th>Nəticə</th></tr>
+  <tr><td>&lt; 40</td><td>APPROVED</td><td>Tam məbləğ təsdiqlənir, claim.decision yayımlanır</td></tr>
+  <tr><td>40–69</td><td>UNDER_REVIEW</td><td>Əməkdaş növbəsinə düşür (event yox)</td></tr>
+  <tr><td>≥ 70</td><td>REJECTED</td><td>Rədd edilir, claim.decision yayımlanır</td></tr>
+</table>
+<p><strong>Manual baxış (reviewClaim):</strong> yalnız STAFF/ADMIN, yalnız SUBMITTED/UNDER_REVIEW statusda. APPROVED üçün <code>0 &lt; approvedAmount ≤ amount</code> tələb olunur.</p>
+<p><strong>Kafka:</strong> göndərişdə <code>claim.submitted</code>; qərarda (manual və ya AI) <code>claim.decision</code>; <code>fraud.detected</code> qəbul edir.</p>
+
+<!-- PAYMENT -->
+<h2 class="pagebreak">6. payment — Ödəniş (Mock)</h2>
+<p>MVP üçün ödəniş <strong>simulyasiyadır</strong>: <code>MockPaymentProcessor</code> 2 saniyə gecikir, sonra avtomatik COMPLETED edir. İki istiqamətdə işləyir — premium ödənişi (police üçün) və iddia ödənişi (müştəriyə).</p>
+<h4>Entity: Payment</h4>
+<p>userId, referenceId (policyId və ya claimId), <strong>referenceType</strong> (POLICY_PREMIUM / CLAIM_PAYOUT), amount, status, transactionId (TXN-xxxx), failureReason.</p>
+<div class="warn"><strong>İdempotentlik (kritik düzəliş):</strong> <code>processPayment</code> əvvəlcə eyni <code>(referenceId, referenceType)</code> üçün FAILED olmayan ödəniş axtarır — varsa, yenisini yaratmadan mövcudu qaytarır. Bu, Kafka təkrar çatdırılması zamanı <em>ikiqat ödənişin</em> qarşısını alır.</p>
+<p><strong>Kafka:</strong> <code>policy.created</code> → POLICY_PREMIUM ödənişi; <code>claim.decision</code> (yalnız APPROVED) → CLAIM_PAYOUT; nəticədə <code>payment.completed</code> və ya <code>payment.failed</code> yayımlanır.</p>
+
+<!-- AI -->
+<h2 class="pagebreak">7. ai — Fırıldaq, Risk və Chatbot</h2>
+<p>Üç vəzifəni daşıyır. <code>claim.submitted</code> qəbul edib hibrid fırıldaq qiymətləndirməsi aparır və <code>fraud.detected</code> yayımlayır.</p>
+<h4>Hibrid fırıldaq aşkarlanması</h4>
+<ul>
+  <li><strong>Qayda mühərriki (rule engine):</strong> claimType üzrə məbləğ hədləri (HOSPITALIZATION 10000, MEDICATION 2000, DENTAL 1500, CONSULTATION 500) + təkrar yüksək-riskli istifadəçi yoxlaması → <code>ruleScore</code>.</li>
+  <li><strong>AI çağırışı:</strong> yalnız <code>ruleScore ≥ 40</code> olduqda OpenRouter/Gemini 2.5 Flash çağırılır. Cavab markdown ``` fence-lərindən təmizlənib JSON kimi parse olunur.</li>
+  <li><strong>Yekun bal:</strong> AI işləyibsə <code>finalScore = ruleScore×0.4 + aiScore×0.6</code>, əks halda yalnız ruleScore.</li>
+  <li><strong>Fallback:</strong> AI xətası/timeout olarsa (default 15s) sırf qaydaya əsaslanan bala düşür — sistem dayanmır.</li>
+</ul>
+<h4>Digər iki vəzifə</h4>
+<ul>
+  <li><strong>RiskProfile:</strong> hər istifadəçi üçün bir sətir — totalClaims, averageRiskScore, highRiskCount. <code>highRiskCount ≥ 2</code> = yüksək riskli.</li>
+  <li><strong>Chatbot:</strong> sessiya tarixçəsi ilə çoxnövbəli söhbət (ChatMessage), sığorta köməkçisi personası.</li>
+</ul>
+<table>
+  <tr><th>Metod</th><th>Yol</th><th>Auth</th></tr>
+  <tr><td>GET</td><td>/api/v1/ai/fraud-checks/{claimId}</td><td>STAFF, ADMIN</td></tr>
+  <tr><td>GET</td><td>/api/v1/ai/risk-profile/{userId}</td><td>STAFF, ADMIN</td></tr>
+  <tr><td>POST</td><td>/api/v1/ai/chatbot</td><td>CUSTOMER</td></tr>
+  <tr><td>POST</td><td>/api/v1/ai/claims/{claimId}/analyze</td><td>STAFF, ADMIN</td></tr>
+</table>
+
+<!-- NOTIFICATION -->
+<h2 class="pagebreak">8. notification — Bildirişlər</h2>
+<p>Tək istiqamətli: <strong>7 hadisənin hamısını qəbul edir</strong>, heç nə yayımlamır. Hər hadisəni uyğun bildiriş tipinə çevirir. MVP-də real email/SMS yoxdur — <code>NotificationSender</code> sadəcə <code>log.info</code> ilə "göndərir" və SENT statusu qoyur.</p>
+<table>
+  <tr><th>Qəbul edilən hadisə</th><th>Yaranan bildiriş</th></tr>
+  <tr><td>user.registered</td><td>WELCOME (email mövcuddur)</td></tr>
+  <tr><td>policy.created</td><td>POLICY_PENDING</td></tr>
+  <tr><td>payment.completed</td><td>POLICY_ACTIVATED və ya PAYMENT_SUCCESS</td></tr>
+  <tr><td>payment.failed</td><td>PAYMENT_FAILED</td></tr>
+  <tr><td>claim.submitted</td><td>CLAIM_SUBMITTED</td></tr>
+  <tr><td>claim.decision</td><td>CLAIM_APPROVED / CLAIM_REJECTED</td></tr>
+  <tr><td>fraud.detected</td><td>FRAUD_ALERT (yalnız riskScore ≥ 70)</td></tr>
+</table>
+<p><strong>RetryScheduler:</strong> hər 5 dəqiqədə FAILED bildirişləri (retryCount &lt; 3) yenidən göndərməyə çalışır.</p>
+
+<div class="note"><strong>Ümumi şablon:</strong> Bütün biznes servisləri eyni quruluşu paylaşır — <code>controller/ → service/(+impl) → repository/ → entity/</code>, <code>dto/(request+response)</code>, <code>kafka/</code>, <code>mapper/</code> (MapStruct), <code>config/</code>, <code>exception/</code> (GlobalExceptionHandler + XxxErrorEnum). Hər biri JWT-ni özü doğrulayır, hər biri öz <code>@PreAuthorize</code> rol yoxlamasını edir.</p>
+
+</body>
+</html>

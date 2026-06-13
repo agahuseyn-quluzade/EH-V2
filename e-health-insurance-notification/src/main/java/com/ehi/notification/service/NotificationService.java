@@ -11,7 +11,7 @@ import java.util.UUID;
 
 public interface NotificationService {
 
-    NotificationDto send(UUID userId, NotificationType type, NotificationChannel channel, String recipient, String subject, String body);
+    NotificationDto send(UUID correlationId, UUID userId, NotificationType type, NotificationChannel channel, String recipient, String subject, String body);
 
     List<NotificationDto> getMyNotifications(UUID userId);
 

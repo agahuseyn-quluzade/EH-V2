@@ -3,6 +3,7 @@ package com.ehi.payment.controller;
 import com.ehi.payment.dto.request.ProcessPaymentRequest;
 import com.ehi.payment.dto.response.PaymentDto;
 import com.ehi.payment.security.JwtProvider;
+import com.ehi.payment.service.EpointPaymentService;
 import com.ehi.payment.service.PaymentService;
 import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.PaymentReferenceType;
@@ -55,6 +56,7 @@ class PaymentControllerTest {
     @Autowired ObjectMapper objectMapper;
 
     @MockBean PaymentService paymentService;
+    @MockBean EpointPaymentService epointPaymentService;
     @MockBean JwtProvider jwtProvider;
 
     private PaymentDto stubDto() {

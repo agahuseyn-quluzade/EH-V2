@@ -7,6 +7,8 @@ spring:
     hibernate:
       ddl-auto: create-drop
     show-sql: false
+  liquibase:
+    enabled: false
   kafka:
     bootstrap-servers: ${spring.embedded.kafka.brokers}
     consumer:

@@ -36,6 +36,8 @@ public class Notification {
     @Column(nullable = false)
     private UUID userId;
 
+    private UUID correlationId;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NotificationType type;

@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.001">
+<testsuite name="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-13T04:04:07" hostname="AGA" time="0.018">
   <properties/>
-  <testcase name="consume_sendsPolicyPendingNotification()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-12T22:56:30.812+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=3e6bd9d5-dc25-411d-acc5-01c7b67e7e5f, userId=67097eef-8d20-4f95-8f23-828eee0ccbef
+  <testcase name="consume_sendsPolicyPendingNotification_viaEmail()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.01"/>
+  <testcase name="consume_sendsNothing_whenContactNotFound()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.006"/>
+  <system-out><![CDATA[2026-06-13T08:04:07.639+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=786fd577-8cc4-4f44-a8e1-21136cae814e, userId=f9c09ad7-8136-41fd-a1e1-22be360bfa9b
+2026-06-13T08:04:07.647+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=75eb44b0-8b7c-4c0b-b7de-064052279e0c, userId=d00ff023-94ca-462f-9175-6e0456b71ab0
+2026-06-13T08:04:07.649+04:00  WARN 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : No contact for userId=d00ff023-94ca-462f-9175-6e0456b71ab0, skipping POLICY_PENDING notification
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

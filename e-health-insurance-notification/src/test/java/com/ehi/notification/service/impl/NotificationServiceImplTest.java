@@ -5,6 +5,7 @@ import com.ehi.notification.entity.Notification;
 import com.ehi.notification.enums.NotificationStatus;
 import com.ehi.notification.mapper.NotificationMapper;
 import com.ehi.notification.repository.NotificationRepository;
+import com.ehi.notification.service.NotificationSender;
 import com.ehi.infra.enums.NotificationChannel;
 import com.ehi.infra.enums.NotificationType;
 import org.junit.jupiter.api.Test;
@@ -56,6 +57,7 @@ class NotificationServiceImplTest {
     @Test
     void send_savesPendingThenSent_whenSenderSucceeds() {
         List<NotificationStatus> savedStatuses = new ArrayList<>();
+        when(notificationRepository.existsByCorrelationIdAndType(any(), any())).thenReturn(false);
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification n = invocation.getArgument(0);
             savedStatuses.add(n.getStatus());
@@ -66,7 +68,7 @@ class NotificationServiceImplTest {
 
         UUID userId = UUID.randomUUID();
 
-        NotificationDto result = notificationService.send(userId, NotificationType.WELCOME, NotificationChannel.EMAIL,
+        NotificationDto result = notificationService.send(UUID.randomUUID(), userId, NotificationType.WELCOME, NotificationChannel.EMAIL,
                 "user@example.com", "Welcome", "Hi there");
 
         verify(notificationRepository, times(2)).save(any(Notification.class));
@@ -90,6 +92,7 @@ class NotificationServiceImplTest {
     @Test
     void send_savesFailed_whenSenderFails() {
         List<NotificationStatus> savedStatuses = new ArrayList<>();
+        when(notificationRepository.existsByCorrelationIdAndType(any(), any())).thenReturn(false);
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification n = invocation.getArgument(0);
             savedStatuses.add(n.getStatus());
@@ -98,11 +101,33 @@ class NotificationServiceImplTest {
         when(notificationSender.send(any(Notification.class))).thenReturn(false);
         when(notificationMapper.toDto(any(Notification.class))).thenAnswer(invocation -> toDtoStub(invocation.getArgument(0)));
 
-        NotificationDto result = notificationService.send(UUID.randomUUID(), NotificationType.CLAIM_SUBMITTED, NotificationChannel.EMAIL,
+        NotificationDto result = notificationService.send(UUID.randomUUID(), UUID.randomUUID(), NotificationType.CLAIM_SUBMITTED, NotificationChannel.EMAIL,
                 "user@example.com", "Claim Submitted", "Your claim was submitted");
 
         assertThat(savedStatuses).containsExactly(NotificationStatus.PENDING, NotificationStatus.FAILED);
         assertThat(result.status()).isEqualTo(NotificationStatus.FAILED);
+    }
+
+    @Test
+    void send_skipsDuplicate_whenCorrelationIdAndTypeAlreadyExists() {
+        UUID correlationId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+        Notification existing = Notification.builder()
+                .id(UUID.randomUUID()).correlationId(correlationId).userId(userId)
+                .type(NotificationType.CLAIM_APPROVED).channel(NotificationChannel.EMAIL)
+                .recipient("user@example.com").subject("Claim Approved").body("Approved")
+                .status(NotificationStatus.SENT).retryCount(0).build();
+
+        when(notificationRepository.existsByCorrelationIdAndType(correlationId, NotificationType.CLAIM_APPROVED)).thenReturn(true);
+        when(notificationRepository.findByCorrelationIdAndType(correlationId, NotificationType.CLAIM_APPROVED)).thenReturn(existing);
+        when(notificationMapper.toDto(existing)).thenReturn(toDtoStub(existing));
+
+        NotificationDto result = notificationService.send(correlationId, userId, NotificationType.CLAIM_APPROVED,
+                NotificationChannel.EMAIL, "user@example.com", "Claim Approved", "Approved");
+
+        verify(notificationRepository, org.mockito.Mockito.never()).save(any());
+        verify(notificationSender, org.mockito.Mockito.never()).send(any());
+        assertThat(result.status()).isEqualTo(NotificationStatus.SENT);
     }
 
     // ---- getMyNotifications ----

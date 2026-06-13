@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.ehi.notification.service.impl.AwsNotificationSenderTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-13T04:04:08" hostname="AGA" time="1.837">
+  <properties/>
+  <testcase name="send_returnsTrueAndSendsEmail_forEmailChannel()" classname="com.ehi.notification.service.impl.AwsNotificationSenderTest" time="1.746"/>
+  <testcase name="send_returnsFalse_whenSesThrows()" classname="com.ehi.notification.service.impl.AwsNotificationSenderTest" time="0.028"/>
+  <testcase name="send_returnsTrueAndPublishesToSns_forSmsChannel()" classname="com.ehi.notification.service.impl.AwsNotificationSenderTest" time="0.045"/>
+  <testcase name="send_returnsFalse_whenSnsThrows()" classname="com.ehi.notification.service.impl.AwsNotificationSenderTest" time="0.011"/>
+  <system-out><![CDATA[2026-06-13T08:04:09.799+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.AwsNotificationSender       : Email sent via SES to user@example.com
+2026-06-13T08:04:09.870+04:00 ERROR 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.AwsNotificationSender       : SES email failed for userId=d6d66dc5-9c1b-4bb5-b021-53adacd07d81 recipient=user@example.com: SesException
+2026-06-13T08:04:09.913+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.AwsNotificationSender       : SMS sent via SNS to +994501234567
+2026-06-13T08:04:09.932+04:00 ERROR 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.AwsNotificationSender       : SNS SMS failed for userId=57aaafcf-34ed-44eb-a33d-af9bf8a84267 recipient=+994501234567: SnsException
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

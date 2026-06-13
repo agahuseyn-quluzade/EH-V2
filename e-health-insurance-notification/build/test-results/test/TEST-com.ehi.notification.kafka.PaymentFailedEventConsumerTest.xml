@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.001">
+<testsuite name="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T04:04:07" hostname="AGA" time="0.025">
   <properties/>
-  <testcase name="consume_sendsPaymentFailedNotification()" classname="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-12T22:56:30.811+04:00  INFO 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : Received PaymentFailedEvent for paymentId=c9372690-c234-40ab-a3ca-bb6c50a3f099, userId=8c71b8a6-4866-497e-9566-5e5bbbfd4302
+  <testcase name="consume_sendsPaymentFailedNotification_viaEmail_whenNoPhone()" classname="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" time="0.008"/>
+  <testcase name="consume_sendsNothing_whenContactNotFound()" classname="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" time="0.005"/>
+  <testcase name="consume_sendsPaymentFailedNotification_viaSms_whenPhoneAvailable()" classname="com.ehi.notification.kafka.PaymentFailedEventConsumerTest" time="0.008"/>
+  <system-out><![CDATA[2026-06-13T08:04:07.600+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : Received PaymentFailedEvent for paymentId=4eb67d0e-7203-4f47-8382-4bd0b3fe0058, userId=ee4f4c76-032f-4083-978b-d8a2bb878dcc
+2026-06-13T08:04:07.608+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : Received PaymentFailedEvent for paymentId=6723fc93-3465-471f-b952-b8d9f5dd140b, userId=4cb8b2f0-cde1-4eee-bc74-dceacb22681e
+2026-06-13T08:04:07.609+04:00  WARN 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : No contact for userId=4cb8b2f0-cde1-4eee-bc74-dceacb22681e, skipping PAYMENT_FAILED notification
+2026-06-13T08:04:07.615+04:00  INFO 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PaymentFailedEventConsumer   : Received PaymentFailedEvent for paymentId=af7cc89f-f26b-42f2-ae11-6d38c9217030, userId=b5ad01bd-657a-4b24-937e-e3cadbdce2b6
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

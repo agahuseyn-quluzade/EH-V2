@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.service.impl.NotificationServiceImplTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2026-06-12T18:56:30" hostname="Nijats-MacBook-Pro.local" time="0.02">
+<testsuite name="com.ehi.notification.service.impl.NotificationServiceImplTest" tests="5" skipped="0" failures="0" errors="0" timestamp="2026-06-13T04:04:09" hostname="AGA" time="0.14">
   <properties/>
-  <testcase name="send_savesFailed_whenSenderFails()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.013"/>
-  <testcase name="getAllNotifications_returnsPagedResponse()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.001"/>
-  <testcase name="getMyNotifications_returnsNotifications_scopedByUserId()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.0"/>
-  <testcase name="send_savesPendingThenSent_whenSenderSucceeds()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.004"/>
-  <system-out><![CDATA[2026-06-12T22:56:30.882+04:00  WARN 21978 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.NotificationServiceImpl     : Notification FAILED: type=CLAIM_SUBMITTED, userId=a4ae85d6-388c-43a6-bcbc-029b7fd7bc16, recipient=user@example.com
+  <testcase name="send_savesFailed_whenSenderFails()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.079"/>
+  <testcase name="getAllNotifications_returnsPagedResponse()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.026"/>
+  <testcase name="getMyNotifications_returnsNotifications_scopedByUserId()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.006"/>
+  <testcase name="send_savesPendingThenSent_whenSenderSucceeds()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.009"/>
+  <testcase name="send_skipsDuplicate_whenCorrelationIdAndTypeAlreadyExists()" classname="com.ehi.notification.service.impl.NotificationServiceImplTest" time="0.009"/>
+  <system-out><![CDATA[2026-06-13T08:04:10.012+04:00  WARN 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.NotificationServiceImpl     : Notification FAILED: type=CLAIM_SUBMITTED, userId=d2c4d49b-ae58-48e1-a61c-1c3a4bdd99ce, recipient=user@example.com
+2026-06-13T08:04:10.078+04:00  WARN 18236 --- [e-health-insurance-notification] [    Test worker] c.e.n.s.impl.NotificationServiceImpl     : Duplicate notification skipped: correlationId=549868ad-889c-4ed6-8f64-944fe32016bb, type=CLAIM_APPROVED
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

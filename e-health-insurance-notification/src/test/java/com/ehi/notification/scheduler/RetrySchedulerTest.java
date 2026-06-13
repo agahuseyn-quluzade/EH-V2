@@ -3,7 +3,7 @@ package com.ehi.notification.scheduler;
 import com.ehi.notification.entity.Notification;
 import com.ehi.notification.enums.NotificationStatus;
 import com.ehi.notification.repository.NotificationRepository;
-import com.ehi.notification.service.impl.NotificationSender;
+import com.ehi.notification.service.NotificationSender;
 import com.ehi.infra.enums.NotificationChannel;
 import com.ehi.infra.enums.NotificationType;
 import org.junit.jupiter.api.Test;

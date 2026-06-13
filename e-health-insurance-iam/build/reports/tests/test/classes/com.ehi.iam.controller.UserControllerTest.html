@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.046s</div>
+<div class="counter">1.569s</div>
 <p>duration</p>
 </div>
 </td>
@@ -79,47 +79,47 @@
 </thead>
 <tr>
 <td class="success">changePassword_allowedForAnyAuthenticatedUser()</td>
-<td class="success">0.004s</td>
+<td class="success">0.042s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">changePassword_blocked_whenUnauthenticated()</td>
-<td class="success">0.002s</td>
+<td class="success">0.028s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">changeRole_allowedForAdmin()</td>
-<td class="success">0.005s</td>
+<td class="success">0.063s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">changeRole_forbiddenForCustomer()</td>
-<td class="success">0.002s</td>
+<td class="success">0.050s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">changeStatus_allowedForAdmin()</td>
-<td class="success">0.026s</td>
+<td class="success">1.278s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">changeStatus_forbiddenForCustomer()</td>
-<td class="success">0.002s</td>
+<td class="success">0.020s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">searchUsers_allowedForAdmin()</td>
-<td class="success">0.003s</td>
+<td class="success">0.054s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">searchUsers_allowedForAgent()</td>
-<td class="success">0.001s</td>
+<td class="success">0.017s</td>
 <td class="success">passed</td>
 </tr>
 <tr>
 <td class="success">searchUsers_forbiddenForCustomer()</td>
-<td class="success">0.001s</td>
+<td class="success">0.017s</td>
 <td class="success">passed</td>
 </tr>
 </table>
@@ -127,7 +127,7 @@
 <div id="tab1" class="tab">
 <h2>Standard output</h2>
 <span class="code">
-<pre>2026-06-12T23:00:36.997+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.ehi.iam.IamApplication for test class com.ehi.iam.controller.UserControllerTest
+<pre>07:06:40.367 [Test worker] INFO org.springframework.boot.test.context.SpringBootTestContextBootstrapper -- Found @SpringBootConfiguration com.ehi.iam.IamApplication for test class com.ehi.iam.controller.UserControllerTest
 
   .   ____          _            __ _ _
  /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
@@ -137,19 +137,19 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::                (v3.2.5)
 
-2026-06-12T23:00:37.007+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Starting UserControllerTest using Java 17.0.19 with PID 22724 (started by nijatnasirli in /Users/nijatnasirli/Desktop/EH-V3/e-health-insurance-iam)
-2026-06-12T23:00:37.007+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : No active profile set, falling back to 1 default profile: &quot;default&quot;
-2026-06-12T23:00:37.113+04:00  WARN 22724 --- [e-health-insurance-iam] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
+2026-06-13T07:06:42.035+04:00  INFO 18852 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Starting UserControllerTest using Java 17.0.19 with PID 18852 (started by Aga in D:\ehfinal\e-health-insurance-iam)
+2026-06-13T07:06:42.039+04:00  INFO 18852 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : No active profile set, falling back to 1 default profile: &quot;default&quot;
+2026-06-13T07:06:49.585+04:00  WARN 18852 --- [e-health-insurance-iam] [    Test worker] .s.s.UserDetailsServiceAutoConfiguration : 
 
-Using generated security password: 8bc6fc3c-aed5-4f43-bf98-0bd988ee4b36
+Using generated security password: 74c9dd82-f6d1-486f-8032-1dcb1991b24d
 
 This generated password is for development use only. Your security configuration must be updated before running your application in production.
 
-2026-06-12T23:00:37.140+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@7b364711, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@1267348a, org.springframework.security.web.context.SecurityContextHolderFilter@6561629, org.springframework.security.web.header.HeaderWriterFilter@8039274, org.springframework.web.filter.CorsFilter@350ce9db, org.springframework.security.web.authentication.logout.LogoutFilter@43b8d302, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@26156929, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@3291cfad, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@279ebd4, org.springframework.security.web.session.SessionManagementFilter@126aaaa5, org.springframework.security.web.access.ExceptionTranslationFilter@2d01bc46, org.springframework.security.web.access.intercept.AuthorizationFilter@1bf596f8]
-2026-06-12T23:00:37.167+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
-2026-06-12T23:00:37.168+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
-2026-06-12T23:00:37.168+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 0 ms
-2026-06-12T23:00:37.172+04:00  INFO 22724 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Started UserControllerTest in 0.172 seconds (process running for 3.521)
+2026-06-13T07:06:51.913+04:00  INFO 18852 --- [e-health-insurance-iam] [    Test worker] o.s.s.web.DefaultSecurityFilterChain     : Will secure any request with [org.springframework.security.web.session.DisableEncodeUrlFilter@350342e0, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@5d297d4d, org.springframework.security.web.context.SecurityContextHolderFilter@550fa96f, org.springframework.security.web.header.HeaderWriterFilter@6181bc4a, org.springframework.web.filter.CorsFilter@1dd44289, org.springframework.security.web.authentication.logout.LogoutFilter@b0d3e7, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@5d01b0d8, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@271e851e, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@6cc56b32, org.springframework.security.web.session.SessionManagementFilter@1ba35152, org.springframework.security.web.access.ExceptionTranslationFilter@604c7e9b, org.springframework.security.web.access.intercept.AuthorizationFilter@2619cb76]
+2026-06-13T07:06:52.907+04:00  INFO 18852 --- [e-health-insurance-iam] [    Test worker] o.s.b.t.m.w.SpringBootMockServletContext : Initializing Spring TestDispatcherServlet ''
+2026-06-13T07:06:52.908+04:00  INFO 18852 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Initializing Servlet ''
+2026-06-13T07:06:52.913+04:00  INFO 18852 --- [e-health-insurance-iam] [    Test worker] o.s.t.web.servlet.TestDispatcherServlet  : Completed initialization in 4 ms
+2026-06-13T07:06:53.158+04:00  INFO 18852 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.controller.UserControllerTest  : Started UserControllerTest in 12.41 seconds (process running for 16.991)
 </pre>
 </span>
 </div>
@@ -161,7 +161,7 @@ This generated password is for development use only. Your security configuration
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 12, 2026, 11:00:37 PM</p>
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 13, 2026, 7:06:57 AM</p>
 </div>
 </div>
 </body>

@@ -1,7 +1,7 @@
 name: e-health-insurance
 
 x-jwt-secret: &jwt-secret
-  JWT_SECRET: change-me-to-a-secure-256-bit-secret-key-for-jwt-signing-please
+  JWT_SECRET: ${JWT_SECRET:?JWT_SECRET must be set (see .env / .env.example)}
 
 networks:
   ehi-network:
@@ -70,8 +70,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       <<: *jwt-secret
-    ports:
-      - "8081:8081"
+    expose:
+      - "8081"
     networks:
       - ehi-network
 
@@ -89,8 +89,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       <<: *jwt-secret
-    ports:
-      - "8082:8082"
+    expose:
+      - "8082"
     networks:
       - ehi-network
 
@@ -108,8 +108,8 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: docker
       <<: *jwt-secret
-    ports:
-      - "8083:8083"
+    expose:
+      - "8083"
     volumes:
       - claim-uploads:/app/uploads
     networks:
@@ -134,8 +134,8 @@ services:
       EPOINT_PRIVATE_KEY: ${EPOINT_PRIVATE_KEY:-}
       EPOINT_SUCCESS_REDIRECT_URL: ${EPOINT_SUCCESS_REDIRECT_URL:-http://localhost:5173/payments/success}
       EPOINT_ERROR_REDIRECT_URL: ${EPOINT_ERROR_REDIRECT_URL:-http://localhost:5173/payments/error}
-    ports:
-      - "8084:8084"
+    expose:
+      - "8084"
     networks:
       - ehi-network
 
@@ -154,8 +154,8 @@ services:
       SPRING_PROFILES_ACTIVE: docker
       <<: *jwt-secret
       OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
-    ports:
-      - "8085:8085"
+    expose:
+      - "8085"
     networks:
       - ehi-network
 
@@ -178,8 +178,8 @@ services:
       AWS_SES_FROM: ${AWS_SES_FROM:-no-reply@ehi.example.com}
       AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
       AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
-    ports:
-      - "8086:8086"
+    expose:
+      - "8086"
     networks:
       - ehi-network
 
@@ -208,9 +208,7 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - gw
-    environment:
-      VITE_GATEWAY_URL: http://gw:8080
     ports:
-      - "5173:5173"
+      - "5173:80"
     networks:
       - ehi-network

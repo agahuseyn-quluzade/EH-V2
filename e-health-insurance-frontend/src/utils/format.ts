@@ -44,17 +44,18 @@ export function fileSize(bytes: number | null | undefined): string {
 
 // ─── Status etiketləri (Azərbaycan dilində) ──────────────────────────────────
 
-// Backend UserRole: CUSTOMER, AGENT, ADMIN
+// Backend UserRole: CUSTOMER, STAFF, ADMIN
 export const roleLabels: Record<Role, string> = {
   CUSTOMER: "Müştəri",
-  AGENT: "Əməkdaş",
+  STAFF: "Əməkdaş",
   ADMIN: "Administrator",
 };
 
-// Backend PolicyStatus: PENDING, ACTIVE, CANCELLED
+// Backend PolicyStatus: PENDING, ACTIVE, EXPIRED, CANCELLED
 export const policyStatusLabels: Record<PolicyStatus, string> = {
   PENDING: "Gözləmədə",
   ACTIVE: "Aktiv",
+  EXPIRED: "Müddəti bitib",
   CANCELLED: "Ləğv edilib",
 };
 
@@ -96,6 +97,8 @@ export function statusTone(
     case "FAILED":
     case "CANCELLED":
       return "danger";
+    case "EXPIRED":
+      return "neutral";
     default:
       return "info";
   }

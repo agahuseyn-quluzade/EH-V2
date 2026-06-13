@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="x-ua-compatible" content="IE=edge"/>
+<title>Test results - EpointPaymentServiceImplTest</title>
+<link href="../css/base-style.css" rel="stylesheet" type="text/css"/>
+<link href="../css/style.css" rel="stylesheet" type="text/css"/>
+<script src="../js/report.js" type="text/javascript"></script>
+</head>
+<body>
+<div id="content">
+<h1>EpointPaymentServiceImplTest</h1>
+<div class="breadcrumbs">
+<a href="../index.html">all</a> &gt; 
+<a href="../packages/com.ehi.payment.service.impl.html">com.ehi.payment.service.impl</a> &gt; EpointPaymentServiceImplTest</div>
+<div id="summary">
+<table>
+<tr>
+<td>
+<div class="summaryGroup">
+<table>
+<tr>
+<td>
+<div class="infoBox" id="tests">
+<div class="counter">12</div>
+<p>tests</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="failures">
+<div class="counter">0</div>
+<p>failures</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="ignored">
+<div class="counter">0</div>
+<p>ignored</p>
+</div>
+</td>
+<td>
+<div class="infoBox" id="duration">
+<div class="counter">0.201s</div>
+<p>duration</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</td>
+<td>
+<div class="infoBox success" id="successRate">
+<div class="percent">100%</div>
+<p>successful</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div id="tabs">
+<ul class="tabLinks">
+<li>
+<a href="#tab0">Tests</a>
+</li>
+<li>
+<a href="#tab1">Standard output</a>
+</li>
+</ul>
+<div id="tab0" class="tab">
+<h2>Tests</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Duration</th>
+<th>Result</th>
+</tr>
+</thead>
+<tr>
+<td class="success">handleCallback_cardRegistrationFailed_leavesCardInactive()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">handleCallback_cardRegistrationSuccess_activatesCard()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">handleCallback_duplicateSuccess_isIdempotent()</td>
+<td class="success">0.011s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">handleCallback_failed_failsPayment_andPublishesEvent()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">handleCallback_rejectsInvalidSignature()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">handleCallback_success_completesPayment_andPublishesEvent()</td>
+<td class="success">0.009s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">handleCallback_unknownPayment_isIgnored()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">refreshStatus_appliesSuccessResult()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">refreshStatus_throwsNotFound_forNonOwner()</td>
+<td class="success">0.004s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">refreshStatus_throws_whenNoEpointTransaction()</td>
+<td class="success">0.140s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">startCardRegistration_savesInactiveCard_andReturnsRedirect()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+<tr>
+<td class="success">startCardRegistration_throws_whenEpointRejects()</td>
+<td class="success">0.005s</td>
+<td class="success">passed</td>
+</tr>
+</table>
+</div>
+<div id="tab1" class="tab">
+<h2>Standard output</h2>
+<span class="code">
+<pre>2026-06-13T08:07:13.928+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Duplicate Epoint success for payment f7fa3df4-c1ad-4d76-8ff9-fa902aae2722 skipped
+2026-06-13T08:07:13.933+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint callback rejected: invalid signature
+2026-06-13T08:07:13.939+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payout card registration started for user 4cb83041-d16c-4c04-b91f-c7fd7e0e7cf2: card=null
+2026-06-13T08:07:13.945+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint card registration failed for user 3a9e5102-c245-447e-a8fa-009510b3684e: Invalid merchant
+2026-06-13T08:07:13.954+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payment eb832231-8a00-4836-b6ad-85581f7f4fc5 completed via Epoint: transaction=tw000123, rrn=rrn-1
+2026-06-13T08:07:13.961+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint callback for unknown payment be8f07d1-4d93-4454-b1ba-779aba9e23f5 ignored
+2026-06-13T08:07:13.966+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payout card af914c3b-cbe0-4324-a4a2-bfb649cc437f activated for user fa395c6d-368d-478c-9aab-348150561d06
+2026-06-13T08:07:13.977+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payment 8dbc530f-9319-472f-bce1-ef6b66056c06 failed via Epoint: code=116, message=Declined, insufficient funds
+2026-06-13T08:07:13.983+04:00  WARN 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Epoint card registration failed for card c0c07ae1-bce5-4210-910f-8083fddfa571: Rejected
+2026-06-13T08:07:13.988+04:00  INFO 18180 --- [e-health-insurance-payment] [    Test worker] c.e.p.s.impl.EpointPaymentServiceImpl    : Payment 0f73c955-c940-4261-a983-be3381be359a completed via Epoint: transaction=tw000123, rrn=rrn-1
+</pre>
+</span>
+</div>
+</div>
+<div id="footer">
+<p>
+<div>
+<label class="hidden" id="label-for-line-wrapping-toggle" for="line-wrapping-toggle">Wrap lines
+<input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
+</label>
+</div>Generated by 
+<a href="http://www.gradle.org">Gradle 8.10.2</a> at Jun 13, 2026, 8:07:19 AM</p>
+</div>
+</div>
+</body>
+</html>

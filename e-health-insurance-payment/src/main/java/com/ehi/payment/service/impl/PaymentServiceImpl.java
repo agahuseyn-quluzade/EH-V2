@@ -5,6 +5,7 @@ import com.ehi.payment.entity.Payment;
 import com.ehi.payment.kafka.PaymentFailedEventProducer;
 import com.ehi.payment.mapper.PaymentMapper;
 import com.ehi.payment.repository.PaymentRepository;
+import com.ehi.payment.service.PaymentProcessor;
 import com.ehi.payment.service.PaymentService;
 import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.PaymentReferenceType;
@@ -30,7 +31,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final PaymentMapper paymentMapper;
     private final PaymentFailedEventProducer paymentFailedEventProducer;
-    private final MockPaymentProcessor mockPaymentProcessor;
+    private final PaymentProcessor paymentProcessor;
 
     @Override
     public PaymentDto processPayment(UUID userId, UUID referenceId, PaymentReferenceType referenceType, BigDecimal amount) {
@@ -69,7 +70,7 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment = paymentRepository.save(payment);
         log.info("Processing payment: referenceId={}, type={}, amount={}", referenceId, referenceType, amount);
-        mockPaymentProcessor.process(payment.getId());
+        paymentProcessor.process(payment.getId());
 
         return paymentMapper.toDto(payment);
     }

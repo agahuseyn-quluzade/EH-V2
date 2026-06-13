@@ -47,5 +47,6 @@ gateway:
   security:
     public-paths:
       - /api/v1/auth/**
+      - /api/v1/payments/epoint/callback
     public-get-paths:
       - /api/v1/plans/**

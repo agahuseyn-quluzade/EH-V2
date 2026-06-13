@@ -1,7 +1,10 @@
 package com.ehi.payment.controller;
 
 import com.ehi.payment.dto.request.ProcessPaymentRequest;
+import com.ehi.payment.dto.response.CardRegistrationResponse;
 import com.ehi.payment.dto.response.PaymentDto;
+import com.ehi.payment.dto.response.SavedCardDto;
+import com.ehi.payment.service.EpointPaymentService;
 import com.ehi.payment.service.PaymentService;
 import com.ehi.infra.dto.ApiResponse;
 import com.ehi.infra.dto.PagedResponse;
@@ -28,6 +31,7 @@ import java.util.UUID;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final EpointPaymentService epointPaymentService;
 
     @PostMapping("/process")
     @PreAuthorize("hasRole('ADMIN')")
@@ -53,6 +57,26 @@ public class PaymentController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<PagedResponse<PaymentDto>>> getAllPayments(Pageable pageable) {
         return ResponseEntity.ok(ApiResponse.ok(paymentService.getAllPayments(pageable)));
+    }
+
+    @PostMapping("/{id}/refresh-status")
+    public ResponseEntity<ApiResponse<PaymentDto>> refreshStatus(Authentication authentication, @PathVariable UUID id) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return ResponseEntity.ok(ApiResponse.ok(epointPaymentService.refreshStatus(id, userId, isAdmin(authentication))));
+    }
+
+    @PostMapping("/cards/register")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<CardRegistrationResponse>> registerCard(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return ResponseEntity.ok(ApiResponse.ok(epointPaymentService.startCardRegistration(userId)));
+    }
+
+    @GetMapping("/cards/me")
+    @PreAuthorize("hasRole('CUSTOMER')")
+    public ResponseEntity<ApiResponse<List<SavedCardDto>>> getMyCards(Authentication authentication) {
+        UUID userId = UUID.fromString(authentication.getName());
+        return ResponseEntity.ok(ApiResponse.ok(epointPaymentService.getMyCards(userId)));
     }
 
     private boolean isAdmin(Authentication authentication) {

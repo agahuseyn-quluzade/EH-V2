@@ -18,6 +18,9 @@ public record PaymentDto(
         PaymentStatus status,
         String transactionId,
         String failureReason,
+        String checkoutUrl,
+        String epointTransaction,
+        String cardMask,
         Instant createdAt
 ) {
 }

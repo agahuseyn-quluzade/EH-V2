@@ -1,7 +1,7 @@
 // Domen tipləri — backend DTO-ları ilə birəbir uyğundur.
 
-// Backend UserRole enum: CUSTOMER, AGENT, ADMIN
-export type Role = "CUSTOMER" | "AGENT" | "ADMIN";
+// Backend UserRole enum: CUSTOMER, STAFF, ADMIN
+export type Role = "CUSTOMER" | "STAFF" | "ADMIN";
 
 // ─── IAM ─────────────────────────────────────────────────────────────────────
 // Backend AuthResponse: userId, email, role, accessToken, refreshToken
@@ -57,8 +57,8 @@ export interface ChangeStatusRequest {
 }
 
 // ─── Policy ──────────────────────────────────────────────────────────────────
-// Backend PolicyStatus infra enum: PENDING, ACTIVE, CANCELLED
-export type PolicyStatus = "PENDING" | "ACTIVE" | "CANCELLED";
+// Backend PolicyStatus infra enum: PENDING, ACTIVE, EXPIRED, CANCELLED
+export type PolicyStatus = "PENDING" | "ACTIVE" | "EXPIRED" | "CANCELLED";
 
 // Backend PlanDto: id, name, description, coverageAmount, premiumAmount, durationMonths, active, createdAt, updatedAt
 export interface Plan {

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="style.css">
+<title>C4 Model</title>
+</head>
+<body>
+
+<section class="cover">
+  <div class="badge">E-Health Insurance · Sənəd 1 / 5</div>
+  <div class="kicker">Memarlıq Sənədləşməsi</div>
+  <h1>C4 Model<br>Diaqramları</h1>
+  <div class="subtitle">Sistemin Kontekst, Konteyner, Komponent və Yerləşdirmə (Deployment) səviyyələrinin vizual izahı</div>
+  <div class="meta">E-Sağlamlıq Sığortası — Mikroservis Backend Platforması<br>Java 17 · Spring Boot 3.2.5 · Kafka · PostgreSQL · 2026</div>
+</section>
+
+<h2>C4 Model nədir?</h2>
+<p>C4 model proqram memarlığını <strong>4 abstraksiya səviyyəsində</strong> təsvir edən yanaşmadır. Hər səviyyə fərqli "böyütmə" (zoom) verir: ümumi mənzərədən kod detallarına doğru. Bu sənəd E-Sağlamlıq Sığortası platformasını həmin 4 səviyyədə izah edir.</p>
+
+<table>
+  <tr><th>Səviyyə</th><th>Ad</th><th>Sualı cavablandırır</th></tr>
+  <tr><td>1</td><td>System Context (Kontekst)</td><td>Sistem kimlərlə və hansı xarici sistemlərlə əlaqədədir?</td></tr>
+  <tr><td>2</td><td>Container (Konteyner)</td><td>Sistem hansı icra olunan hissələrdən (servis, baza, broker) ibarətdir?</td></tr>
+  <tr><td>3</td><td>Component (Komponent)</td><td>Bir konteynerin daxili strukturu necədir?</td></tr>
+  <tr><td>4</td><td>Code / Deployment</td><td>Komponentlər kodda və serverdə necə yerləşir?</td></tr>
+</table>
+
+<!-- ============ LEVEL 1 ============ -->
+<h2 class="pagebreak">Səviyyə 1 — System Context</h2>
+<p>Ən yüksək baxış. Platforma <strong>tək bir qutu</strong> kimi göstərilir; ətrafında istifadəçi rolları və yeganə xarici sistem (OpenRouter AI) var. Bu, B2C tək-sığortaçı modelidir — platformanın özü sığortaçıdır.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 760 440" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="13">
+  <defs>
+    <marker id="arr" markerWidth="9" markerHeight="9" refX="7" refY="3" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L7,3 L0,6 Z" fill="#64748b"/>
+    </marker>
+  </defs>
+  <!-- persons -->
+  <g>
+    <rect x="40" y="40" width="150" height="80" rx="10" fill="#0c4a6e"/>
+    <text x="115" y="72" fill="#fff" text-anchor="middle" font-weight="600">Müştəri</text>
+    <text x="115" y="92" fill="#cbd5e1" text-anchor="middle" font-size="10">Plan alır, iddia göndərir</text>
+  </g>
+  <g>
+    <rect x="305" y="30" width="150" height="80" rx="10" fill="#0c4a6e"/>
+    <text x="380" y="62" fill="#fff" text-anchor="middle" font-weight="600">Əməkdaş (Staff)</text>
+    <text x="380" y="82" fill="#cbd5e1" text-anchor="middle" font-size="10">Şübhəli iddiaları yoxlayır</text>
+  </g>
+  <g>
+    <rect x="570" y="40" width="150" height="80" rx="10" fill="#0c4a6e"/>
+    <text x="645" y="72" fill="#fff" text-anchor="middle" font-weight="600">Admin</text>
+    <text x="645" y="92" fill="#cbd5e1" text-anchor="middle" font-size="10">Plan, rol, status idarəsi</text>
+  </g>
+  <!-- system -->
+  <rect x="230" y="210" width="300" height="110" rx="14" fill="#0f766e"/>
+  <text x="380" y="252" fill="#fff" text-anchor="middle" font-weight="700" font-size="15">E-Sağlamlıq Sığortası</text>
+  <text x="380" y="274" fill="#e0f2f1" text-anchor="middle" font-size="11">Sığorta Platforması (Backend Sistemi)</text>
+  <text x="380" y="294" fill="#b2dfdb" text-anchor="middle" font-size="10">Plan satışı · iddia · AI fırıldaq qiymətləndirmə · ödəniş</text>
+  <!-- external -->
+  <rect x="300" y="380" width="160" height="56" rx="10" fill="#78716c"/>
+  <text x="380" y="404" fill="#fff" text-anchor="middle" font-weight="600">OpenRouter AI</text>
+  <text x="380" y="421" fill="#e7e5e4" text-anchor="middle" font-size="10">Gemini 2.5 Flash (xarici)</text>
+  <!-- arrows -->
+  <line x1="115" y1="120" x2="300" y2="210" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="380" y1="110" x2="380" y2="208" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="645" y1="120" x2="460" y2="210" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr)"/>
+  <line x1="380" y1="320" x2="380" y2="378" stroke="#64748b" stroke-width="1.6" marker-end="url(#arr)"/>
+  <text x="120" y="175" fill="#52616b" font-size="10">HTTPS / JWT</text>
+  <text x="540" y="175" fill="#52616b" font-size="10">HTTPS / JWT</text>
+  <text x="392" y="356" fill="#52616b" font-size="10">REST (fırıldaq analizi · chatbot)</text>
+</svg>
+<div class="caption">Şəkil 1 — System Context: 3 istifadəçi rolu, 1 platforma, 1 xarici AI sistemi.</div>
+</div>
+
+<div class="note"><strong>Qeyd:</strong> Modeldə xəstəxana, həkim və ya digər sığorta şirkətləri <em>yoxdur</em>. Platforma birbaşa sığortaçı rolundadır (single-insurer MVP).</div>
+
+<!-- ============ LEVEL 2 ============ -->
+<h2 class="pagebreak">Səviyyə 2 — Container</h2>
+<p>Platformanın içini açırıq. Hər qutu ayrıca işləyən prosesi və ya data anbarını təmsil edir. Servislər bir-biri ilə <strong>iki yolla</strong> əlaqə qurur: sinxron (Gateway üzərindən REST) və asinxron (Kafka hadisələri). Hər servisin <strong>öz PostgreSQL bazası</strong> var (database-per-service).</p>
+
+<div class="diagram">
+<svg viewBox="0 0 800 560" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <defs>
+    <marker id="a2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/></marker>
+    <marker id="a2k" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#ea580c"/></marker>
+  </defs>
+  <!-- clients -->
+  <rect x="40" y="20" width="160" height="48" rx="8" fill="#0c4a6e"/>
+  <text x="120" y="40" fill="#fff" text-anchor="middle" font-weight="600">Frontend (React)</text>
+  <text x="120" y="56" fill="#cbd5e1" text-anchor="middle" font-size="9">SPA · brauzer</text>
+  <!-- gateway -->
+  <rect x="40" y="110" width="160" height="56" rx="8" fill="#0f766e"/>
+  <text x="120" y="132" fill="#fff" text-anchor="middle" font-weight="600">API Gateway</text>
+  <text x="120" y="150" fill="#e0f2f1" text-anchor="middle" font-size="9">:8080 · JWT filtr · marşrutlama</text>
+  <line x1="120" y1="68" x2="120" y2="108" stroke="#94a3b8" stroke-width="1.5" marker-end="url(#a2)"/>
+  <text x="128" y="92" fill="#52616b" font-size="9">REST/JWT</text>
+
+  <!-- services column -->
+  <g font-size="10">
+    <rect x="300" y="30"  width="150" height="46" rx="7" fill="#0891b2"/><text x="375" y="50" fill="#fff" text-anchor="middle" font-weight="600">IAM :8081</text><text x="375" y="65" fill="#e0f7fa" text-anchor="middle" font-size="8.5">auth · users</text>
+    <rect x="300" y="92" width="150" height="46" rx="7" fill="#0891b2"/><text x="375" y="112" fill="#fff" text-anchor="middle" font-weight="600">Policy :8082</text><text x="375" y="127" fill="#e0f7fa" text-anchor="middle" font-size="8.5">plan · police</text>
+    <rect x="300" y="154" width="150" height="46" rx="7" fill="#0891b2"/><text x="375" y="174" fill="#fff" text-anchor="middle" font-weight="600">Claim :8083</text><text x="375" y="189" fill="#e0f7fa" text-anchor="middle" font-size="8.5">iddia · evidence</text>
+    <rect x="300" y="216" width="150" height="46" rx="7" fill="#0891b2"/><text x="375" y="236" fill="#fff" text-anchor="middle" font-weight="600">Payment :8084</text><text x="375" y="251" fill="#e0f7fa" text-anchor="middle" font-size="8.5">mock ödəniş</text>
+    <rect x="300" y="278" width="150" height="46" rx="7" fill="#0891b2"/><text x="375" y="298" fill="#fff" text-anchor="middle" font-weight="600">AI :8085</text><text x="375" y="313" fill="#e0f7fa" text-anchor="middle" font-size="8.5">fırıldaq · chatbot</text>
+    <rect x="300" y="340" width="150" height="46" rx="7" fill="#0891b2"/><text x="375" y="360" fill="#fff" text-anchor="middle" font-weight="600">Notification :8086</text><text x="375" y="375" fill="#e0f7fa" text-anchor="middle" font-size="8.5">bildirişlər</text>
+  </g>
+  <!-- gateway to services -->
+  <line x1="200" y1="138" x2="298" y2="53" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
+  <line x1="200" y1="138" x2="298" y2="115" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
+  <line x1="200" y1="138" x2="298" y2="177" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
+  <line x1="200" y1="138" x2="298" y2="239" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
+  <line x1="200" y1="138" x2="298" y2="301" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
+  <line x1="200" y1="138" x2="298" y2="363" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
+
+  <!-- Kafka bus -->
+  <rect x="300" y="430" width="430" height="42" rx="8" fill="#ea580c"/>
+  <text x="515" y="456" fill="#fff" text-anchor="middle" font-weight="700">Apache Kafka — Event Bus (8 topic)</text>
+  <!-- services to kafka (dashed) -->
+  <g stroke="#ea580c" stroke-width="1.1" stroke-dasharray="4 3">
+    <line x1="375" y1="76" x2="450" y2="430" marker-end="url(#a2k)"/>
+    <line x1="400" y1="138" x2="490" y2="430" marker-end="url(#a2k)"/>
+    <line x1="420" y1="200" x2="540" y2="430" marker-end="url(#a2k)"/>
+    <line x1="440" y1="262" x2="590" y2="430" marker-end="url(#a2k)"/>
+    <line x1="450" y1="324" x2="640" y2="430" marker-end="url(#a2k)"/>
+    <line x1="450" y1="386" x2="690" y2="430" marker-end="url(#a2k)"/>
+  </g>
+
+  <!-- DBs -->
+  <g font-size="9">
+    <rect x="540" y="30"  width="120" height="40" rx="6" fill="#475569"/><text x="600" y="55" fill="#fff" text-anchor="middle">ehi_iam</text>
+    <rect x="540" y="92" width="120" height="40" rx="6" fill="#475569"/><text x="600" y="117" fill="#fff" text-anchor="middle">ehi_policy</text>
+    <rect x="540" y="154" width="120" height="40" rx="6" fill="#475569"/><text x="600" y="179" fill="#fff" text-anchor="middle">ehi_claim</text>
+    <rect x="540" y="216" width="120" height="40" rx="6" fill="#475569"/><text x="600" y="241" fill="#fff" text-anchor="middle">ehi_payment</text>
+    <rect x="540" y="278" width="120" height="40" rx="6" fill="#475569"/><text x="600" y="303" fill="#fff" text-anchor="middle">ehi_ai</text>
+    <rect x="540" y="340" width="120" height="40" rx="6" fill="#475569"/><text x="600" y="365" fill="#fff" text-anchor="middle">ehi_notification</text>
+  </g>
+  <g stroke="#94a3b8" stroke-width="1.1">
+    <line x1="450" y1="53" x2="540" y2="50" marker-end="url(#a2)"/>
+    <line x1="450" y1="115" x2="540" y2="112" marker-end="url(#a2)"/>
+    <line x1="450" y1="177" x2="540" y2="174" marker-end="url(#a2)"/>
+    <line x1="450" y1="239" x2="540" y2="236" marker-end="url(#a2)"/>
+    <line x1="450" y1="301" x2="540" y2="298" marker-end="url(#a2)"/>
+    <line x1="450" y1="363" x2="540" y2="360" marker-end="url(#a2)"/>
+  </g>
+  <!-- external AI -->
+  <rect x="690" y="278" width="100" height="46" rx="7" fill="#78716c"/>
+  <text x="740" y="300" fill="#fff" text-anchor="middle" font-size="9.5" font-weight="600">OpenRouter</text>
+  <text x="740" y="314" fill="#e7e5e4" text-anchor="middle" font-size="8">Gemini 2.5</text>
+  <line x1="450" y1="301" x2="688" y2="301" stroke="#94a3b8" stroke-width="1.2" marker-end="url(#a2)"/>
+</svg>
+<div class="legend">
+  <span><span class="swatch" style="background:#0f766e"></span> Gateway</span>
+  <span><span class="swatch" style="background:#0891b2"></span> Mikroservis</span>
+  <span><span class="swatch" style="background:#475569"></span> PostgreSQL baza</span>
+  <span><span class="swatch" style="background:#ea580c"></span> Kafka (asinxron)</span>
+  <span><span class="swatch" style="background:#78716c"></span> Xarici sistem</span>
+</div>
+<div class="caption">Şəkil 2 — Container: davamlı xətt = sinxron REST, kəsik narıncı xətt = asinxron Kafka hadisəsi.</div>
+</div>
+
+<!-- ============ LEVEL 3 ============ -->
+<h2 class="pagebreak">Səviyyə 3 — Component (Claim servisi nümunəsində)</h2>
+<p>Bir konteynerin içinə baxırıq. Bütün servislər eyni qatlı (layered) struktura malikdir: <code>Controller → Service → Repository → DB</code>, üstəgəl Kafka producer/consumer-lər. Aşağıda <strong>Claim</strong> servisinin komponentləri göstərilib.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 760 470" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <defs>
+    <marker id="a3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#64748b"/></marker>
+  </defs>
+  <rect x="20" y="20" width="720" height="430" rx="12" fill="#f1f5f9" stroke="#cbd5e1"/>
+  <text x="40" y="46" fill="#0f766e" font-weight="700" font-size="13">Claim Service (com.ehi.claim)</text>
+
+  <rect x="60" y="70" width="180" height="56" rx="8" fill="#0f766e"/>
+  <text x="150" y="93" fill="#fff" text-anchor="middle" font-weight="600">ClaimController</text>
+  <text x="150" y="110" fill="#e0f2f1" text-anchor="middle" font-size="9">REST · @PreAuthorize</text>
+
+  <rect x="60" y="170" width="180" height="56" rx="8" fill="#0891b2"/>
+  <text x="150" y="193" fill="#fff" text-anchor="middle" font-weight="600">ClaimServiceImpl</text>
+  <text x="150" y="210" fill="#e0f7fa" text-anchor="middle" font-size="9">biznes məntiqi · qərarlar</text>
+
+  <rect x="60" y="270" width="180" height="56" rx="8" fill="#6366f1"/>
+  <text x="150" y="293" fill="#fff" text-anchor="middle" font-weight="600">ClaimRepository</text>
+  <text x="150" y="310" fill="#e0e7ff" text-anchor="middle" font-size="9">Spring Data JPA</text>
+
+  <rect x="60" y="380" width="180" height="48" rx="8" fill="#475569"/>
+  <text x="150" y="408" fill="#fff" text-anchor="middle" font-weight="600">ehi_claim (PostgreSQL)</text>
+
+  <!-- Kafka side -->
+  <rect x="360" y="120" width="180" height="50" rx="8" fill="#ea580c"/>
+  <text x="450" y="140" fill="#fff" text-anchor="middle" font-weight="600" font-size="10">FraudDetectedEventConsumer</text>
+  <text x="450" y="157" fill="#ffedd5" text-anchor="middle" font-size="8.5">← fraud.detected</text>
+
+  <rect x="360" y="200" width="180" height="50" rx="8" fill="#ea580c"/>
+  <text x="450" y="220" fill="#fff" text-anchor="middle" font-weight="600" font-size="10">ClaimSubmittedEventProducer</text>
+  <text x="450" y="237" fill="#ffedd5" text-anchor="middle" font-size="8.5">→ claim.submitted</text>
+
+  <rect x="360" y="270" width="180" height="50" rx="8" fill="#ea580c"/>
+  <text x="450" y="290" fill="#fff" text-anchor="middle" font-weight="600" font-size="10">ClaimDecisionEventProducer</text>
+  <text x="450" y="307" fill="#ffedd5" text-anchor="middle" font-size="8.5">→ claim.decision</text>
+
+  <rect x="610" y="200" width="110" height="120" rx="8" fill="#ea580c" opacity="0.85"/>
+  <text x="665" y="255" fill="#fff" text-anchor="middle" font-weight="700">Kafka</text>
+  <text x="665" y="273" fill="#ffedd5" text-anchor="middle" font-size="9">Event Bus</text>
+
+  <!-- mapper/dto -->
+  <rect x="360" y="360" width="180" height="44" rx="8" fill="#0d9488"/>
+  <text x="450" y="380" fill="#fff" text-anchor="middle" font-size="10" font-weight="600">ClaimMapper (MapStruct)</text>
+  <text x="450" y="395" fill="#ccfbf1" text-anchor="middle" font-size="8.5">Entity ↔ ClaimDto</text>
+
+  <!-- arrows vertical -->
+  <line x1="150" y1="126" x2="150" y2="168" stroke="#64748b" stroke-width="1.5" marker-end="url(#a3)"/>
+  <line x1="150" y1="226" x2="150" y2="268" stroke="#64748b" stroke-width="1.5" marker-end="url(#a3)"/>
+  <line x1="150" y1="326" x2="150" y2="378" stroke="#64748b" stroke-width="1.5" marker-end="url(#a3)"/>
+  <!-- service to kafka -->
+  <line x1="240" y1="190" x2="358" y2="220" stroke="#64748b" stroke-width="1.3" marker-end="url(#a3)"/>
+  <line x1="240" y1="200" x2="358" y2="290" stroke="#64748b" stroke-width="1.3" marker-end="url(#a3)"/>
+  <line x1="358" y1="145" x2="240" y2="185" stroke="#64748b" stroke-width="1.3" marker-end="url(#a3)"/>
+  <line x1="240" y1="198" x2="358" y2="380" stroke="#64748b" stroke-width="1.1" marker-end="url(#a3)"/>
+  <!-- producers/consumer to kafka -->
+  <line x1="540" y1="145" x2="608" y2="225" stroke="#ea580c" stroke-width="1.2" marker-end="url(#a3)"/>
+  <line x1="540" y1="225" x2="608" y2="250" stroke="#ea580c" stroke-width="1.2" marker-end="url(#a3)"/>
+  <line x1="540" y1="295" x2="608" y2="280" stroke="#ea580c" stroke-width="1.2" marker-end="url(#a3)"/>
+</svg>
+<div class="caption">Şəkil 3 — Component: Claim servisinin daxili qatları və Kafka inteqrasiyası. Bu şablon bütün servislərdə təkrarlanır.</div>
+</div>
+
+<!-- ============ LEVEL 4 ============ -->
+<h2 class="pagebreak">Səviyyə 4 — Deployment (Docker Compose)</h2>
+<p>Komponentlərin fiziki yerləşməsi. Bütün sistem <strong>Docker Compose</strong> ilə tək host üzərində qaldırılır. Hər servis ayrıca konteynerdir; infra kitabxanası build mərhələsində <code>mavenLocal()</code>-a publish olunur.</p>
+
+<div class="diagram">
+<svg viewBox="0 0 760 420" xmlns="http://www.w3.org/2000/svg" font-family="Segoe UI, Arial" font-size="11">
+  <rect x="20" y="20" width="720" height="380" rx="12" fill="#eef2f5" stroke="#cbd5e1" stroke-dasharray="6 4"/>
+  <text x="40" y="46" fill="#334155" font-weight="700">Docker Host — docker-compose.yml</text>
+
+  <!-- infra row -->
+  <rect x="50" y="70" width="200" height="64" rx="8" fill="#0f766e"/>
+  <text x="150" y="96" fill="#fff" text-anchor="middle" font-weight="600">gateway</text>
+  <text x="150" y="115" fill="#e0f2f1" text-anchor="middle" font-size="9">:8080 (host-a açıq)</text>
+
+  <rect x="300" y="70" width="180" height="64" rx="8" fill="#ea580c"/>
+  <text x="390" y="96" fill="#fff" text-anchor="middle" font-weight="600">kafka + zookeeper</text>
+  <text x="390" y="115" fill="#ffedd5" text-anchor="middle" font-size="9">Confluent 7.5.0 · :29092</text>
+
+  <rect x="530" y="70" width="180" height="64" rx="8" fill="#475569"/>
+  <text x="620" y="96" fill="#fff" text-anchor="middle" font-weight="600">postgres</text>
+  <text x="620" y="115" fill="#e2e8f0" text-anchor="middle" font-size="9">6 baza · :5432</text>
+
+  <!-- services grid -->
+  <g font-size="10">
+    <rect x="50" y="170" width="130" height="50" rx="7" fill="#0891b2"/><text x="115" y="190" fill="#fff" text-anchor="middle" font-weight="600">iam</text><text x="115" y="206" fill="#e0f7fa" text-anchor="middle" font-size="8.5">:8081</text>
+    <rect x="200" y="170" width="130" height="50" rx="7" fill="#0891b2"/><text x="265" y="190" fill="#fff" text-anchor="middle" font-weight="600">policy</text><text x="265" y="206" fill="#e0f7fa" text-anchor="middle" font-size="8.5">:8082</text>
+    <rect x="350" y="170" width="130" height="50" rx="7" fill="#0891b2"/><text x="415" y="190" fill="#fff" text-anchor="middle" font-weight="600">claim</text><text x="415" y="206" fill="#e0f7fa" text-anchor="middle" font-size="8.5">:8083</text>
+    <rect x="500" y="170" width="130" height="50" rx="7" fill="#0891b2"/><text x="565" y="190" fill="#fff" text-anchor="middle" font-weight="600">payment</text><text x="565" y="206" fill="#e0f7fa" text-anchor="middle" font-size="8.5">:8084</text>
+    <rect x="125" y="240" width="130" height="50" rx="7" fill="#0891b2"/><text x="190" y="260" fill="#fff" text-anchor="middle" font-weight="600">ai</text><text x="190" y="276" fill="#e0f7fa" text-anchor="middle" font-size="8.5">:8085</text>
+    <rect x="290" y="240" width="150" height="50" rx="7" fill="#0891b2"/><text x="365" y="260" fill="#fff" text-anchor="middle" font-weight="600">notification</text><text x="365" y="276" fill="#e0f7fa" text-anchor="middle" font-size="8.5">:8086</text>
+  </g>
+
+  <!-- shared lib -->
+  <rect x="475" y="240" width="235" height="50" rx="7" fill="#7c3aed"/>
+  <text x="592" y="260" fill="#fff" text-anchor="middle" font-weight="600" font-size="10">e-health-insurance-infra (jar)</text>
+  <text x="592" y="276" fill="#ede9fe" text-anchor="middle" font-size="8.5">mavenLocal · enum/event/exception</text>
+
+  <!-- frontend -->
+  <rect x="50" y="320" width="660" height="50" rx="8" fill="#0c4a6e"/>
+  <text x="380" y="346" fill="#fff" text-anchor="middle" font-weight="600">Frontend SPA (React) — yalnız gateway :8080 üzərindən sistemə daxil olur</text>
+  <text x="380" y="362" fill="#cbd5e1" text-anchor="middle" font-size="8.5">Vite · React Router · MSW (test)</text>
+</svg>
+<div class="caption">Şəkil 4 — Deployment: bütün konteynerlər bir Docker host-da. Hər servis öz prosesidir; ortaq <code>infra</code> jar build-də paylaşılır.</div>
+</div>
+
+<div class="warn"><strong>Təhlükəsizlik qeydi:</strong> Hazırkı dev quruluşunda bütün servis portları (8081–8086) host-a açıqdır, yəni gateway-i atlayaraq birbaşa müraciət mümkündür. Prod üçün yalnız 8080 və frontend açıq qalmalıdır.</div>
+
+</body>
+</html>
