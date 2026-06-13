@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" tests="2" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.001">
+<testsuite name="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T11:56:22" hostname="Mac" time="0.003">
   <properties/>
-  <testcase name="consume_sendsPolicyActivatedNotification_forPolicyPremium()" classname="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" time="0.0"/>
-  <testcase name="consume_sendsPaymentSuccessNotification_forClaimPayout()" classname="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T11:32:09.934+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=01c94933-8c22-4faf-a2c4-741b9f1c4eb0, userId=cabd7971-b050-4ac0-8834-3033b0d27f8b
-2026-06-13T11:32:09.934+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=5b757b52-b7e9-4492-bb88-a0ccd62c9635, userId=b1cf7d73-3a0f-4908-b28f-ff602791f1b7
+  <testcase name="consume_skips_whenNoContact()" classname="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" time="0.001"/>
+  <testcase name="consume_sendsPolicyActivated_forPolicyPremium()" classname="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" time="0.001"/>
+  <testcase name="consume_sendsPaymentSuccess_forClaimPayout()" classname="com.ehi.notification.kafka.PaymentCompletedEventConsumerTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-13T15:56:22.016+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=bd087545-c5e2-4e85-aae8-cd70f534dbf6, userId=1e57e979-dcce-4cdd-a67a-f1e71fef08c1
+2026-06-13T15:56:22.016+04:00  WARN 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : No contact for userId=1e57e979-dcce-4cdd-a67a-f1e71fef08c1, skipping payment notification
+2026-06-13T15:56:22.016+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=b15a2c68-6d7a-470a-9173-23c383b409ca, userId=4096035d-f6fa-4099-8e71-7f76251b3090
+2026-06-13T15:56:22.017+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.k.PaymentCompletedEventConsumer    : Received PaymentCompletedEvent for paymentId=39eabd10-db50-4dd9-8016-84a0317274b4, userId=ffd5ba40-fadc-4c81-ba4f-03b1710010ae
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

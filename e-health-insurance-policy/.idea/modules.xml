@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/e-health-insurance-policy.main.iml" filepath="$PROJECT_DIR$/.idea/modules/e-health-insurance-policy.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/e-health-insurance-policy.test.iml" filepath="$PROJECT_DIR$/.idea/modules/e-health-insurance-policy.test.iml" />
     </modules>
   </component>
 </project>

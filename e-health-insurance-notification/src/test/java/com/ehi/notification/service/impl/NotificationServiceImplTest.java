@@ -5,6 +5,8 @@ import com.ehi.notification.entity.Notification;
 import com.ehi.notification.enums.NotificationStatus;
 import com.ehi.notification.mapper.NotificationMapper;
 import com.ehi.notification.repository.NotificationRepository;
+import com.ehi.notification.service.NotificationSender;
+import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.NotificationChannel;
 import com.ehi.infra.enums.NotificationType;
 import org.junit.jupiter.api.Test;
@@ -51,9 +53,14 @@ class NotificationServiceImplTest {
                 .build();
     }
 
-
     @Test
     void send_savesPendingThenSent_whenSenderSucceeds() {
+        UUID correlationId = UUID.randomUUID();
+        UUID userId = UUID.randomUUID();
+
+        when(notificationRepository.existsByCorrelationIdAndTypeAndChannel(correlationId, NotificationType.WELCOME, NotificationChannel.EMAIL))
+                .thenReturn(false);
+
         List<NotificationStatus> savedStatuses = new ArrayList<>();
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification n = invocation.getArgument(0);
@@ -63,9 +70,7 @@ class NotificationServiceImplTest {
         when(notificationSender.send(any(Notification.class))).thenReturn(true);
         when(notificationMapper.toDto(any(Notification.class))).thenAnswer(invocation -> toDtoStub(invocation.getArgument(0)));
 
-        UUID userId = UUID.randomUUID();
-
-        NotificationDto result = notificationService.send(userId, NotificationType.WELCOME, NotificationChannel.EMAIL,
+        NotificationDto result = notificationService.send(correlationId, userId, NotificationType.WELCOME, NotificationChannel.EMAIL,
                 "user@example.com", "Welcome", "Hi there");
 
         verify(notificationRepository, times(2)).save(any(Notification.class));
@@ -74,6 +79,7 @@ class NotificationServiceImplTest {
         ArgumentCaptor<Notification> captor = ArgumentCaptor.forClass(Notification.class);
         verify(notificationSender).send(captor.capture());
         Notification sentNotification = captor.getValue();
+        assertThat(sentNotification.getCorrelationId()).isEqualTo(correlationId);
         assertThat(sentNotification.getUserId()).isEqualTo(userId);
         assertThat(sentNotification.getType()).isEqualTo(NotificationType.WELCOME);
         assertThat(sentNotification.getChannel()).isEqualTo(NotificationChannel.EMAIL);
@@ -88,6 +94,11 @@ class NotificationServiceImplTest {
 
     @Test
     void send_savesFailed_whenSenderFails() {
+        UUID correlationId = UUID.randomUUID();
+
+        when(notificationRepository.existsByCorrelationIdAndTypeAndChannel(correlationId, NotificationType.CLAIM_SUBMITTED, NotificationChannel.EMAIL))
+                .thenReturn(false);
+
         List<NotificationStatus> savedStatuses = new ArrayList<>();
         when(notificationRepository.save(any(Notification.class))).thenAnswer(invocation -> {
             Notification n = invocation.getArgument(0);
@@ -97,13 +108,33 @@ class NotificationServiceImplTest {
         when(notificationSender.send(any(Notification.class))).thenReturn(false);
         when(notificationMapper.toDto(any(Notification.class))).thenAnswer(invocation -> toDtoStub(invocation.getArgument(0)));
 
-        NotificationDto result = notificationService.send(UUID.randomUUID(), NotificationType.CLAIM_SUBMITTED, NotificationChannel.EMAIL,
+        NotificationDto result = notificationService.send(correlationId, UUID.randomUUID(), NotificationType.CLAIM_SUBMITTED, NotificationChannel.EMAIL,
                 "user@example.com", "Claim Submitted", "Your claim was submitted");
 
         assertThat(savedStatuses).containsExactly(NotificationStatus.PENDING, NotificationStatus.FAILED);
         assertThat(result.status()).isEqualTo(NotificationStatus.FAILED);
     }
 
+    @Test
+    void send_returnsDuplicate_whenAlreadySent() {
+        UUID correlationId = UUID.randomUUID();
+        Notification existing = Notification.builder()
+                .id(UUID.randomUUID()).correlationId(correlationId).userId(UUID.randomUUID())
+                .type(NotificationType.WELCOME).channel(NotificationChannel.EMAIL)
+                .status(NotificationStatus.SENT).retryCount(0).build();
+
+        when(notificationRepository.existsByCorrelationIdAndTypeAndChannel(correlationId, NotificationType.WELCOME, NotificationChannel.EMAIL))
+                .thenReturn(true);
+        when(notificationRepository.findByCorrelationIdAndTypeAndChannel(correlationId, NotificationType.WELCOME, NotificationChannel.EMAIL))
+                .thenReturn(existing);
+        when(notificationMapper.toDto(existing)).thenReturn(toDtoStub(existing));
+
+        NotificationDto result = notificationService.send(correlationId, UUID.randomUUID(), NotificationType.WELCOME, NotificationChannel.EMAIL,
+                "user@example.com", "Welcome", "Hi there");
+
+        assertThat(result.status()).isEqualTo(NotificationStatus.SENT);
+        verify(notificationRepository, times(0)).save(any());
+    }
 
     @Test
     void getMyNotifications_returnsNotifications_scopedByUserId() {
@@ -122,6 +153,47 @@ class NotificationServiceImplTest {
         assertThat(result.get(0).userId()).isEqualTo(userId);
     }
 
+    @Test
+    void getMyNotifications_collapsesEmailAndSmsRows_fromSameEvent() {
+        UUID userId = UUID.randomUUID();
+        UUID correlationId = UUID.randomUUID();
+        Notification emailNotification = Notification.builder().id(UUID.randomUUID()).userId(userId)
+                .correlationId(correlationId).type(NotificationType.WELCOME).channel(NotificationChannel.EMAIL)
+                .recipient("user@example.com").subject("Welcome").body("Hi")
+                .status(NotificationStatus.SENT).retryCount(0).build();
+        Notification smsNotification = Notification.builder().id(UUID.randomUUID()).userId(userId)
+                .correlationId(correlationId).type(NotificationType.WELCOME).channel(NotificationChannel.SMS)
+                .recipient("+994501234567").subject("Welcome").body("Hi")
+                .status(NotificationStatus.SENT).retryCount(0).build();
+
+        when(notificationRepository.findByUserId(userId)).thenReturn(List.of(emailNotification, smsNotification));
+        when(notificationMapper.toDto(emailNotification)).thenReturn(toDtoStub(emailNotification));
+
+        List<NotificationDto> result = notificationService.getMyNotifications(userId);
+
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).channel()).isEqualTo(NotificationChannel.EMAIL);
+    }
+
+    @Test
+    void getMyNotifications_keepsRows_withNullCorrelationId() {
+        UUID userId = UUID.randomUUID();
+        Notification first = Notification.builder().id(UUID.randomUUID()).userId(userId)
+                .type(NotificationType.WELCOME).channel(NotificationChannel.EMAIL)
+                .recipient("user@example.com").subject("Welcome").body("Hi")
+                .status(NotificationStatus.SENT).retryCount(0).build();
+        Notification second = Notification.builder().id(UUID.randomUUID()).userId(userId)
+                .type(NotificationType.POLICY_ACTIVATED).channel(NotificationChannel.EMAIL)
+                .recipient("user@example.com").subject("Policy Activated").body("Hi")
+                .status(NotificationStatus.SENT).retryCount(0).build();
+
+        when(notificationRepository.findByUserId(userId)).thenReturn(List.of(first, second));
+        when(notificationMapper.toDto(any(Notification.class))).thenAnswer(invocation -> toDtoStub(invocation.getArgument(0)));
+
+        List<NotificationDto> result = notificationService.getMyNotifications(userId);
+
+        assertThat(result).hasSize(2);
+    }
 
     @Test
     void getAllNotifications_returnsPagedResponse() {
@@ -135,7 +207,7 @@ class NotificationServiceImplTest {
         when(notificationRepository.findAll(pageable)).thenReturn(page);
         when(notificationMapper.toDto(notification)).thenReturn(toDtoStub(notification));
 
-        var result = notificationService.getAllNotifications(pageable);
+        PagedResponse<NotificationDto> result = notificationService.getAllNotifications(pageable);
 
         assertThat(result.content()).hasSize(1);
         assertThat(result.totalElements()).isEqualTo(1);

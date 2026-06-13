@@ -49,6 +49,36 @@
 | FraudDetectedEvent | claimId, userId, riskScore, flags, aiExplanation | fraud.detected |
 | NotificationEvent | userId, channel, type, recipient, subject, body | notification.send |
 
+## Planned: phone on UserRegisteredEvent (for notification SMS — Option A)
+
+> Required by the notification SMS/email feature (`docs/e-health-insurance-notification.md` →
+> "IMPLEMENTATION PLAN"). Do this **first** and `./gradlew publishToMavenLocal`, because IAM and
+> notification will not compile against the old 4-field record.
+
+Add a nullable `phone` field to `UserRegisteredEvent`, making it the **5th** field:
+
+```java
+public record UserRegisteredEvent(
+        UUID userId,
+        String email,
+        String firstName,
+        String lastName,
+        String phone        // nullable — null when the user gave no phone
+) {
+}
+```
+
+- Per CLAUDE.md ("records with 5+ fields get Lombok `@Builder`"), add `@Builder` to the record now
+  that it has 5 fields, and update construction sites to use the builder (or keep positional — the
+  builder is preferred to avoid positional-arg mistakes). Construction sites that must be updated to
+  pass `phone` (or switch to the builder):
+  - `e-health-insurance-iam` → `service/impl/AuthServiceImpl.java` (the `register` publish call).
+  - `e-health-insurance-notification` (`_V1`) tests → `NotificationFlowIT` and
+    `UserRegisteredEventConsumerTest`.
+- `phone` is optional everywhere; consumers must treat `null` as "no phone → use email channel".
+- After editing, run `./gradlew publishToMavenLocal` so IAM and notification resolve the new jar from
+  `mavenLocal()`.
+
 ## Response DTOs
 | Class | Purpose |
 |---|---|

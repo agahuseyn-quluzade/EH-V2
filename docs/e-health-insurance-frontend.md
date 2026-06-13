@@ -98,6 +98,23 @@ Per project decision: these are **not implemented**. The corresponding frontend 
 ### Auth
 - **Refresh token rotation** — `POST /api/v1/auth/refresh` exists and is called, but the IAM service may not implement token revocation; logout is client-side only.
 
+## Planned: phone on registration (Option A — for notification SMS)
+
+> Supports the notification SMS/email feature (`docs/e-health-insurance-notification.md` →
+> "IMPLEMENTATION PLAN"). Prerequisite: the IAM `RegisterRequest` already accepts an optional
+> `phone` (`docs/e-health-insurance-iam.md` → "Planned: capture & publish phone"). This **reverses**
+> the earlier reconciliation note "`RegisterRequest` has no `phone`" (Step 2) for the register form
+> only. `phone` is **optional** — registration must still submit with the field left blank.
+
+- **`src/types.ts`** — add an optional `phone?: string` to `RegisterRequest`.
+- **Register page/form** (the component calling `iamApi.register`) — add an optional phone input
+  (label "Phone (optional)", `type="tel"`). Send `phone` only when non-empty (omit or send
+  `undefined`/`null` when blank so the backend `@Pattern` doesn't reject an empty string).
+- No change to `login`, `me`, or `updateMe`. Editing phone in the profile is **out of scope** unless
+  separately requested (the notification contact is captured at registration via the
+  `user.registered` event).
+- Verify with `tsc -b --noEmit` from the frontend dir.
+
 ## Planned Additions (incremental — wire after IAM backend is built)
 
 > Depends on the four new IAM endpoints in `docs/e-health-insurance-iam.md` →

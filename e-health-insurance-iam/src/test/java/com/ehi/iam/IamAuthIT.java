@@ -33,7 +33,7 @@ class IamAuthIT {
     void register_login_thenAccessProfile() {
         var reg = restTemplate.postForEntity(
                 "/api/v1/auth/register",
-                new RegisterRequest("it-flow@example.com", "password123", "IT", "User"),
+                new RegisterRequest("it-flow@example.com", "password123", "IT", "User", null),
                 Map.class);
         assertThat(reg.getStatusCode()).isEqualTo(HttpStatus.OK);
 
@@ -60,7 +60,7 @@ class IamAuthIT {
     void suspendedUser_cannotLogin() {
         restTemplate.postForEntity(
                 "/api/v1/auth/register",
-                new RegisterRequest("suspended-it@example.com", "password123", "Sus", "User"),
+                new RegisterRequest("suspended-it@example.com", "password123", "Sus", "User", null),
                 Map.class);
 
         userRepository.findByEmail("suspended-it@example.com").ifPresent(u -> {

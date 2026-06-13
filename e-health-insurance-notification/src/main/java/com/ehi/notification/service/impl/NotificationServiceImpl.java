@@ -5,6 +5,7 @@ import com.ehi.notification.entity.Notification;
 import com.ehi.notification.enums.NotificationStatus;
 import com.ehi.notification.mapper.NotificationMapper;
 import com.ehi.notification.repository.NotificationRepository;
+import com.ehi.notification.service.NotificationSender;
 import com.ehi.notification.service.NotificationService;
 import com.ehi.infra.dto.PagedResponse;
 import com.ehi.infra.enums.NotificationChannel;
@@ -15,7 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Slf4j
@@ -28,8 +31,15 @@ public class NotificationServiceImpl implements NotificationService {
     private final NotificationSender notificationSender;
 
     @Override
-    public NotificationDto send(UUID userId, NotificationType type, NotificationChannel channel, String recipient, String subject, String body) {
+    public NotificationDto send(UUID correlationId, UUID userId, NotificationType type, NotificationChannel channel, String recipient, String subject, String body) {
+        if (notificationRepository.existsByCorrelationIdAndTypeAndChannel(correlationId, type, channel)) {
+            log.warn("Duplicate notification skipped: correlationId={}, type={}, channel={}", correlationId, type, channel);
+            return notificationMapper.toDto(
+                    notificationRepository.findByCorrelationIdAndTypeAndChannel(correlationId, type, channel));
+        }
+
         Notification notification = Notification.builder()
+                .correlationId(correlationId)
                 .userId(userId)
                 .type(type)
                 .channel(channel)
@@ -54,7 +64,15 @@ public class NotificationServiceImpl implements NotificationService {
 
     @Override
     public List<NotificationDto> getMyNotifications(UUID userId) {
-        return notificationRepository.findByUserId(userId).stream()
+        Map<String, Notification> deduped = new LinkedHashMap<>();
+        for (Notification notification : notificationRepository.findByUserId(userId)) {
+            String key = notification.getCorrelationId() != null
+                    ? notification.getCorrelationId() + ":" + notification.getType()
+                    : notification.getId().toString();
+            deduped.merge(key, notification, (existing, current) ->
+                    existing.getChannel() == NotificationChannel.EMAIL ? existing : current);
+        }
+        return deduped.values().stream()
                 .map(notificationMapper::toDto)
                 .toList();
     }

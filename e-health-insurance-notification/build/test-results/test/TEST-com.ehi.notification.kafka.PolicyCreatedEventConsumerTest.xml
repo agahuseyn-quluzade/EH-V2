@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.0">
+<testsuite name="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T11:56:22" hostname="Mac" time="0.002">
   <properties/>
-  <testcase name="consume_sendsPolicyPendingNotification()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-13T11:32:09.937+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=ccdaf9a8-48d4-4a51-8acd-ab2956a9ec01, userId=f3db9ab5-1929-4652-88d8-409ff0754d70
+  <testcase name="consume_sendsPolicyPendingEmailAndSms_whenPhonePresent()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.0"/>
+  <testcase name="consume_skips_whenNoContact()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.0"/>
+  <testcase name="consume_sendsPolicyPendingEmail_whenContactExists()" classname="com.ehi.notification.kafka.PolicyCreatedEventConsumerTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-13T15:56:22.021+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=16019dc8-d98b-43b1-9e0a-d3987a8c94a5, userId=ba4f7091-7ae5-4f1b-b092-34d1078d6d09
+2026-06-13T15:56:22.022+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=a60c649f-265d-4080-9738-83c02ab075e7, userId=786d0c57-1153-43ac-a45c-454be55a59c7
+2026-06-13T15:56:22.022+04:00  WARN 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : No contact for userId=786d0c57-1153-43ac-a45c-454be55a59c7, skipping POLICY_PENDING notification
+2026-06-13T15:56:22.023+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.PolicyCreatedEventConsumer   : Received PolicyCreatedEvent for policyId=fecdc391-2af9-4f5d-9e75-c833ea72161c, userId=717c3cb5-b057-4289-8b7d-5f1a96f10894
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

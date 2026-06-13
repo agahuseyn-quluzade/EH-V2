@@ -1,8 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.001">
+<testsuite name="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T11:56:22" hostname="Mac" time="0.003">
   <properties/>
-  <testcase name="consume_sendsClaimSubmittedNotification()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T11:32:09.930+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=092e4275-5ac3-4ee4-b105-0eb143e63d45, userId=30feea89-2a24-485c-923f-a08f96145c09
+  <testcase name="consume_sendsEmailAndSms_whenPhonePresent()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.001"/>
+  <testcase name="consume_skips_whenNoContact()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.001"/>
+  <testcase name="consume_sendsEmailOnly_whenNoPhone()" classname="com.ehi.notification.kafka.ClaimSubmittedEventConsumerTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-13T15:56:22.007+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=7629b065-e9c7-4375-b687-803774b4e98d, userId=19cc0995-a4fb-47a6-8120-833703e26b6c
+2026-06-13T15:56:22.008+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=72bad2da-ad88-43f7-8520-cdd7d04909c0, userId=b6b8173a-096c-4bc5-a31e-a9a27e8effa3
+2026-06-13T15:56:22.009+04:00  WARN 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : No contact for userId=b6b8173a-096c-4bc5-a31e-a9a27e8effa3, skipping CLAIM_SUBMITTED notification
+2026-06-13T15:56:22.009+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.kafka.ClaimSubmittedEventConsumer  : Received ClaimSubmittedEvent for claimId=b5e96ebd-32da-4ae4-a263-f911c94483b2, userId=da721e02-117a-4472-9ac7-248baa893846
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

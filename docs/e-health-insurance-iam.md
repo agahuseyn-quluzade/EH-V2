@@ -27,6 +27,7 @@
 | password | String | hashed, not null |
 | firstName | String | not null |
 | lastName | String | not null |
+| phone | String | nullable (planned — Option A, for notification SMS) |
 | role | UserRole (infra enum) | not null, stored as STRING |
 | createdAt | Instant | set on persist |
 | updatedAt | Instant | set on persist/update |
@@ -49,6 +50,40 @@
 ## Kafka
 - Produces: user.registered (`UserRegisteredEventProducer`, `kafka/`, fires from `AuthServiceImpl.register()` after save, key = userId, value = `UserRegisteredEvent`)
 - Consumes: (none)
+
+## Planned: capture & publish phone (for notification SMS — Option A)
+
+> Required by the notification SMS/email feature (`docs/e-health-insurance-notification.md` →
+> "IMPLEMENTATION PLAN"). Prerequisite: the infra change adding `phone` to `UserRegisteredEvent`
+> must already be published (`docs/e-health-insurance-infra.md` → "Planned: phone on
+> UserRegisteredEvent"). `phone` is **optional** — registration must still succeed without it.
+
+1. **`dto/request/RegisterRequest.java`** — add an optional `phone` field (no `@NotBlank`; an
+   optional `@Pattern` for E.164 like `^\\+?[1-9]\\d{6,14}$` is fine):
+   ```java
+   public record RegisterRequest(
+           @NotBlank @Email String email,
+           @NotBlank @Size(min = 8) String password,
+           @NotBlank String firstName,
+           @NotBlank String lastName,
+           String phone) {}
+   ```
+2. **`entity/User.java`** — add `private String phone;` as a **nullable** `@Column` (no constraint).
+3. **`AuthServiceImpl.register()`** — set `.phone(request.phone())` on the `User.builder()`, and pass
+   `user.getPhone()` as the new 5th arg (or via the infra `@Builder`) when constructing
+   `UserRegisteredEvent` at line ~51.
+4. **Liquibase** (`db/changelog/db.changelog-master.yaml`, `ddl-auto: validate`) — add a forward
+   changeset `002-add-users-phone` (precondition `not columnExists` on `users.phone`,
+   `onFail: MARK_RAN`) doing `addColumn` → `phone varchar(50)` (nullable) on the `users` table.
+   Do **not** edit the existing `001-create-users` changeset.
+5. **Tests** — update any `RegisterRequest(...)` constructions and the `register` test to account for
+   the new field; assert the published `UserRegisteredEvent` carries the phone. `./gradlew build` green.
+6. **Decision to record:** phone is optional → a user who registers without one still works and will
+   receive EMAIL-only notifications downstream.
+
+> Note: `GET/PUT /users/me` (UserDto / UpdateUserRequest) do **not** need phone for the notification
+> feature — only registration publishes the contact. Add phone to the profile DTOs only if you also
+> want users to edit it later (out of scope for this feature unless requested).
 
 ## Planned Additions (DONE — implemented)
 

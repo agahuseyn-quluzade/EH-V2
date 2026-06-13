@@ -65,3 +65,76 @@ databaseChangeLog:
                   type: TIMESTAMP(6) WITH TIME ZONE
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 002-create-user-contacts
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          tableExists:
+            tableName: user_contacts
+      changes:
+        - createTable:
+            tableName: user_contacts
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: email
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: phone
+                  type: varchar(50)
+
+  - changeSet:
+      id: 003-add-correlation-id-column
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        and:
+          - tableExists:
+              tableName: notifications
+          - not:
+              columnExists:
+                tableName: notifications
+                columnName: correlation_id
+      changes:
+        - addColumn:
+            tableName: notifications
+            columns:
+              - column:
+                  name: correlation_id
+                  type: uuid
+
+  - changeSet:
+      id: 004-add-correlation-index
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        not:
+          indexExists:
+            indexName: idx_notifications_correlation_type_channel
+      changes:
+        - createIndex:
+            indexName: idx_notifications_correlation_type_channel
+            tableName: notifications
+            columns:
+              - column:
+                  name: correlation_id
+              - column:
+                  name: type
+              - column:
+                  name: channel

@@ -50,11 +50,11 @@
         {
           "name": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
           "url": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
-          "size": 37129,
-          "sha512": "41a45037857cea91731197cda253251a0b89930d3dcae2a7500e98772960901d105a994976c0c7ae6ce948eaa61ebad02e65ea81545eeee4c2d2a672582d3d38",
-          "sha256": "dc2b222df3196b8edeb46e43b5e95366d068063377cf8036d56fe06d36346414",
-          "sha1": "e7a35c17949e9bc3714044025cfa40bb8b1c051b",
-          "md5": "9f50772abcb37fc0d3dc705eb09db5dc"
+          "size": 38380,
+          "sha512": "f2ddc18a40332689b31e0cf17798589957f18e56853ad92b6653a030ac55d2718cc875782dda6a87c171d125508cefded73fe706d36d977b4da6c15a044e150a",
+          "sha256": "3f53bca30f6fc4f41a5f17e30188cb7971bc71a4952f5c68b05a2189f83b24ce",
+          "sha1": "92151fa989549f04e8aeae1f8b7441cfac45c2c2",
+          "md5": "59a54f672cc4a835842c1f9462a65289"
         }
       ]
     },
@@ -94,11 +94,11 @@
         {
           "name": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
           "url": "e-health-insurance-infra-0.0.1-SNAPSHOT.jar",
-          "size": 37129,
-          "sha512": "41a45037857cea91731197cda253251a0b89930d3dcae2a7500e98772960901d105a994976c0c7ae6ce948eaa61ebad02e65ea81545eeee4c2d2a672582d3d38",
-          "sha256": "dc2b222df3196b8edeb46e43b5e95366d068063377cf8036d56fe06d36346414",
-          "sha1": "e7a35c17949e9bc3714044025cfa40bb8b1c051b",
-          "md5": "9f50772abcb37fc0d3dc705eb09db5dc"
+          "size": 38380,
+          "sha512": "f2ddc18a40332689b31e0cf17798589957f18e56853ad92b6653a030ac55d2718cc875782dda6a87c171d125508cefded73fe706d36d977b4da6c15a044e150a",
+          "sha256": "3f53bca30f6fc4f41a5f17e30188cb7971bc71a4952f5c68b05a2189f83b24ce",
+          "sha1": "92151fa989549f04e8aeae1f8b7441cfac45c2c2",
+          "md5": "59a54f672cc4a835842c1f9462a65289"
         }
       ]
     }

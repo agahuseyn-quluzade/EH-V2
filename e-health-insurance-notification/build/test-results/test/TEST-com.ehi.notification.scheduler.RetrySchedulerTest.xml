@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.notification.scheduler.RetrySchedulerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:32:09" hostname="Nijats-MacBook-Pro.local" time="0.071">
+<testsuite name="com.ehi.notification.scheduler.RetrySchedulerTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-06-13T11:56:22" hostname="Mac" time="0.059">
   <properties/>
-  <testcase name="retryFailedNotifications_marksFailed_andIncrementsRetryCount_whenSenderFails()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.069"/>
+  <testcase name="retryFailedNotifications_marksFailed_andIncrementsRetryCount_whenSenderFails()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.057"/>
   <testcase name="retryFailedNotifications_onlyQueriesFailedWithRetryCountBelowMax()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.001"/>
   <testcase name="retryFailedNotifications_marksSent_andIncrementsRetryCount_whenSenderSucceeds()" classname="com.ehi.notification.scheduler.RetrySchedulerTest" time="0.001"/>
-  <system-out><![CDATA[2026-06-13T11:32:10.006+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification 50f9933e-0dce-4a1c-b2e4-8ed8742ac956 (attempt 1), result: FAILED
-2026-06-13T11:32:10.010+04:00  INFO 94261 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification cc947450-3907-4511-9276-8bedf3969930 (attempt 2), result: SENT
+  <system-out><![CDATA[2026-06-13T15:56:22.083+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification ce7850bb-2400-4bdb-bab7-e1e594edc775 (attempt 1), result: FAILED
+2026-06-13T15:56:22.085+04:00  INFO 17180 --- [e-health-insurance-notification] [    Test worker] c.e.n.scheduler.RetryScheduler           : Retried notification eb60f928-976d-4ad6-ad23-b0e6015d2e1d (attempt 2), result: SENT
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

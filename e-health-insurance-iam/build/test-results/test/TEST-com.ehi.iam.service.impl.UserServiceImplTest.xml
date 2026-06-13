@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.ehi.iam.service.impl.UserServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-13T07:17:43" hostname="Nijats-MacBook-Pro.local" time="0.023">
+<testsuite name="com.ehi.iam.service.impl.UserServiceImplTest" tests="6" skipped="0" failures="0" errors="0" timestamp="2026-06-13T08:40:47" hostname="Nijats-MacBook-Pro.local" time="0.024">
   <properties/>
-  <testcase name="getCurrentUser_throwsNotFound_whenEmailMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.016"/>
-  <testcase name="changeRole_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.0"/>
-  <testcase name="changePassword_throwsBadRequest_whenCurrentPasswordWrong()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
-  <testcase name="changeStatus_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
-  <testcase name="searchUsers_returnsPagedResponse()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.003"/>
-  <testcase name="changePassword_encodesNewPassword()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.0"/>
-  <system-out><![CDATA[2026-06-13T11:17:43.850+04:00  WARN 92121 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password change rejected (wrong current) for email=test@example.com
-2026-06-13T11:17:43.856+04:00  INFO 92121 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password changed for userId=f78a310e-7513-4130-a572-4b58b7c2e177
+  <testcase name="getCurrentUser_throwsNotFound_whenEmailMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.017"/>
+  <testcase name="changeRole_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
+  <testcase name="changePassword_throwsBadRequest_whenCurrentPasswordWrong()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.0"/>
+  <testcase name="changeStatus_throwsNotFound_whenUserMissing()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.0"/>
+  <testcase name="searchUsers_returnsPagedResponse()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.004"/>
+  <testcase name="changePassword_encodesNewPassword()" classname="com.ehi.iam.service.impl.UserServiceImplTest" time="0.001"/>
+  <system-out><![CDATA[2026-06-13T12:40:47.828+04:00  WARN 2886 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password change rejected (wrong current) for email=test@example.com
+2026-06-13T12:40:47.834+04:00  INFO 2886 --- [e-health-insurance-iam] [    Test worker] c.ehi.iam.service.impl.UserServiceImpl   : Password changed for userId=114fb5c6-9529-486a-ab42-648bda533f8a
 ]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>

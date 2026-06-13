@@ -56,3 +56,23 @@ databaseChangeLog:
                   type: TIMESTAMP(6) WITH TIME ZONE
                   constraints:
                     nullable: false
+
+  - changeSet:
+      id: 002-add-users-phone
+      author: ehi
+      preConditions:
+        onFail: MARK_RAN
+        and:
+          - tableExists:
+              tableName: users
+          - not:
+              columnExists:
+                tableName: users
+                columnName: phone
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: phone
+                  type: varchar(50)

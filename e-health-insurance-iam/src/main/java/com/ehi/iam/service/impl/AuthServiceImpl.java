@@ -42,14 +42,20 @@ public class AuthServiceImpl implements AuthService {
                 .password(passwordEncoder.encode(request.password()))
                 .firstName(request.firstName())
                 .lastName(request.lastName())
+                .phone(request.phone())
                 .role(UserRole.CUSTOMER)
                 .build();
 
         user = userRepository.save(user);
         log.info("Registered new user userId={}, email={}", user.getId(), user.getEmail());
 
-        userRegisteredEventProducer.publish(new UserRegisteredEvent(
-                user.getId(), user.getEmail(), user.getFirstName(), user.getLastName()));
+        userRegisteredEventProducer.publish(UserRegisteredEvent.builder()
+                .userId(user.getId())
+                .email(user.getEmail())
+                .firstName(user.getFirstName())
+                .lastName(user.getLastName())
+                .phone(user.getPhone())
+                .build());
 
         return buildAuthResponse(user);
     }

@@ -1,8 +1,10 @@
 package com.ehi.notification;
 
 import com.ehi.notification.entity.Notification;
+import com.ehi.notification.entity.UserContact;
 import com.ehi.notification.enums.NotificationStatus;
 import com.ehi.notification.repository.NotificationRepository;
+import com.ehi.notification.repository.UserContactRepository;
 import com.ehi.infra.config.KafkaTopics;
 import com.ehi.infra.enums.ClaimStatus;
 import com.ehi.infra.enums.ClaimType;
@@ -41,6 +43,11 @@ class NotificationFlowIT {
 
     @Autowired KafkaTemplate<String, Object> kafkaTemplate;
     @Autowired NotificationRepository notificationRepository;
+    @Autowired UserContactRepository userContactRepository;
+
+    private void seedContact(UUID userId) {
+        userContactRepository.save(UserContact.builder().userId(userId).email("user@example.com").build());
+    }
 
     private Notification awaitNotification(UUID userId, NotificationType type) {
         return await().atMost(Duration.ofSeconds(10)).until(() -> {
@@ -55,7 +62,7 @@ class NotificationFlowIT {
     void userRegistered_createsWelcomeNotification_withEmailRecipient() {
         UUID userId = UUID.randomUUID();
         kafkaTemplate.send(KafkaTopics.USER_REGISTERED, userId.toString(),
-                new UserRegisteredEvent(userId, "user@example.com", "John", "Doe"));
+                new UserRegisteredEvent(userId, "user@example.com", "John", "Doe", null));
 
         Notification notification = awaitNotification(userId, NotificationType.WELCOME);
 
@@ -66,6 +73,7 @@ class NotificationFlowIT {
     @Test
     void policyCreated_createsPolicyPendingNotification() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.POLICY_CREATED, userId.toString(),
                 PolicyCreatedEvent.builder()
                         .policyId(UUID.randomUUID()).userId(userId).planId(UUID.randomUUID())
@@ -81,6 +89,7 @@ class NotificationFlowIT {
     @Test
     void paymentCompleted_createsPolicyActivatedNotification_forPolicyPremium() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.PAYMENT_COMPLETED, userId.toString(),
                 PaymentCompletedEvent.builder()
                         .paymentId(UUID.randomUUID()).userId(userId).referenceId(UUID.randomUUID())
@@ -97,6 +106,7 @@ class NotificationFlowIT {
     @Test
     void paymentCompleted_createsPaymentSuccessNotification_forClaimPayout() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.PAYMENT_COMPLETED, userId.toString(),
                 PaymentCompletedEvent.builder()
                         .paymentId(UUID.randomUUID()).userId(userId).referenceId(UUID.randomUUID())
@@ -113,6 +123,7 @@ class NotificationFlowIT {
     @Test
     void paymentFailed_createsPaymentFailedNotification() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.PAYMENT_FAILED, userId.toString(),
                 PaymentFailedEvent.builder()
                         .paymentId(UUID.randomUUID()).userId(userId).referenceId(UUID.randomUUID())
@@ -129,6 +140,7 @@ class NotificationFlowIT {
     @Test
     void claimSubmitted_createsClaimSubmittedNotification() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.CLAIM_SUBMITTED, userId.toString(),
                 ClaimSubmittedEvent.builder()
                         .claimId(UUID.randomUUID()).userId(userId).policyId(UUID.randomUUID())
@@ -144,6 +156,7 @@ class NotificationFlowIT {
     @Test
     void claimDecision_createsClaimApprovedNotification_whenApproved() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.CLAIM_DECISION, userId.toString(),
                 ClaimDecisionEvent.builder()
                         .claimId(UUID.randomUUID()).userId(userId).policyId(UUID.randomUUID())
@@ -160,6 +173,7 @@ class NotificationFlowIT {
     @Test
     void claimDecision_createsClaimRejectedNotification_whenRejected() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.CLAIM_DECISION, userId.toString(),
                 ClaimDecisionEvent.builder()
                         .claimId(UUID.randomUUID()).userId(userId).policyId(UUID.randomUUID())
@@ -176,6 +190,7 @@ class NotificationFlowIT {
     @Test
     void fraudDetected_createsFraudAlertNotification_whenRiskScoreAboveThreshold() {
         UUID userId = UUID.randomUUID();
+        seedContact(userId);
         kafkaTemplate.send(KafkaTopics.FRAUD_DETECTED, userId.toString(),
                 FraudDetectedEvent.builder()
                         .claimId(UUID.randomUUID()).userId(userId).riskScore(80)

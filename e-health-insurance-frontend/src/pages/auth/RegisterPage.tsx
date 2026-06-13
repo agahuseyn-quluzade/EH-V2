@@ -42,6 +42,7 @@ export function RegisterPage() {
         password: form.password,
         firstName: form.firstName,
         lastName: form.lastName,
+        phone: form.phone || undefined,
       });
       toast.success("Registration completed successfully!");
       navigate(homePathForRole(role), { replace: true });
