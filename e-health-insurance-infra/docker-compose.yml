@@ -222,9 +222,12 @@ services:
       - ./docker/seed.sql:/seed.sql
     entrypoint: >
       bash -c "
-        echo 'Waiting for services to initialize...' &&
-        sleep 60 &&
-        echo 'Seeding database...' &&
+        echo 'Waiting for Liquibase schemas to be ready...' &&
+        until psql -h postgres -U postgres -d ehi_iam -c 'SELECT 1 FROM users LIMIT 1' >/dev/null 2>&1 &&
+              psql -h postgres -U postgres -d ehi_policy -c 'SELECT 1 FROM plans LIMIT 1' >/dev/null 2>&1; do
+          echo '  ...waiting for schemas'; sleep 3;
+        done &&
+        echo 'Seeding default data...' &&
         psql -h postgres -U postgres -f /seed.sql &&
         echo 'Seeding complete!'
       "
